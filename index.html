@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- If CSS and JS are in the same folder as index.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renaissance Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --background-color: #0f3a3a; /* Dark Green */
+            --text-color: #ffffff; /* White */
+            --primary-color: #d4af37; /* Gold */
+            --secondary-color: #1a2b4f; /* Navy Blue */
+            --accent-color: #20b2aa; /* Emerald/Teal */
+            --heading-font: 'Cormorant Garamond', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+        
+        body {
+            font-family: var(--body-font);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--secondary-color);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--heading-font);
+            font-weight: bold;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+
+        .logo-section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--heading-font);
+            color: var(--primary-color);
+        }
+
+        .hero {
+            background-image: url('/api/placeholder/1200/400');
+            background-size: cover;
+            background-position: center;
+            color: var(--text-color);
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 58, 58, 0.7); /* Dark Green with opacity */
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .video-grid, .paper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-item, .paper-item {
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-item iframe {
+            width: 100%;
+            height: 200px;
+        }
+
+        .video-item h3, .paper-item h3 {
+            padding: 1rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .paper-item p {
+            padding: 0 1rem;
+            color: var(--text-color);
+        }
+
+        .paper-item a {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 0 1rem 1rem;
+        }
+
+        .calculator {
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .calculator h2 {
+            margin-top: 0;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .calculator-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-item label {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .calculator-item input {
+            padding: 0.5rem;
+            border: 1px solid var(--accent-color);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border-radius: 4px;
+        }
+
+        .calculator-result {
+            margin-top: 1rem;
+        }
+
+        .calculator-chart {
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .savings-projection {
+            background-color: rgba(32, 178, 170, 0.1); /* Emerald/Teal with low opacity */
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid, .paper-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-section">
+        <div class="logo">RF</div>
+        <h2>Renaissance Finance</h2>
+    </div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#videos">Video Lectures</a></li>
+                <li><a href="#papers">Research Papers</a></li>
+                <li><a href="#calculator">50/30/20 Calculator</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Renaissance Finance</h1>
+                <p>Exploring the intersection of historical financial wisdom and modern economic principles</p>
+            </div>
+        </section>
+        <section id="videos">
+            <h2>Video Lectures</h2>
+            <div class="video-grid">
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <h3>Introduction to Renaissance Finance</h3>
+                </div>
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <h3>The Medici Bank: Lessons for Modern Banking</h3>
+                </div>
+                <div class="video-item">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <h3>Double-Entry Bookkeeping: From Venice to Wall Street</h3>
+                </div>
+            </div>
+        </section>
+        <section id="papers">
+            <h2>Research Papers</h2>
+            <div class="paper-grid">
+                <div class="paper-item">
+                    <h3>The Evolution of Financial Instruments in Renaissance Italy</h3>
+                    <p>Explore the innovative financial tools developed during the Renaissance and their impact on modern finance.</p>
+                    <a href="#">Download PDF</a>
+                </div>
+                <div class="paper-item">
+                    <h3>Medici Family: The Godfathers of Banking</h3>
+                    <p>An in-depth look at how the Medici family revolutionized banking and shaped the economic landscape of Europe.</p>
+                    <a href="#">Download PDF</a>
+                </div>
+                <div class="paper-item">
+                    <h3>From Barter to Bitcoin: The Renaissance Roots of Modern Currency</h3>
+                    <p>Tracing the evolution of currency from Renaissance-era innovations to contemporary cryptocurrencies.</p>
+                    <a href="#">Download PDF</a>
+                </div>
+            </div>
+        </section>
+        <section id="calculator" class="calculator">
+            <h2>50/30/20 Rule Budget Calculator</h2>
+            <p>Enter your monthly after-tax income to see how you should allocate your budget according to the 50/30/20 rule.</p>
+            <div class="calculator-grid">
+                <div class="calculator-item">
+                    <label for="income">Monthly After-Tax Income:</label>
+                    <input type="number" id="income" placeholder="Enter your monthly income" min="0">
+                </div>
+            </div>
+            <div class="calculator-result">
+                <h3>Your 50/30/20 Budget Breakdown:</h3>
+                <p>Needs (50%): <span id="needs">$0</span></p>
+                <p>Wants (30%): <span id="wants">$0</span></p>
+                <p>Savings/Debt (20%): <span id="savings">$0</span></p>
+            </div>
+            <div class="calculator-chart">
+                <canvas id="budgetChart"></canvas>
+            </div>
+            <div class="savings-projection">
+                <h3>Potential Savings Growth</h3>
+                <p>If you consistently save <span id="monthlySavings">$0</span> per month:</p>
+                <ul>
+                    <li>In 1 year, you could save: <span id="yearSavings">$0</span></li>
+                    <li>In 5 years, you could save: <span id="fiveYearSavings">$0</span></li>
+                    <li>In 10 years, you could save: <span id="tenYearSavings">$0</span></li>
+                </ul>
+                <p>Start your journey to financial freedom today!</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Renaissance Finance. All rights reserved.</p>
+    </footer>
+    <script>
+        const incomeInput = document.getElementById('income');
+        const needsSpan = document.getElementById('needs');
+        const wantsSpan = document.getElementById('wants');
+        const savingsSpan = document.getElementById('savings');
+        const monthlySavingsSpan = document.getElementById('monthlySavings');
+        const yearSavingsSpan = document.getElementById('yearSavings');
+        const fiveYearSavingsSpan = document.getElementById('fiveYearSavings');
+        const tenYearSavingsSpan = document.getElementById('tenYearSavings');
+        
+        let budgetChart;
+
+        function calculateBudget() {
+            const income = parseFloat(incomeInput.value) || 0;
+            const needs = income * 0.5;
+            const wants = income * 0.3;
+            const savings = income * 0.2;
+
+            needsSpan.textContent = `$${needs.toFixed(2)}`;
+            wantsSpan.textContent = `$${wants.toFixed(2)}`;
+            savingsSpan.textContent = `$${savings.toFixed(2)}`;
+
+            monthlySavingsSpan.textContent = `$${savings.toFixed(2)}`;
+            yearSavingsSpan.textContent = `$${(savings * 12).toFixed(2)}`;
+            fiveYearSavingsSpan.textContent = `$${(savings * 12 * 5).toFixed(2)}`;
+            tenYearSavingsSpan.textContent = `$${(savings * 12 * 10).toFixed(2)}`;
+
+            updateChart(needs, wants, savings);
+        }
+
+        function updateChart(needs, wants, savings) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            
+            if (budgetChart) {
+                budgetChart.destroy();
+            }
+
+            budgetChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Needs (50%)', 'Wants (30%)', 'Savings/Debt (20%)'],
+                    datasets: [{
+                        data: [needs, wants, savings],
+                        backgroundColor: ['#d4af37', '#1a2b4f', '#20b2aa']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        incomeInput.addEventListener('input', calculateBudget);
+        calculateBudget(); // Initial calculation
+    </script>
+
+</body>
+</html>
+
+
+
