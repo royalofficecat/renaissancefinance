@@ -1,0 +1,23 @@
+# Sources — "What if the 2008 market crash never happened?"
+
+Every REAL HISTORY number in the video is listed below with its source.
+
+**How these were checked:** the sandbox this was built in can't load government websites directly; their addresses would not resolve. Each figure was confirmed through web searches that quoted the original document, and the original link is listed here. **Before publishing, open each link and check the number against it.**
+
+| ID | Fact used | Source | Notes |
+|---|---|---|---|
+| S1 | The recession ran Dec 2007–Jun 2009 (18 months). Unemployment was 5.0% in Dec 2007 and peaked at 10% in Oct 2009. Home prices fell about 30% from mid-2006 to mid-2009. | Federal Reserve History, "The Great Recession" (Robert Rich) — https://www.federalreservehistory.org/essays/great-recession-of-200709 | |
+| S2 | The US lost 8.7 million jobs, Jan 2008–Feb 2010. | BLS, The Economics Daily, June 9, 2014 — https://www.bls.gov/opub/ted/2014/ted_20140609.htm | Measured from Dec 2007, BLS reported −8.4M (TED, Mar 9, 2010). |
+| S3 | Subprime loans were 23.5% of mortgage originations in 2006 ($600B). | Financial Crisis Inquiry Commission resource library — https://fcic.law.stanford.edu/resource · FCIC preliminary staff report (2010) — https://fraser.stlouisfed.org/files/docs/historical/fct/fcic/fcic_report_prelim_mortgage_20100407.pdf | Other definitions give ~19–29%. The video uses the FCIC figure. |
+| S4 | Bank failures: 3 (2007), 25 (2008), 140 (2009), 157 (2010). | FDIC Failed Bank List / BankFind — https://www.fdic.gov/bank-failures/failed-bank-list | Annual counts were confirmed via search summaries of FDIC data. Re-check against FDIC. |
+| S5 | The Fed approved its "ability to repay" rule for higher-priced mortgages on July 14, 2008. Most of it took effect Oct 1, 2009. | Federal Register 73 FR 44522 (July 30, 2008) — https://www.govinfo.gov/content/pkg/FR-2008-07-30/html/E8-16500.htm · Fed testimony, Braunstein, Mar 11, 2009 — https://www.federalreserve.gov/newsevents/testimony/braunstein20090311a.htm | |
+| S6 | Median family net worth fell 38.8%, from $126,400 (2007) to $77,300 (2010). | Federal Reserve Bulletin, 2010 Survey of Consumer Finances — https://www.federalreserve.gov/Pubs/Bulletin/2012/articles/scf/scf.htm | |
+| S7 | Housing starts went from ~2.27M a year (Jan 2006) to ~478K a year (Apr 2009). | Census Bureau, New Residential Construction (series HOUST) — https://www.census.gov/construction/nrc/index.html | Revised trough is 477K–478K. |
+| S8 | Retail trade lost about 1 million jobs (−6.7%) in the 2007–09 recession. | BLS Monthly Labor Review, April 2011, McCall, "Deep drop in retail trade employment" — https://www.bls.gov/opub/mlr/2011/04/art8full.pdf | |
+| S9 | The Fed raised rates 17 times in a row, June 2004–June 2006, ending at 5.25%. | NPR, Dec 14, 2015 — https://www.wgbh.org/news/2015-12-14/for-millennials-rising-interest-rates-sound-like-olden-tales · FOMC statement, June 29, 2006 — https://www.federalreserve.gov/newsevents/pressreleases/monetary20060629a.htm | Confirm against the Fed's statement. |
+| S10 | Lehman Brothers filed for bankruptcy Sept 15, 2008, with $639B in assets, the largest US filing at that time. | Britannica — https://www.britannica.com/print/article/2208103 · History.com — https://www.history.com/this-day-in-history/september-15/lehman-brothers-collapses | No .gov source was found. The $639B is from Lehman's May 2008 balance sheet. |
+| S11 | The median sales price of new houses sold was $239,500 in July 2007 and $420,300 for 2024. | Census Bureau, New Residential Sales — July 2007: https://www.census.gov/construction/nrs/pdf/newressales_200707.pdf · Dec 2024 / annual: https://www.census.gov/construction/nrs/pdf/newressales_202412.pdf | The two figures cover different periods (one month vs a full year), and the caption labels each. |
+| S12 | The Fed set rates at 0–¼% on Dec 16, 2008 and first raised them to ¼–½% on Dec 16, 2015. | FOMC statements — https://www.federalreserve.gov/newsevents/pressreleases/monetary20081216b.htm · https://www.federalreserve.gov/newsevents/pressreleases/monetary20151216a.htm | |
+| S13 | The 30-year fixed mortgage rate averaged 2.65% (week of Jan 7, 2021), the lowest since the survey began in 1971. | Freddie Mac Primary Mortgage Market Survey press release — https://freddiemac.gcs-web.com/news-releases/news-release-details/mortgage-rates-hit-new-record-low-first-week-2021 | |
+| S14 | Payrolls fell 20.5 million in April 2020. Unemployment was 14.7%. | BLS Employment Situation, May 8, 2020 — https://www.bls.gov/news.release/archives/empsit_05082020.htm | |
+| — | **The WHAT IF outcomes** | No source — they're imagined. | They are shown only in words ("might", "could") and never as numbers. |
