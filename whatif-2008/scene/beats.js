@@ -26,7 +26,7 @@ export const BEATS = [
 ];
 
 export const END = {
-  question: 'No dot-com crash—or no 2020 crash next?',
+  question: 'No dot-com crash or no 2020 crash next?',
   cta: 'Comment your pick 👇',
   sources: 'Sources: Federal Reserve · BLS · Census · FDIC · FCIC · Freddie Mac',
 };

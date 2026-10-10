@@ -901,7 +901,7 @@ function updateOverlay(t) {
   $('caption').classList.toggle('hidden', isEnd); $('end').classList.toggle('hidden', !isEnd);
   if (isEnd) {
     const lt = t - 13 * BEAT_LEN;
-    $('endQ').innerHTML = 'No <span class="a">dot-com crash</span>—or no <span class="b">2020 crash</span> next?';
+    $('endQ').innerHTML = 'No <span class="a">dot-com crash</span> or no <span class="b">2020 crash</span> next?';
     setText($('endCta'), END.cta); setText($('endSrc'), END.sources);
     $('end').style.transform = `scale(${easeOutBack(lt / 0.45)})`;
     $('takeaway').classList.add('hidden'); $('sticker').classList.add('hidden');
