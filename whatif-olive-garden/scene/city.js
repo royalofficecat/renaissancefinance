@@ -150,7 +150,7 @@ for (let i = 0; i < 12; i++) {
       const floatY = b === 7 ? 0.75 + Math.sin(t * 3 + i) * 0.12 : 0.1 + Math.abs(Math.sin(t * 9 + i)) * 0.03;
       c.position.set(x, floatY, dir > 0 ? 1.6 : -1.6); c.rotation.z = b === 7 ? Math.sin(t * 2.5 + i) * 0.08 : 0;
       c.userData.wheels.forEach(w => { w.rotation.y = -t * sp * 3.5; });
-      c.visible = !(b === 1 && x > -20 && x < 16);
+      c.visible = !((b === 1 || b === 3 || b === 10) && x > -20 && x < 16);
     });
   } else {
     const cx = i % 2 ? -36 : 24; c.rotation.y = dir > 0 ? -Math.PI / 2 : Math.PI / 2;
@@ -198,6 +198,7 @@ for (let f = 0; f < 22; f++) {
 const towerSign = new THREE.Group(); tower.add(towerSign);
 towerSign.add(at(textPlane('PARENT CO.', 7.4, 1.4, { bg: '#3c1814', fg: '#ffd166', font: '900 96px Inter', radius: 24 }), 0, 0, 4.3));
 { const bk = at(textPlane('PARENT CO.', 7.4, 1.4, { bg: '#3c1814', fg: '#ffd166', font: '900 96px Inter', radius: 24 }), 0, 0, -4.3); bk.rotation.y = Math.PI; towerSign.add(bk); }
+towerSign.children.forEach(m => { m.material.side = THREE.FrontSide; }); // each face reads only from its own side
 const ticker = new THREE.Mesh(new THREE.BufferGeometry(), M('#19c3b1', { emissive: '#0d7d72', emissiveIntensity: 0.4 })); tower.add(ticker);
 const tickerHead = sprite('STOCK ↑', 3.4, 1.0, { bg: '#19c3b1', fg: '#00332e', font: '900 96px Inter', radius: 50 }); tower.add(tickerHead);
 const towerCloud = cloud(2.4); towerCloud.position.set(34, 30, -12);
@@ -487,7 +488,7 @@ setShots([
   { orbit: { c: V(50, 5, 0), r: 44, h: 18, a0: 2.2, a1: 1.3 } },                                           // 8 orbit the giant bowl
   { p0: V(66, 8, 22), p1: V(66, 44, 22), t0: V(34, 8, -12), t1: V(34, 40, -12) },                          // 9 crane up the tower
   { p0: V(0, 48, 14), p1: V(0, 52, 34), t0: V(0, 46, -42), t1: V(0, 46, -42) },                            // 10 pull out from the little Earth
-  { p0: V(HX + 13, 4.0, 13), p1: V(HX + 11.5, 3.8, 11.5), t0: V(HX + 3, 3.0, -3.3), t1: V(HX + 3, 3.0, -3.3) }, // 11 close on the menu board
+  { p0: V(HX + 6, 9.5, 14), p1: V(HX + 5.5, 8.5, 12), t0: V(HX + 3, 2.8, -3.3), t1: V(HX + 3, 2.8, -3.3) }, // 11 close on the menu board
   { p0: V(-20, 14, -78), p1: V(-20, 11, -92), t0: V(-20, 3, -150), t1: V(-20, 3, -150) },                 // 12 wide over the water to Italy
   { p0: V(-6, 6, 14), p1: V(0, 52, 92), t0: V(-6, 4, 0), t1: V(-4, 6, -8) },                              // 13 pull back
   { p0: V(0, 15, 190), p1: V(0, 15, 190), t0: V(0, 4, 140), t1: V(0, 4, 140) },                           // end card
