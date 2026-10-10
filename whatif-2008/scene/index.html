@@ -53,12 +53,19 @@
   #endQ .a { color: #c9a2ff; } #endQ .b { color: #ffb15c; }
   #endCta { font-size: 40px; font-weight: 800; margin-top: 20px; color: #ffc93c; }
   #endSrc { font-size: 22px; font-weight: 600; margin-top: 18px; color: #b9c2e8; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 85% 70% at 50% 46%, rgba(0,0,0,0) 60%, rgba(18,26,60,0.18) 100%); }
+  #progress { position: absolute; left: 70px; right: 70px; top: 40px; display: flex; gap: 8px; }
+  #progress i { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.45); box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
+  #progress i.on { background: #ffc93c; }
+  #progress i.now { background: #ffffff; }
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 <div id="stage">
   <canvas id="c" width="1080" height="1920"></canvas>
+  <div id="vignette"></div>
+  <div id="progress"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div id="title">What if the <b>2008 market crash</b> never happened?</div>
   <div id="stats">
     <div class="row real"><span class="tag gold">REAL HISTORY</span><span id="statReal"></span></div>
@@ -78,7 +85,7 @@
     <div id="endSrc"></div>
   </div>
 </div>
-<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js" } }</script>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }</script>
 <script type="module" src="./city.js"></script>
 </body>
 </html>

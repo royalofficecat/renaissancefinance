@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "stills": "node render/stills.mjs",
+    "audio": "node render/audio.mjs",
+    "video": "node render/video.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "three": "^0.169.0"
-  }
+  },
+  "type": "module"
 }
