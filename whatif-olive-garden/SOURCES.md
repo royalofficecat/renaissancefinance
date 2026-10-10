@@ -1,0 +1,22 @@
+# Sources — "What if the world could only eat Olive Garden?"
+
+Every REAL number in the video is listed here.
+
+**How these were checked:** this sandbox can't load most websites directly. Each figure was confirmed through web searches that quote the original documents, and the original link is listed here. **Open each link and check the number before publishing.**
+
+| ID | Fact used | Source | Notes |
+|---|---|---|---|
+| S1 | The first Olive Garden opened in Orlando on Dec 13, 1982. General Mills spun off its restaurants as Darden in 1995. | Darden press release, "Olive Garden Celebrates 20th Anniversary" (2002) — https://investor.darden.com/news/news-details/2002/Olive-Garden-Celebrates-20th-Anniversary-2002-12-7/default.aspx · Wikipedia, Olive Garden — https://en.wikipedia.org/wiki/Olive_Garden | Check the 1995 spin-off date against Darden's 10-K history section. |
+| S2 | Darden FY2025 (ended May 25, 2025): total sales of about $12.1B, 2,159 restaurants, and 935 Olive Gardens. | Darden FY2025 results release — https://investor.darden.com/news/news-details/2025/Darden-Restaurants-Reports-Fiscal-2025-Fourth-Quarter-and-Full-Year-Results-Increases-Quarterly-Dividend-Authorizes-New-1-Billion-Share-Repurchase-Program-And-Provides-Fiscal-2026-Outlook/ · Form 10-K FY2025 — https://www.sec.gov/Archives/edgar/data/940944/000094094425000038/dri-20250525.htm | 935 is the company-owned count. |
+| S3 | Darden has about 190,000 team members. | Darden's own stated figure (as quoted in company profiles); confirm in the 10-K "Human Capital" section — https://www.sec.gov/Archives/edgar/data/940944/000094094425000038/dri-20250525.htm | Data aggregators list 197,924. The video says "about 190,000", which matches Darden's wording. Confirm before publishing. |
+| S4 | US restaurant sales passed $1 trillion for the first time in 2024. | National Restaurant Association, via Nation's Restaurant News — https://nrn.com/finance/us-restaurant-industry-expected-pass-1-trillion-first-time · NACS summary — https://www.convenience.org/stay-current/news/2024/feb/8/5-restaurants-to-earn-1-trillion-2024_operations | |
+| S5 | One Olive Garden breadstick is about 140 calories. | Olive Garden nutrition info (check the official nutrition PDF on olivegarden.com); third-party listings agree at 140, for example Fitbit — https://canarywww.fitbit.com/foods/Breadstick/692001184 | Some listings show 120–150. Confirm against Olive Garden's current nutrition guide. |
+| S6 | Nutrition Facts labels use 2,000 calories a day for general nutrition advice. | FDA, sample Nutrition Facts label — https://fda.gov/media/132225/download | |
+| S7 | In 2015, 2,000 Never Ending Pasta Passes ($100, about 7 weeks) sold out in 1 second. | Fox News — https://www.foxnews.com/food-drink/olive-gardens-never-ending-pasta-passes-sell-out-within-one-second.amp · TODAY — https://www.today.com/today/amp/tdna136113 | The 2014 sale took about 45 minutes. |
+| S8 | The Never Ending Pasta Bowl returned Aug 25, 2025, at $13.99. | Gray TV stations (e.g., WTAP), Aug 19, 2025 — https://www.wtap.com/2025/08/19/olive-gardens-never-ending-pasta-bowl-is-back · NRN — https://www.nrn.com/casual-dining/olive-garden-brings-back-never-ending-pasta-bowl-at-2022-price | |
+| S9 | The world population was about 8.2 billion in 2024. | UN World Population Prospects 2024 — https://www.un.org/sustainabledevelopment/blog/2024/07/press-release-wpp2024/ | |
+| S10 | Congress passed the first antitrust law, the Sherman Act, in 1890. | FTC, "The Antitrust Laws" — https://www.ftc.gov/advice-guidance/competition-guidance/guide-antitrust-laws/antitrust-laws | |
+| S11 | There are no Olive Garden restaurants in Italy. | The Daily Meal — https://www.thedailymeal.com/1368048/olive-garden-doesnt-exist-italy | Not a primary source. Confirm with Olive Garden's international locator. |
+| S12 | Free breadstick refills began at the first Orlando restaurant in 1982, when crowds were bigger than expected. | Fortune, July 24, 2025 — https://fortune.com/2025/07/24/olive-garden-unlimited-breadsticks-origin-darden-restaurants | |
+| — | Napkin math: 14 × 140 = 1,960 calories, and 8.2 billion × 1 = 8.2 billion breadsticks. | Arithmetic on S5, S6 and S9 | Labeled as napkin math on screen. |
+| — | **WHAT IF outcomes** | Imagined | Shown only in words, never as numbers. |
