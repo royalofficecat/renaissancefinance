@@ -121,7 +121,10 @@ server.close();
 // ---------- 5. Map labels (logged during the final render)
 const logFile = path.join(OUT, 'frames/log.jsonl');
 if (fs.existsSync(logFile)) {
-  const log = fs.readFileSync(logFile, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+  // keep the latest entry per frame (frames can be re-rendered)
+  const byFrame = new Map();
+  for (const l of fs.readFileSync(logFile, 'utf8').trim().split('\n')) { const e = JSON.parse(l); byFrame.set(e.frame, e); }
+  const log = [...byFrame.values()];
   const bad = [], clash = [];
   for (const e of log) {
     const vis = (e.labels || []).filter((l) => l.opacity > 0.3);

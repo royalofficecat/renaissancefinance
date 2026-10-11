@@ -98,9 +98,9 @@ export class Labels {
         it.t.position.copy(it.pos);
         rect = { x: sx - tw / 2, y: sy - th / 2, w: tw, h: th };
       }
-      // Fade out smoothly as any edge approaches the safe-zone border or a text panel.
-      const over = Math.max(SAFE.x0 - rect.x, rect.x + rect.w - SAFE.x1, SAFE.y0 - rect.y, rect.y + rect.h - SAFE.y1, 0);
-      let o = target * clamp(1 - over / 24);
+      // Fade out smoothly as any edge approaches the safe-zone border: fully gone by the time it touches it.
+      const over = Math.max(SAFE.x0 - rect.x, rect.x + rect.w - SAFE.x1, SAFE.y0 - rect.y, rect.y + rect.h - SAFE.y1);
+      let o = target * clamp(-over / 28);
       for (const r of avoid) o *= clamp(1 - overlap(rect, r, 10) / 14);
       for (const q of placed) o *= clamp(1 - overlap(rect, q, 6) / 10);
       it.opacity = o;

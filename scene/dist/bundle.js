@@ -37567,8 +37567,8 @@ var init_labels = __esm({
             it.t.position.copy(it.pos);
             rect = { x: sx - tw / 2, y: sy - th / 2, w: tw, h: th };
           }
-          const over = Math.max(SAFE2.x0 - rect.x, rect.x + rect.w - SAFE2.x1, SAFE2.y0 - rect.y, rect.y + rect.h - SAFE2.y1, 0);
-          let o = target * clamp2(1 - over / 24);
+          const over = Math.max(SAFE2.x0 - rect.x, rect.x + rect.w - SAFE2.x1, SAFE2.y0 - rect.y, rect.y + rect.h - SAFE2.y1);
+          let o = target * clamp2(-over / 28);
           for (const r of avoid) o *= clamp2(1 - overlap(rect, r, 10) / 14);
           for (const q3 of placed) o *= clamp2(1 - overlap(rect, q3, 6) / 10);
           it.opacity = o;
@@ -40800,9 +40800,11 @@ async function createMap(pipe) {
       directO = 1 - smoothstep2(1210, 1240, f2);
       const td = truckDist(f2);
       const tp = routeAt(td).p;
-      const follow = { target: tp, pos: tp.clone().add(SHOT.farm.pos.clone().sub(SHOT.farm.target).multiplyScalar(lerp2(1, 3.2, Math.sin(Math.PI * prog(td / routeLen, 0, 1))))), lens: 35 };
-      const a2 = move(f2, 1215, 1290, SHOT.farm, follow, { fn: ease.inOutSine });
-      s = move(f2, 1270, 1316, a2, SHOT.store, { fn: ease.inOutCubic });
+      const lock = ease.inOutSine(prog(f2, 1215, 1240));
+      const tgt = SHOT.farm.target.clone().lerp(tp, lock);
+      const lift = lerp2(1, 4.2, Math.sin(Math.PI * prog(f2, 1215, 1292)));
+      const follow = { target: tgt, pos: tgt.clone().add(SHOT.farm.pos.clone().sub(SHOT.farm.target).multiplyScalar(lift)), lens: 35 };
+      s = move(f2, 1272, 1316, follow, SHOT.store, { fn: ease.inOutCubic });
       sched(f2, 1200, 1225, ["Fresno"], 0, 12);
       sched(f2, 1250, 1320, ["Los Angeles"], 10, 0);
     } else {

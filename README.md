@@ -52,4 +52,4 @@ To preview in a browser, serve this folder and open `scene/index.html?frame=1050
 - [x] Step 2: look development (style frames)
 - [x] Step 3: contact sheet
 - [x] Step 4: fixes
-- [ ] Step 5: final render (in progress)
+- [x] Step 5: final render (`out/california-30-days-of-rain.mp4`, QA 19/19 in `out/qa-report.md`)

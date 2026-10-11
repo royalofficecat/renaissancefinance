@@ -429,11 +429,14 @@ export async function createMap(pipe) {
       // Beat 10: follow the truck south to a Los Angeles store with empty shelves
       flood = meta.floodEnd;
       routeO = 1; directO = 1 - smoothstep(1210, 1240, f);
+      // Lock onto the truck within the first second, rise higher mid-route so the ground slides by gently
       const td = truckDist(f);
       const tp = routeAt(td).p;
-      const follow = { target: tp, pos: tp.clone().add(SHOT.farm.pos.clone().sub(SHOT.farm.target).multiplyScalar(lerp(1, 3.2, Math.sin(Math.PI * prog(td / routeLen, 0, 1))))), lens: 35 };
-      const a = move(f, 1215, 1290, SHOT.farm, follow, { fn: ease.inOutSine });
-      s = move(f, 1270, 1316, a, SHOT.store, { fn: ease.inOutCubic });
+      const lock = ease.inOutSine(prog(f, 1215, 1240));
+      const tgt = SHOT.farm.target.clone().lerp(tp, lock);
+      const lift = lerp(1, 4.2, Math.sin(Math.PI * prog(f, 1215, 1292)));
+      const follow = { target: tgt, pos: tgt.clone().add(SHOT.farm.pos.clone().sub(SHOT.farm.target).multiplyScalar(lift)), lens: 35 };
+      s = move(f, 1272, 1316, follow, SHOT.store, { fn: ease.inOutCubic });
       sched(f, 1200, 1225, ['Fresno'], 0, 12);
       sched(f, 1250, 1320, ['Los Angeles'], 10, 0);
     } else {
