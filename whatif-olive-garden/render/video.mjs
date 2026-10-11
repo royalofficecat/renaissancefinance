@@ -33,7 +33,7 @@ async function renderPart(w) {
 execFileSync('node', [path.join(ROOT, 'render', 'audio.mjs')], { stdio: 'inherit' });
 const parts = await Promise.all(Array.from({ length: WORKERS }, (_, w) => renderPart(w)));
 fs.writeFileSync(path.join(TMP, 'parts.txt'), parts.map(p => `file '${p}'`).join('\n'));
-const final = path.join(OUT, 'what-if-2008.mp4');
+const final = path.join(OUT, 'what-if-olive-garden.mp4');
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', path.join(TMP, 'parts.txt'), '-i', path.join(OUT, 'soundtrack.wav'),
   '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-t', String(TOTAL), '-movflags', '+faststart', final], { stdio: 'inherit' });
 console.log('wrote', final);
