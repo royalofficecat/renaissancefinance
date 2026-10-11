@@ -208,7 +208,7 @@ const billBubble = new THREE.Mesh(new THREE.SphereGeometry(0.6, 24, 18), new THR
 onUpdate(t => {
   const b = beatOf(t), on = b === 3; bill.visible = on; billBubble.visible = on; dial.rotation.z = on ? local(t, 3) * -5 : -t * 0.4;
   if (!on) return; const lt = local(t, 3);
-  const shrink = ease((lt - 0.8) / 1.4), hx = meterHouse.position.x + 0.5, hz = meterHouse.position.z - 5.0;
+  const shrink = ease((lt - 0.8) / 1.4), hx = meterHouse.position.x + 1.6, hz = meterHouse.position.z - 5.2;
   bill.position.set(hx, 3.2 + lt * 0.2, hz); bill.rotation.y = Math.PI; bill.scale.setScalar(Math.max(0.001, 1 - shrink)); bill.visible = shrink < 0.98;
   billBubble.visible = shrink > 0.6; billBubble.position.set(hx, 3.2 + lt * 0.2 + (lt - 2.2) * (lt > 2.2 ? 1.6 : 0), hz); billBubble.scale.setScalar(easeOutBack((shrink - 0.6) / 0.4) * (lt > 3.4 ? 1 - clamp((lt - 3.4) / 0.15) : 1));
 });
@@ -314,7 +314,7 @@ const bot = new THREE.Group(); scene.add(bot);
 bot.add(at(box(1.6, 1.4, 1.4, M(WHITE)), 0, 1.2, 0), at(mesh(new THREE.SphereGeometry(0.55, 16, 12), M(AQUA)), 0, 2.3, 0), at(box(1.8, 0.5, 1.6, M('#2f3a4a')), 0, 0.3, 0));
 for (const sx of [-1.0, 1.0]) { const arm = mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.2, 8), M('#8d99ae')); arm.rotation.z = sx * 0.8; bot.add(at(arm, sx, 1.4, 0.4)); }
 bot.add(at(sprite('♻', 0.9, 0.9, { bg: LIME, fg: '#163300', font: '900 120px Inter', radius: 70, w: 160 }), 0, 1.2, 0.8));
-const bins = ['#7ce83a', '#5fd0ff', ORANGE].map((c, i) => { const bn = mesh(new THREE.CylinderGeometry(1.0, 0.8, 1.6, 16, 1, true), M(c, { side: THREE.DoubleSide })); scene.add(at(bn, -24 + i * 2.6, 0.8, -36)); return bn; });
+const bins = ['#7ce83a', '#5fd0ff', ORANGE].map((c, i) => { const bn = mesh(new THREE.CylinderGeometry(1.0, 0.8, 1.6, 16, 1, true), M(c, { side: THREE.DoubleSide })); scene.add(at(bn, -24 + i * 2.6, 0.8, -56)); return bn; });
 const carried = box(0.9, 1.6, 0.25, M('#e8eef2')); scene.add(carried);
 onUpdate(t => {
   const b = beatOf(t), on = b >= 10;
@@ -322,8 +322,8 @@ onUpdate(t => {
   const lt = b === 10 ? local(t, 10) : 4.5 + (t - 11 * BEAT_LEN);
   pile.position.y = b === 10 ? lerp(-14, 0, easeOutBounce(clamp(lt / 1.2))) : 0;
   const k = (lt * 0.4) % 1, x = k < 0.5 ? lerp(-4, -21, k / 0.5) : lerp(-21, -4, (k - 0.5) / 0.5);
-  bot.position.set(x, 0, -38); bot.rotation.y = k < 0.5 ? -Math.PI / 2 : Math.PI / 2; bot.position.y = Math.abs(Math.sin(lt * 12)) * 0.08;
-  carried.visible = k < 0.5; carried.position.set(x - 1.2, 1.9, -37.6); carried.rotation.y = lt * 2;
+  bot.position.set(x, 0, -54); bot.rotation.y = k < 0.5 ? -Math.PI / 2 : Math.PI / 2; bot.position.y = Math.abs(Math.sin(lt * 12)) * 0.08;
+  carried.visible = k < 0.5; carried.position.set(x - 1.2, 1.9, -53.6); carried.rotation.y = lt * 2;
 });
 
 // ---------- beat 12: gloss flicker, then people polish it back ----------
@@ -331,10 +331,10 @@ const polishers = [];
 for (let i = 0; i < 4; i++) {
   const p = person({ shirt: cyc([ORANGE, AQUA, LIME, '#ff5fa0'], i), hat: false }); scene.add(p); polishers.push(p);
   const tool = new THREE.Group(); tool.add(at(mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.6, 8), M('#8d99ae')), 0, 0.8, 0), at(box(0.9, 0.12, 0.12, M('#2f3a4a')), 0, 1.6, 0)); tool.rotation.x = -0.9; p.add(at(tool, 0.35, 0.6, 0.2));
-  const tw = towers[3 + i];
+  const tw = towers[5];
   onUpdate(t => {
     const on = inBeat(t, 11); p.visible = on; if (!on) return; const lt = local(t, 11);
-    p.position.set(tw.x - 2 + (i % 2) * 4, 0.16, -12 + tw.d / 2 + 0.9); p.rotation.y = Math.PI; tool.rotation.z = lt > 1.0 ? Math.sin(lt * 9 + i) * 0.5 : 0; p.userData.body.position.y = 0.6 + (lt > 1.0 ? Math.abs(Math.sin(lt * 9 + i)) * 0.06 : 0);
+    p.position.set(tw.x + (i - 1.5) * 3, 0.16, -12 + tw.d / 2 + 0.9); p.rotation.y = Math.PI; tool.rotation.z = lt > 1.0 ? Math.sin(lt * 9 + i) * 0.5 : 0; p.userData.body.position.y = 0.6 + (lt > 1.0 ? Math.abs(Math.sin(lt * 9 + i)) * 0.06 : 0);
   });
 }
 onUpdate(t => { glossOverride = null; if (inBeat(t, 11)) { const lt = local(t, 11); if (lt < 1.0) glossOverride = lt < 0.3 ? (Math.floor(lt * 40) % 2 ? 0.35 : 0.8) : lerp(0.35, 1, ease((lt - 0.3) / 0.7)); } });
@@ -393,20 +393,22 @@ onUpdate(t => { const on = beatOf(t) === 13; endSet.visible = on; if (!on) retur
 // ---------- cameras ----------
 setShots([
   { p0: V(-10, 62, 98), p1: V(-8, 54, 82), t0: V(-6, 8, -10), t1: V(-6, 8, -10) },                                // 1 wide push-in as the gloss sweeps
-  { p0: V(-70, 6, 14), p1: V(-20, 6, 14), t0: V(-50, 8, -12), t1: V(0, 9, -12) },                                // 2 dolly past the glass row
-  { p0: V(-30, 4, 16), p1: V(-26, 26, 14), t0: V(-28, 6, -12), t1: V(-26, 21, -12) },                             // 3 crane up to the rooftops
-  { p0: V(-18.5, 3.4, 10.5), p1: V(-19.5, 3.0, 9.5), t0: V(-23.5, 2.6, 3.9), t1: V(-23.5, 3.0, 3.9) },           // 4 porch meter and the bill
-  { p0: V(2, 26, 12), p1: V(-6, 22, 11), t0: V(0, 2, 10), t1: V(-5, 3, 10), up: V(1, 0, 0) },                     // 5 top-down over the hall roof
-  { p0: V(-46, 3.0, -1.5), p1: V(-30, 3.0, -1.5), t0: V(-38.5, 2.4, 5.2), t1: V(-33.5, 2.4, -5.2) },             // 6 share-boxes on the corner
-  { p0: V(30, 3.4, 2.5), p1: V(34, 3.6, 2.0), t0: V(32, 1.6, 10), t1: V(33, 1.6, 10) },                           // 7 across the street into the workshop
-  { orbit: { c: V(52, 3, 2), r: 34, h: 16, a0: 1.9, a1: 1.1 } },                                                 // 8 orbit the plaza market
+  { p0: V(-70, 9, 34), p1: V(-20, 9, 34), t0: V(-50, 8, -12), t1: V(0, 9, -12) },                                // 2 dolly past the glass row
+  { p0: V(-30, 4, 18), p1: V(-26, 31, 19), t0: V(-28, 6, -12), t1: V(-26, 17, -12) },                             // 3 crane up to the rooftops
+  { p0: V(-24.5, 3.4, -8.5), p1: V(-24.2, 3.1, -7.0), t0: V(-24.6, 2.2, 6.5), t1: V(-24.6, 2.4, 6.5) },           // 4 porch meter and the bill
+  { p0: V(2, 34, 12), p1: V(-6, 30, 11), t0: V(0, 2, 10), t1: V(-5, 3, 10), up: V(1, 0, 0) },                     // 5 top-down over the hall roof
+  { p0: V(-30, 3.6, -0.5), p1: V(-29, 3.6, 1.0), t0: V(-38.5, 2.2, 5.2), t1: V(-38.5, 2.4, 5.2) },             // 6 share-boxes on the corner
+  { p0: V(33, 4.5, -6), p1: V(33.5, 4.2, -5), t0: V(33, 1.8, 9.5), t1: V(33, 1.8, 9.5) },                           // 7 across the street into the workshop
+  { orbit: { c: V(52, 3, 2), r: 52, h: 24, a0: 1.9, a1: 1.1 } },                                                 // 8 orbit the plaza market
   { p0: V(-48, 20, 2), p1: V(10, 26, -2), t0: V(-30, 14, -12), t1: V(10, 18, -12) },                             // 9 low pass over the rooftops
   { snap: true, p0: V(40, 30, 30), p1: V(44, 12, 2), t0: V(59, 9, -24), t1: V(57, 8, -22) },                      // 10 snap to the smokestack slide
-  { p0: V(-6, 6, 2), p1: V(-8, 20, 30), t0: V(-8, 4, -20), t1: V(-10, 5, -40) },                                 // 11 pull back to reveal the pile
-  { p0: V(-14, 3.2, 0.5), p1: V(-4, 3.0, 0.5), t0: V(-10, 2.4, -7.5), t1: V(0, 2.4, -7.5) },                      // 12 close on the polishers
+  { p0: V(-10, 8, -72), p1: V(-10, 24, -94), t0: V(-10, 4, -44), t1: V(-10, 6, -40) },                                 // 11 pull back to reveal the pile
+  { p0: V(-9, 3.5, 3), p1: V(-5, 3.3, 3), t0: V(-6, 1.6, -7), t1: V(-3, 1.6, -7) },                      // 12 close on the polishers
   { p0: V(-6, 8, 16), p1: V(0, 60, 100), t0: V(-6, 6, 0), t1: V(0, 8, -10) },                                     // 13 pull back
-  { p0: V(0, 6, 174), p1: V(0, 6, 174), t0: V(0, 4, 144), t1: V(0, 4, 144) },                                     // end card
+  { p0: V(0, 7, 188), p1: V(0, 7, 188), t0: V(0, 5, 144), t1: V(0, 5, 144) },                                     // end card
 ]);
+
+setExtraHide(t => { if (beatOf(t) === 3) for (const [o] of blockers) if (o.userData.wheels && Math.abs(o.position.x + 24) < 10) o.visible = false; });
 
 // ---------- overlay ----------
 setOverlay(t => {
