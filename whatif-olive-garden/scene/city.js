@@ -330,8 +330,20 @@ const bowl = new THREE.Group(); scene.add(at(bowl, 52, 0, 0));
   const b = mesh(new THREE.LatheGeometry(pts, 48), M(CREAM, { side: THREE.DoubleSide })); bowl.add(b);
   bowl.add(at(mesh(new THREE.TorusGeometry(7.5, 0.45, 12, 48), M(TOMATO)), 0, 6, 0));
   bowl.add(at(mesh(new THREE.CylinderGeometry(3.2, 3.2, 0.6, 32), M(CREAM)), 0, 0.3, 0));
-  const pasta = mesh(new THREE.SphereGeometry(7.0, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), M(PASTA, { roughness: 0.6 })); pasta.scale.y = 0.45; bowl.add(at(pasta, 0, 5.6, 0)); bowl.userData.pasta = pasta;
-  for (let i = 0; i < 7; i++) bowl.add(at(mesh(new THREE.SphereGeometry(0.9, 16, 12), M('#8a4b2a')), Math.cos(i * 0.9) * 3.5, 8.0, Math.sin(i * 0.9) * 3.5));
+  // a nest of spaghetti: wobbly strands piled on a low sauce-red base, with saucy meatballs on top
+  const pasta = new THREE.Group(); bowl.add(at(pasta, 0, 5.6, 0)); bowl.userData.pasta = pasta;
+  const sauce = mesh(new THREE.CylinderGeometry(6.9, 6.9, 0.6, 48), M('#c73b2e', { roughness: 0.5 })); pasta.add(at(sauce, 0, 0.3, 0));
+  const strandMat = M(PASTA, { roughness: 0.55 });
+  const r3 = (sd => () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; })(21);
+  for (let i = 0; i < 46; i++) {
+    const pts = []; let a = r3() * Math.PI * 2, rad = 1 + r3() * 5, h = 0.6 + r3() * 0.9;
+    for (let j = 0; j < 14; j++) { a += 0.45 + r3() * 0.5; rad += (r3() - 0.5) * 1.4; rad = Math.max(0.5, Math.min(6.2, rad)); h += (r3() - 0.4) * 0.35; h = Math.max(0.5, Math.min(2.6, h)); pts.push(V(Math.cos(a) * rad, h, Math.sin(a) * rad)); }
+    pasta.add(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.22, 8, false), strandMat));
+  }
+  for (let i = 0; i < 6; i++) { const mb = new THREE.Group(); mb.add(mesh(new THREE.SphereGeometry(0.9, 18, 14), M('#7a4326', { roughness: 0.7 }))); const drip = mesh(new THREE.SphereGeometry(0.72, 16, 12), M('#c73b2e')); drip.scale.y = 0.5; mb.add(at(drip, 0, 0.5, 0)); pasta.add(at(mb, Math.cos(i * 1.05) * 3.2, 2.6, Math.sin(i * 1.05) * 3.2)); }
+  pasta.add(at(mesh(new THREE.SphereGeometry(0.35, 10, 8), M('#4f9d69')), 0.5, 3.2, -0.4)); pasta.add(at(mesh(new THREE.SphereGeometry(0.3, 10, 8), M('#4f9d69')), -1.8, 2.9, 1.2)); // basil
+  const fork = new THREE.Group(); fork.add(at(box(0.35, 7, 0.35, M('#cfd6e0', { metalness: 0.6, roughness: 0.3 })), 0, 3.5, 0)); for (const fx of [-0.45, -0.15, 0.15, 0.45]) fork.add(at(box(0.16, 2.0, 0.16, M('#cfd6e0', { metalness: 0.6, roughness: 0.3 })), fx, -1.0, 0)); fork.add(at(box(1.3, 0.3, 0.3, M('#cfd6e0', { metalness: 0.6, roughness: 0.3 })), 0, 0, 0));
+  fork.rotation.z = 0.35; fork.rotation.x = -0.2; pasta.add(at(fork, 3.5, 3.6, 1.5));
   bowl.add(at(textPlane('NEVER ENDING', 9, 1.3, { bg: '#3c1814', fg: '#ffd166', font: '900 90px Inter', radius: 24 }), 0, 3.4, 7.2));
 }
 const river = new THREE.Mesh(new THREE.BufferGeometry(), M(PASTA, { roughness: 0.55 })); scene.add(river);
