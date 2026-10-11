@@ -1,0 +1,5 @@
+# Video pipeline: renders, downloads and installs stay out of git
+out/
+node_modules/
+data/raw/
+__pycache__/

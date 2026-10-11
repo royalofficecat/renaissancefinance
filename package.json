@@ -1,0 +1,13 @@
+{
+  "name": "explainer-video-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "3d explainer video pipeline: three.js scene, Playwright capture, ffmpeg encode",
+  "scripts": {},
+  "dependencies": {
+    "three": "0.170.0",
+    "troika-three-text": "0.52.0",
+    "esbuild": "0.24.0",
+    "playwright-core": "1.56.1"
+  }
+}

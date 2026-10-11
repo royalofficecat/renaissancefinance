@@ -1,0 +1,16 @@
+{
+  "scene": {
+    "background": { "name": "Deep blue", "hex": "#0B1E33", "job": "Sky, ocean and the space around the diorama. All water is a lighter tint of this same blue." },
+    "water": { "name": "Water tint (of deep blue)", "hex": "#3A80BF", "job": "Rain, rivers, reservoirs, flood water. Same hue as the background, lifted, never a new colour." },
+    "subject": { "name": "Storm gray", "hex": "#8D97A2", "job": "Land, terrain, clouds, roads, buildings: the main subject." },
+    "accent": { "name": "Amber", "hex": "#F2A33A", "job": "Warnings only: stressed levees, slide-prone slopes, the broken route, outages." },
+    "highlight": { "name": "Recovery green", "hex": "#6DBE85", "job": "Recovering hills early on; recharge basins and refilled groundwater in the ending." }
+  },
+  "text": {
+    "text": { "name": "Off-white", "hex": "#F4F1EA", "job": "Titles, captions, stat numbers, labels." },
+    "secondary": { "name": "Warm grey", "hex": "#BFB8AC", "job": "Stat labels, asides, 'illustrative scenario' tags, legend text." },
+    "panelFill": { "name": "Charcoal", "hex": "#1A1816", "opacity": 0.82, "job": "Every caption, stats and legend panel (with an 18 px background blur)." },
+    "panelEdge": { "name": "Warm grey edge", "hex": "#4A4540", "job": "1.5 px panel outline and map-label halos." },
+    "endCard": { "name": "Near-black", "hex": "#12110F", "job": "End-card background." }
+  }
+}
