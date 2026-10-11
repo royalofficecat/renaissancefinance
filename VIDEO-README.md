@@ -19,6 +19,17 @@ npm install
 npm run render
 ```
 
-That fetches data, builds the audio, captures all 1,920 frames, and encodes `out/final.mp4` (h.264 high, yuv420p, crf 17, faststart, AAC 192 kbps).
+That fetches data, builds the audio, captures all 1,920 frames (`render/render-all.sh` is the restartable form), and encodes `out/final.mp4` (h.264 high, yuv420p, crf 17, faststart, AAC 192 kbps).
 
-Intermediate steps, in workflow order: `npm run styleframes` (2–3 full-size look-development frames), `npm run contact` (14 stills on one labelled sheet; add `--safe` to draw the safe-zone overlay).
+Intermediate steps, in workflow order:
+
+- `npm run styleframes` renders the three look-development frames to `out/styleframes/`.
+- `npm run contact` renders 14 stills to `out/contact/`; then `node render/preview.mjs out/contact` makes 1080 × 1920 viewing copies and `node render/contact-sheet.mjs out/contact/preview` assembles the labelled sheet. Add `--safe` to the capture to draw the safe-zone overlay.
+- `node render/capture.mjs --times 29.5,46.4 --out out/fixes` re-renders just the frames you point at.
+- `node render/check.mjs` measures the text layer in the browser: fonts in use, caption line counts, safe zones, overlapping panels.
+- `render/render-all.sh` is what `npm run frames` should be read as in practice: it renders all 1,920 frames in chunks of 240, each in a fresh browser, and skips frames already on disk, so it can be restarted.
+- `npm run encode` joins `out/frames/` and `out/audio.wav` into `out/final.mp4` and prints size, length and stream details.
+
+How a frame is made: the page draws the 3D scene at 2× (2160 × 3840) with soft shadows, bloom, SMAA, vignette and grain, and lays the HTML captions over it. Playwright asks for frame N, waits until every 3D label is laid out, and screenshots the page. ffmpeg scales the frames down to 1080 × 1920 with a Lanczos filter during the encode. This machine has no GPU, so each frame takes 10 to 15 seconds in software rendering.
+
+Audio: `audio/synth.mjs` is a tiny synthesizer (oscillators, noise, biquad filters, ADSR envelopes, a Schroeder reverb). `audio/build-audio.mjs` plays the beat sheet's cue list through it (120 bpm, D major, bar = 2 s), mixes music about 9 dB under the effect hits with the rain bed lower still, and masters with ffmpeg's two-pass loudnorm to −14 LUFS, −1 dBTP.

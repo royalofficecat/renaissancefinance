@@ -9,7 +9,8 @@
     "audio": "node audio/build-audio.mjs",
     "styleframes": "node render/capture.mjs --styleframes",
     "contact": "node render/capture.mjs --contact",
-    "frames": "node render/capture.mjs --all",
+    "frames": "bash render/render-all.sh",
+    "check": "node render/check.mjs",
     "encode": "node render/encode.mjs",
     "render": "npm run data && npm run audio && npm run frames && npm run encode"
   },
