@@ -38405,10 +38405,6 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "rain-bed-in"
-        },
-        {
           at: 60,
           cue: "whoosh-soft"
         },
@@ -38489,7 +38485,7 @@ var beats_default = {
       sound: [
         {
           at: 0,
-          cue: "water-swell"
+          cue: "rise-tone"
         },
         {
           at: 10,
@@ -38528,10 +38524,6 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "rain-heavy"
-        },
-        {
           at: 70,
           cue: "soil-gulp"
         }
@@ -38566,10 +38558,6 @@ var beats_default = {
         reason: "Shows the slope in 3d and where the water goes"
       },
       sound: [
-        {
-          at: 0,
-          cue: "rush-rise"
-        },
         {
           at: 40,
           cue: "warning-tone"

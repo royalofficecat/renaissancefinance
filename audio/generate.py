@@ -1,11 +1,12 @@
 """Generates the whole soundtrack in code: music + sound effects, mixed and mastered.
 
-- Music: cinematic electronic, 120 bpm (one bar = 2 s = 60 frames), D major. Soft pads and rain first,
+- Music: cinematic electronic, 120 bpm (one bar = 2 s = 60 frames), D major. Soft pads first,
   a growing pulse as the flood spreads, then warm piano as the clouds clear, and a final button note.
-- Sound effects: rain, whooshes on every cloud-bank transition and big camera move, ticks on every
-  count-up, pops when objects arrive, warning tones, a soft boom when the floods join.
+- Sound effects: whooshes on every scene dissolve and big camera move, ticks on every count-up,
+  pops when objects arrive, warning tones, a soft boom when the floods join. (No rain bed.)
   Every cue is placed on an exact video frame (timings come from scene/beats.json).
-- Mix: music sits ~9 dB under the effects; master to -14 LUFS integrated with true peak below -1 dBTP.
+- Mix: the music carries the track; short accents sit on top at fixed peak levels.
+  Master to -14 LUFS integrated with true peak below -1 dBTP.
 
 Run:  .venv/bin/python audio/generate.py     -> out/audio/soundtrack.wav (48 kHz stereo float)
 """
@@ -165,7 +166,7 @@ def music():
         act = 0 if bar < 7 else 1 if bar < 18 else 2 if bar < 22 else 3 if bar < 30 else 4
         bright = [0.25, 0.45 + 0.04 * (bar - 7), 0.5, 0.55, 0.4][act]
         if bar < 30:
-            place(buf, s, pad_chord(chords[ch], BAR + 0.8, bright=min(bright, 0.9)), gain=0.55 if act != 3 else 0.7)
+            place(buf, s, pad_chord(chords[ch], BAR + 0.8, bright=min(bright, 0.9)), gain=0.55 if act != 3 else 0.5)
         # Act 1: sparse plucked arpeggio
         if act == 0:
             for k, step in enumerate([0, 2, 3, 5, 6]):
@@ -188,14 +189,14 @@ def music():
         # Act 4: warm piano melody over the chords
         if act == 3:
             mel = {"G": [74, 71, 69], "D": [69, 66, 64], "A": [73, 69, 66], "Bm": [71, 69, 66], "Dsus": [74, 72, 69]}[ch]
-            place(buf, s, piano(roots[ch] + 12, 2.6, 0.6), 0.85, pan=-0.15)
+            place(buf, s, piano(roots[ch] + 12, 2.6, 0.6), 0.55, pan=-0.15)
             for k, m in enumerate(mel):
-                place(buf, s + int((k * 1.5) * BEAT * SR), piano(m, 2.0, 0.55 + 0.1 * (k == 0)), 0.75, pan=0.15)
+                place(buf, s + int((k * 1.5) * BEAT * SR), piano(m, 2.0, 0.55 + 0.1 * (k == 0)), 0.48, pan=0.15)
     # Button note on the end card (frame 1800): D major piano chord + bell
     s = fr(1800)
     for m in (38, 50, 57, 62, 66, 69, 74):
-        place(buf, s, piano(m, 3.6, 0.7), 0.5)
-    place(buf, s, bell(86, 3.5), 0.28)
+        place(buf, s, piano(m, 3.6, 0.7), 0.24)  # seven notes sum: keep the chord clean, not limited
+    place(buf, s, bell(86, 3.5), 0.16)
     # Fade in / fade out
     fade_in = np.minimum(1, t_of(N) / 1.5)
     fade_out = np.clip((DUR - t_of(N)) / 1.2, 0, 1)
@@ -324,8 +325,15 @@ def shimmer(dur=2.8):
     return out
 
 
+def pk(x, db):
+    """Scale a one-shot so its peak sits at `db` dBFS (before the master gain)."""
+    return x / (np.max(np.abs(x)) + 1e-12) * 10 ** (db / 20)
+
+
 def sfx():
-    buf = rain_bed()
+    # No rain or rushing-water beds (removed at the client's request): music plus short accents only.
+    # Every accent gets an explicit peak level so none of them can clip once the master gain is applied.
+    buf = np.zeros((N, 2))
     cues = {}
     for b in BEATS["beats"]:
         for c in b["sound"]:
@@ -339,38 +347,34 @@ def sfx():
                 for k in range(1, 13):
                     p = k / 12
                     u = 1 - (1 - p) ** (1 / 3)  # invert outCubic
-                    place(buf, fr(t_start * FPS + u * 0.9 * FPS), tick(), 0.16 * (0.6 + 0.4 * (k == 12)), pan=0.2)
+                    place(buf, fr(t_start * FPS + u * 0.9 * FPS), pk(tick(), -24 + 4 * (k == 12)), 1.0, pan=0.2)
             elif cue in ("whoosh-soft", "whoosh-map", "whoosh-big"):
                 d, a, bb = {"whoosh-soft": (0.9, 400, 2200), "whoosh-map": (1.1, 300, 3000), "whoosh-big": (1.4, 200, 2600)}[cue]
-                place(buf, s - int(d * 0.6 * SR), whoosh(d, a, bb), 0.5, pan=-0.2)
-            elif cue == "water-swell":
-                place(buf, s, rush(3.8), 0.32)
-                place(buf, s, tone(62, 3.6) * np.linspace(0.2, 1, int(3.6 * SR)) * 0.15, 0.6)
+                place(buf, s - int(d * 0.6 * SR), pk(whoosh(d, a, bb), -12), 1.0, pan=-0.2)
+            elif cue == "rise-tone":
+                place(buf, s, pk(tone(62, 3.6) * np.linspace(0.2, 1, int(3.6 * SR)), -20), 1.0)
             elif cue == "soil-gulp":
-                place(buf, s, gulp(), 0.45)
-            elif cue == "rush-rise":
-                place(buf, s, rush(4.0), 0.36)
+                place(buf, s, pk(gulp(), -14), 1.0)
             elif cue == "warning-tone":
-                place(buf, s, warning(), 0.32)
+                place(buf, s, pk(warning(), -16), 1.0)
             elif cue == "swell-deep":
-                place(buf, s, swell(3.3), 0.7)
-                place(buf, s, rush(6.0), 0.45)
+                place(buf, s, pk(swell(3.3), -12), 1.0)
             elif cue == "boom-soft":
-                place(buf, s, boom(2.4, 62), 0.75)
+                place(buf, s, pk(boom(2.4, 62), -9), 1.0)
             elif cue == "power-down":
-                place(buf, s, power_down(), 0.45, pan=0.3)
+                place(buf, s, pk(power_down(), -14), 1.0, pan=0.3)
             elif cue == "clear-shimmer":
-                place(buf, s, shimmer(), 0.35, pan=0.1)
+                place(buf, s, pk(shimmer(), -16), 1.0, pan=0.1)
             elif cue == "reveal-boom":
-                place(buf, s, boom(2.6, 55), 0.5)
-                place(buf, s + int(0.05 * SR), bell(81, 2.5), 0.2)
+                place(buf, s, pk(boom(2.6, 55), -10), 1.0)
+                place(buf, s + int(0.05 * SR), pk(bell(81, 2.5), -18), 1.0)
     # Soft whoosh on every scene dissolve, peaking at the dissolve's midpoint (4 frames before the cut)
     for cut in (228, 300, 420, 660, 1320, 1440, 1620):
         d = 1.1
-        place(buf, fr(cut - 4) - int(d * 0.6 * SR), whoosh(d, 300, 2200), 0.34, pan=0.2)
+        place(buf, fr(cut - 4) - int(d * 0.6 * SR), pk(whoosh(d, 300, 2200), -14), 1.0, pan=0.2)
     # Pops when objects arrive on screen (springs in the scene)
     for f, p in [(1100, 660), (1108, 740), (1135, 520), (1262, 880)] + [(1640 + 4 * i, 990 + 60 * i) for i in range(5)]:
-        place(buf, fr(f), pop(p), 0.22, pan=0.25)
+        place(buf, fr(f), pk(pop(p), -18), 1.0, pan=0.25)
     return buf
 
 
@@ -398,21 +402,35 @@ def true_peak_db(x):
     return 20 * np.log10(np.max(np.abs(up)) + 1e-12)
 
 
+def peak_limit(x, ceiling_db):
+    """Look-ahead peak limiter: gain only dips where the 4x-oversampled peak would pass the ceiling."""
+    from scipy.ndimage import maximum_filter1d, minimum_filter1d, uniform_filter1d
+    c = 10 ** (ceiling_db / 20)
+    up = np.abs(signal.resample_poly(x, 4, 1, axis=0)).max(1)
+    peak = up.reshape(-1, 4).max(1)[: len(x)]
+    if peak.max() <= c:
+        return x
+    look = int(0.002 * SR)
+    need = np.minimum(1.0, c / (maximum_filter1d(peak, 2 * look + 1) + 1e-12))
+    g = minimum_filter1d(need, int(0.06 * SR))  # hold the reduction briefly
+    g = uniform_filter1d(g, int(0.01 * SR))  # smooth attack/release (no clicks)
+    g = np.minimum(g, need)
+    return x * g[:, None]
+
+
 def main():
     out_dir = ROOT / "out" / "audio"
     out_dir.mkdir(parents=True, exist_ok=True)
     m = music()
     s = sfx()
-    lm, ls = lufs(m), lufs(s)
-    # Music sits about 9 dB under the effects
-    m *= 10 ** ((ls - 9 - lm) / 20)
+    # The music carries the track (no rain bed any more); the short accents sit on top at fixed peak levels.
+    m *= 10 ** ((-16.0 - lufs(m)) / 20)
     mix = m + s
-    # Master: gain to -14 LUFS, then a gentle soft-clip limiter, re-check, iterate
+    # Master: plain gain to -14 LUFS; a transparent look-ahead limiter only touches true peaks above -1.5 dBTP
     target = -14.0
-    for _ in range(4):
+    for _ in range(3):
         mix *= 10 ** ((target - lufs(mix)) / 20)
-        ceiling = 10 ** (-1.5 / 20)
-        mix = np.tanh(mix / ceiling) * ceiling
+        mix = peak_limit(mix, -1.5)
     stats = {"music_lufs_rel": round(lufs(m) - lufs(s), 1), "integrated_lufs": round(lufs(mix), 2), "true_peak_dbtp": round(true_peak_db(mix), 2), "seconds": round(len(mix) / SR, 3)}
     wavfile.write(out_dir / "soundtrack.wav", SR, mix.astype(np.float32))
     wavfile.write(out_dir / "music.wav", SR, m.astype(np.float32))
