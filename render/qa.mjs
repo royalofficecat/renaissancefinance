@@ -21,13 +21,13 @@ ok.push([v.codec_name === 'h264' && v.profile === 'High' && v.pix_fmt === 'yuv42
 ok.push([a.codec_name === 'aac', 'aac audio']);
 
 // 2. loudness of the encoded audio
-const lo = run(['-i', file, '-af', 'ebur128=peak=true', '-f', 'null', '-']);
+const lo = run(['-i', file, '-af', 'ebur128=peak=true', '-f', 'null', '-']).split('Summary:').pop();
 const I = Number((lo.match(/I:\s+(-?[\d.]+) LUFS/) || [])[1]), TP = Number((lo.match(/Peak:\s+(-?[\d.]+) dBFS/) || [])[1]);
 report.push(`loudness: ${I} LUFS integrated, true peak ${TP} dBTP`);
 ok.push([I > -15 && I < -13, 'about -14 LUFS']); ok.push([TP <= -0.9, 'peaks under -1 dBTP']);
 
 // 3. scene-cut scan: a big frame-to-frame change anywhere but a planned set change is a pop or a snap
-const PLANNED = [8, 12, 20, 36, 40, 44, 48, 60];
+const PLANNED = [8, 12, 20, 36, 40, 44, 48, 54, 60];   // set changes, plus the new angle that opens beat 13
 const sc = run(['-i', file, '-vf', "select='gt(scene,0.25)',showinfo", '-f', 'null', '-']);
 const cuts = [...sc.matchAll(/pts_time:\s*([\d.]+)/g)].map(m => Number(m[1]));
 const unplanned = cuts.filter(t => !PLANNED.some(p => Math.abs(t - p) < 0.08));

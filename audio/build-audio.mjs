@@ -123,9 +123,9 @@ const pk = master.peak(); master.scale(0.9 / pk);
 writeFileSync('out/audio-raw.wav', toWav(master));
 console.log('raw audio written, peak normalised; now loudness-normalising to -14 LUFS / -1 dBTP');
 // two-pass loudnorm with ffmpeg
-const p1 = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', 'out/audio-raw.wav', '-af', 'loudnorm=I=-14:TP=-1:LRA=11:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
+const p1 = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', 'out/audio-raw.wav', '-af', 'loudnorm=I=-14:TP=-1.7:LRA=11:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
 const pass1 = p1.stderr;
 const stats = JSON.parse((pass1 + '').slice((pass1 + '').lastIndexOf('{')));
-execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', 'out/audio-raw.wav', '-af', `loudnorm=I=-14:TP=-1:LRA=11:measured_I=${stats.input_i}:measured_TP=${stats.input_tp}:measured_LRA=${stats.input_lra}:measured_thresh=${stats.input_thresh}:offset=${stats.target_offset}:linear=true:print_format=summary`, '-ar', '48000', 'out/audio.wav'], { stdio: 'inherit' });
+execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', 'out/audio-raw.wav', '-af', `loudnorm=I=-14:TP=-1.7:LRA=11:measured_I=${stats.input_i}:measured_TP=${stats.input_tp}:measured_LRA=${stats.input_lra}:measured_thresh=${stats.input_thresh}:offset=${stats.target_offset}:linear=true:print_format=summary`, '-ar', '48000', 'out/audio.wav'], { stdio: 'inherit' });
 const check = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', 'out/audio.wav', '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
 console.log(check.slice(check.lastIndexOf('Summary')).trim());
