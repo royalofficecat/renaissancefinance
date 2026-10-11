@@ -61,11 +61,12 @@ async function boot() {
     overlay.update(f);
     const name = (SCHEDULE.find(([a, b]) => f >= a && f < b) || SCHEDULE[SCHEDULE.length - 1])[2];
     const set = sets[name] || sets.map;
-    const out = set.frame(f, { avoid: overlay.rects() });
+    const avoid = overlay.rects();
+    const out = set.frame(f, { avoid });
     const w = wipe(f);
     pipe.render({ ...out, frame: f, cover: w.cover, wipeTime: w.t });
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); // wait for the GPU to finish
-    last = { frame: f, set: name, cover: w.cover };
+    last = { frame: f, set: name, cover: +w.cover.toFixed(3), labels: set.labels && set.labels.visible ? set.labels.visible() : [], panels: avoid };
     return last;
   }
 

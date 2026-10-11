@@ -100,7 +100,7 @@ export async function createMap(pipe) {
         float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
           return mix(mix(h21(i), h21(i+vec2(1,0)), u.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), u.x), u.y); }
         float fb(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<3;i++){ s+=a*vn(p); p=p*2.1+7.3; a*=0.5;} return s; }
-        float gWater = 0.0; float gOcean = 0.0;
+        float gWater = 0.0; float gOcean = 0.0; float gEdge = 1.0;
         ${SKY_REFL}`)
       .replace('#include <color_fragment>', /* glsl */ `
         vec3 mk = texture2D(uMasks, vMapUv).rgb;
@@ -115,7 +115,7 @@ export async function createMap(pipe) {
           float cl = uCloud * smoothstep(0.45, 0.75, fb(vWPos.xz * 0.045 + vec2(uTime * 0.05, uTime * 0.02)));
           landCol *= 1.0 - 0.28 * cl;
         }
-        vec3 oceanCol = mix(uWaterCol * 0.46, uBg * 1.25, smoothstep(0.0, 0.5, ex.g));
+        vec3 oceanCol = mix(uWaterCol * 0.46, uBg * 0.62, smoothstep(0.0, 0.5, ex.g));
         float lake = smoothstep(0.35, 0.65, lakeM) * land;
         float flood = 0.0, depth = 0.0;
         if (uFlood > 0.0005 && mk.b < uFlood + 0.03) {
@@ -129,15 +129,14 @@ export async function createMap(pipe) {
         col = mix(col, oceanCol, 1.0 - land);
         gWater = max(max(lake, flood), 1.0 - land);
         gOcean = 1.0 - land;
-        float edgeFade = smoothstep(0.0, 0.07, min(vMapUv.x, 1.0 - vMapUv.x)) * smoothstep(0.0, 0.07, min(vMapUv.y, 1.0 - vMapUv.y));
-        col = mix(uBg, col, edgeFade);
+        gEdge = smoothstep(0.0, 0.08, min(vMapUv.x, 1.0 - vMapUv.x)) * smoothstep(0.0, 0.08, min(vMapUv.y, 1.0 - vMapUv.y));
         col = mix(col, uAccent, clamp(ex.r * uLevee * 1.4, 0.0, 1.0));
         diffuseColor.rgb = col;`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-        roughnessFactor = mix(roughnessFactor, mix(0.12, 0.32, gOcean), gWater);`)
+        roughnessFactor = mix(roughnessFactor, mix(0.12, 0.75, gOcean), gWater);`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
         normal = normalize(mix(normal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz), max(gWater * 0.92, gOcean)));`)
-      .replace('#include <opaque_fragment>', 'outgoingLight += skyReflect(normal, geometryViewDir, gWater * mix(1.0, 0.22, gOcean));\n#include <opaque_fragment>')
+      .replace('#include <opaque_fragment>', 'outgoingLight += skyReflect(normal, geometryViewDir, gWater * mix(1.0, 0.22, gOcean));\n// map edges melt into the background after lighting\noutgoingLight = mix(uBg, outgoingLight, gEdge);\n#include <opaque_fragment>')
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
         float lev = ex.r * uLevee * (0.75 + 0.25 * sin(uTime * 5.0));
         totalEmissiveRadiance += uAccent * lev * 0.9;`);
@@ -339,7 +338,7 @@ export async function createMap(pipe) {
   const labels = new Labels();
   const L = (id, text, lon, lat, o = {}) => labels.add(id, { text, pos: ll(lon, lat, 0.02), ...o });
   L('california', 'California', -119.9, 37.2, { size: 34, priority: 5 });
-  L('pacific', 'Pacific Ocean', -124.3, 36.3, { italic: true, size: 32, priority: 4 });
+  L('pacific', 'Pacific Ocean', -123.2, 35.0, { italic: true, size: 32, priority: 4 });
   L('sierra', 'Sierra Nevada', -119.25, 37.75, { size: 32, priority: 5 });
   L('valley', 'Central Valley', -120.95, 37.55, { size: 32, priority: 5 });
   L('sacR', 'Sacramento River', -122.25, 39.55, { italic: true, size: 28, priority: 3 });
@@ -441,7 +440,7 @@ export async function createMap(pipe) {
       // Beat 13 + end card: Santa Ana basins in warm light, then rise to the whole state
       warm = 1; cloud = 0; flow = 0.6;
       exposureMap = 0.9;
-      s = move(f, 1635, 1700, SHOT.saLow, SHOT.saPush, { fn: ease.inOutSine });
+      s = move(f, 1652, 1700, SHOT.saLow, SHOT.saPush, { fn: ease.inOutSine }); // holds while title and caption land
       if (f > 1702) s = move(f, 1702, 1796, SHOT.saPush, SHOT.caEnd, { via: ll(-118.4, 34.6, 45), viaT: ll(-118.6, 35.4) });
       if (f >= 1800) s = move(f, 1800, 1920, SHOT.caEnd, { ...SHOT.caEnd, pos: SHOT.caEnd.pos.clone().multiplyScalar(1.03) }, { fn: ease.inOutSine });
       flood = lerp(0.2, 0.1, prog(f, 1620, 1800));

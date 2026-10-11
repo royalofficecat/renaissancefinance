@@ -131,10 +131,10 @@ export async function createGlobe(pipe) {
     let s;
     if (f < 180) {
       // Beat 1: establishing wide, slow orbit east across the North Pacific
-      s = orbit(f, 0, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
+      s = orbit(f, 15, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
     } else {
       // Beat 2: hold for the caption, then dive toward California (match-cut into the clouds)
-      const A = orbit(180, 0, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
+      const A = orbit(180, 15, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
       const B = { pos: caPt.clone().multiplyScalar(1.22), target: caPt.clone(), lens: 50 };
       s = move(f, 195, 234, A, B, { fn: ease.inCubic, via: onSphere(-132, 37, 30) });
     }
@@ -146,5 +146,5 @@ export async function createGlobe(pipe) {
     labels.update(cam, want, ctx.avoid);
     return { scene, camera: cam, labels: labels.scene, bloom: 0.3 };
   }
-  return { scene, frame };
+  return { scene, frame, labels };
 }

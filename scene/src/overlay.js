@@ -138,7 +138,7 @@ export class Overlay {
       const pin = ease.outCubic(prog(t, 0.2, 0.55));
       const pout = ease.inCubic(prog(t, tOut, tOut + OUT));
       this.setPanel(stat, pin * (1 - pout), (1 - pin) * 14);
-      const tc = b.id === 12 || b.id === 13 ? 1.0 : 0.8;
+      const tc = b.id === 12 || b.id === 13 ? 0.95 : 0.35; // count starts as the panel lands
       this.setStatText(b, ease.outCubic(prog(t, tc, tc + 0.9)));
     } else this.setPanel(stat, 0);
 

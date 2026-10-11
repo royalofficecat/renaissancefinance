@@ -131,5 +131,5 @@ export async function createShasta(pipe) {
     labels.update(cam, want, ctx.avoid);
     return { scene, camera: cam, labels: labels.scene, bloom: 0.2 };
   }
-  return { scene, frame };
+  return { scene, frame, labels };
 }

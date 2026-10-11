@@ -33,7 +33,7 @@ export const SKY_REFL = /* glsl */ `
   vec3 skyReflect(vec3 nView, vec3 vView, float amount) {
     vec3 rW = inverseTransformDirection(reflect(-vView, nView), viewMatrix);
     float y = clamp(rW.y, 0.0, 1.0);
-    vec3 sky = mix(vec3(0.40, 0.45, 0.52), vec3(0.07, 0.11, 0.19), pow(y, 0.55));
+    vec3 sky = mix(vec3(0.24, 0.31, 0.42), vec3(0.06, 0.10, 0.18), pow(y, 0.55));
     float glint = pow(max(dot(rW, normalize(vec3(-0.55, 0.62, -0.2))), 0.0), 220.0);
     float fres = 0.05 + 0.95 * pow(1.0 - clamp(dot(nView, vView), 0.0, 1.0), 5.0);
     return (sky * fres + vec3(1.4, 1.38, 1.32) * glint * 0.18) * amount;

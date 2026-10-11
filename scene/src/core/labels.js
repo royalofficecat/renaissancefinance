@@ -104,6 +104,7 @@ export class Labels {
       for (const r of avoid) o *= clamp(1 - overlap(rect, r, 10) / 14);
       for (const q of placed) o *= clamp(1 - overlap(rect, q, 6) / 10);
       it.opacity = o;
+      it.rect = rect;
       if (o > 0.02) placed.push(rect);
       this.apply(it, o);
     }
@@ -126,7 +127,7 @@ export class Labels {
 
   /** Current on-screen rectangles of visible labels (for QA). */
   visible() {
-    return [...this.items.values()].filter((i) => i.opacity > 0.02).map((i) => ({ id: i.id, opacity: i.opacity }));
+    return [...this.items.values()].filter((i) => i.opacity > 0.02).map((i) => ({ id: i.id, opacity: +i.opacity.toFixed(3), rect: Object.fromEntries(Object.entries(i.rect).map(([k, v]) => [k, Math.round(v)])) }));
   }
 }
 

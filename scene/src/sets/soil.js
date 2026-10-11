@@ -122,9 +122,9 @@ export async function createSoil(pipe) {
     if (f < 540) s = move(f, 435, 536, A4, B4);
     else {
       // Beat 5 starts where beat 4 ended, then orbits round to the downhill side
-      const O = (ff) => orbit(ff, 555, 656, { center: [-1.3, 0.2, 4.0], target: [0.2, 0.4, 0.6], a0: -0.04, a1: 0.92, r0: 11.0, r1: 14.0, h0: 1.7, h1: 6.2, lens0: 40, lens1: 35 });
-      s = move(f, 540, 556, B4, O(556), { fn: ease.inOutSine });
-      if (f >= 556) s = O(f);
+      // Beat 5: hold on beat 4's last framing while the caption lands, then orbit round to the downhill side
+      s = orbit(f, 556, 656, { center: [-1.3, 0.2, 4.0], a0: Math.atan2(-0.1, 11.0), a1: 0.92, r0: 11.0, r1: 14.0, h0: 1.7, h1: 6.2, lens0: 40, lens1: 35 });
+      s.target = new THREE.Vector3(-1.3, -0.2, 4.0).lerp(new THREE.Vector3(0.2, 0.4, 0.6), s.t);
     }
     applyCam(cam, s);
     lights.follow(new THREE.Vector3(0, 0.5, 0), 9);

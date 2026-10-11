@@ -107,7 +107,7 @@ export async function createTown(pipe) {
 
   function frame(f) {
     WU.uTime.value = f / 30;
-    const s = move(f, 1455, 1616, A, B, { fn: ease.inOutSine });
+    const s = move(f, 1472, 1616, A, B, { fn: ease.inOutSine }); // holds while title and caption land
     applyCam(cam, s);
     lights.follow(new THREE.Vector3(0, 0, -6), 14);
     lights.warmth(0.85);

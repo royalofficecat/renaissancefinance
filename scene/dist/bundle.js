@@ -31775,7 +31775,7 @@ var init_look = __esm({
   vec3 skyReflect(vec3 nView, vec3 vView, float amount) {
     vec3 rW = inverseTransformDirection(reflect(-vView, nView), viewMatrix);
     float y = clamp(rW.y, 0.0, 1.0);
-    vec3 sky = mix(vec3(0.40, 0.45, 0.52), vec3(0.07, 0.11, 0.19), pow(y, 0.55));
+    vec3 sky = mix(vec3(0.24, 0.31, 0.42), vec3(0.06, 0.10, 0.18), pow(y, 0.55));
     float glint = pow(max(dot(rW, normalize(vec3(-0.55, 0.62, -0.2))), 0.0), 220.0);
     float fres = 0.05 + 0.95 * pow(1.0 - clamp(dot(nView, vView), 0.0, 1.0), 5.0);
     return (sky * fres + vec3(1.4, 1.38, 1.32) * glint * 0.18) * amount;
@@ -37572,6 +37572,7 @@ var init_labels = __esm({
           for (const r of avoid) o *= clamp2(1 - overlap(rect, r, 10) / 14);
           for (const q3 of placed) o *= clamp2(1 - overlap(rect, q3, 6) / 10);
           it.opacity = o;
+          it.rect = rect;
           if (o > 0.02) placed.push(rect);
           this.apply(it, o);
         }
@@ -37591,7 +37592,7 @@ var init_labels = __esm({
       }
       /** Current on-screen rectangles of visible labels (for QA). */
       visible() {
-        return [...this.items.values()].filter((i) => i.opacity > 0.02).map((i) => ({ id: i.id, opacity: i.opacity }));
+        return [...this.items.values()].filter((i) => i.opacity > 0.02).map((i) => ({ id: i.id, opacity: +i.opacity.toFixed(3), rect: Object.fromEntries(Object.entries(i.rect).map(([k, v2]) => [k, Math.round(v2)])) }));
       }
     };
   }
@@ -37907,7 +37908,7 @@ async function createShasta(pipe) {
     labels.update(cam, want, ctx.avoid);
     return { scene, camera: cam, labels: labels.scene, bloom: 0.2 };
   }
-  return { scene, frame };
+  return { scene, frame, labels };
 }
 var EX;
 var init_shasta = __esm({
@@ -38036,9 +38037,8 @@ async function createSoil(pipe) {
     let s;
     if (f2 < 540) s = move(f2, 435, 536, A4, B4);
     else {
-      const O = (ff) => orbit(ff, 555, 656, { center: [-1.3, 0.2, 4], target: [0.2, 0.4, 0.6], a0: -0.04, a1: 0.92, r0: 11, r1: 14, h0: 1.7, h1: 6.2, lens0: 40, lens1: 35 });
-      s = move(f2, 540, 556, B4, O(556), { fn: ease.inOutSine });
-      if (f2 >= 556) s = O(f2);
+      s = orbit(f2, 556, 656, { center: [-1.3, 0.2, 4], a0: Math.atan2(-0.1, 11), a1: 0.92, r0: 11, r1: 14, h0: 1.7, h1: 6.2, lens0: 40, lens1: 35 });
+      s.target = new Vector3(-1.3, -0.2, 4).lerp(new Vector3(0.2, 0.4, 0.6), s.t);
     }
     applyCam(cam, s);
     lights.follow(new Vector3(0, 0.5, 0), 9);
@@ -38343,7 +38343,7 @@ ${SKY_REFL}`).replace("#include <normal_fragment_maps>", `#include <normal_fragm
   const B = { pos: [0.5, 1.75, 5.4], target: [0, 2.6, -12], lens: 24 };
   function frame(f2) {
     WU.uTime.value = f2 / 30;
-    const s = move(f2, 1455, 1616, A, B, { fn: ease.inOutSine });
+    const s = move(f2, 1472, 1616, A, B, { fn: ease.inOutSine });
     applyCam(cam, s);
     lights.follow(new Vector3(0, 0, -6), 14);
     lights.warmth(0.85);
@@ -38385,12 +38385,41 @@ var beats_default = {
       point: "Hook",
       title: "What if California got\n30 days of extreme rain?",
       caption: "At first, everyone celebrates.\nThen the water keeps rising",
-      stat: { parts: [30], decimals: 0, template: "{0} days", label: "a storm sequence scientists\nsimulated in a 2022 study" },
-      day: [1, 2],
+      stat: {
+        parts: [
+          30
+        ],
+        decimals: 0,
+        template: "{0} days",
+        label: "a storm sequence scientists\nsimulated in a 2022 study"
+      },
+      day: [
+        1,
+        2
+      ],
       visual: "Night-blue globe. A glowing moisture plume streams from near Hawaii to California within 2 s.",
-      camera: { shot: "Establishing wide, slow orbit east", lens: "35 mm", reason: "Shows where in the world the water comes from" },
-      sound: [{ at: 0, cue: "rain-bed-in" }, { at: 60, cue: "whoosh-soft" }, { at: 24, cue: "ticks" }],
-      sources: ["F1"]
+      camera: {
+        shot: "Establishing wide, slow orbit east",
+        lens: "35 mm",
+        reason: "Shows where in the world the water comes from"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "rain-bed-in"
+        },
+        {
+          at: 60,
+          cue: "whoosh-soft"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F1"
+      ]
     },
     {
       id: 2,
@@ -38399,12 +38428,38 @@ var beats_default = {
       set: "globe-to-map",
       point: "1 \xB7 The rain feels like a gift",
       caption: "Atmospheric rivers bring about **30\u201350%**\nof West Coast precipitation",
-      stat: { parts: [30, 50], decimals: 0, template: "{0}\u2013{1}%", label: "of yearly West Coast\nprecipitation \xB7 NOAA" },
-      day: [2, 4],
+      stat: {
+        parts: [
+          30,
+          50
+        ],
+        decimals: 0,
+        template: "{0}\u2013{1}%",
+        label: "of yearly West Coast\nprecipitation \xB7 NOAA"
+      },
+      day: [
+        2,
+        4
+      ],
       visual: "Fly-to: the camera follows the plume down through the cloud deck and emerges over the California relief map.",
-      camera: { shot: "Fly-to: zoom in along the plume, cloud pass, settle over California", lens: "50 \u2192 35 mm", reason: "Carries the viewer from the Pacific source to the destination" },
-      sound: [{ at: 15, cue: "whoosh-map" }, { at: 24, cue: "ticks" }],
-      sources: ["F2"]
+      camera: {
+        shot: "Fly-to: zoom in along the plume, cloud pass, settle over California",
+        lens: "50 \u2192 35 mm",
+        reason: "Carries the viewer from the Pacific source to the destination"
+      },
+      sound: [
+        {
+          at: 15,
+          cue: "whoosh-map"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F2"
+      ]
     },
     {
       id: 3,
@@ -38413,12 +38468,38 @@ var beats_default = {
       set: "shasta",
       point: "1 \xB7 The rain feels like a gift",
       caption: "Reservoirs rise fast. Shasta Lake\ncan hold **4.55 million** acre-feet",
-      stat: { parts: [4.55], decimals: 2, template: "{0} million", label: "acre-feet: Shasta Lake's capacity\n1 acre-foot \u2248 326,000 gallons \xB7 USBR" },
-      day: [4, 8],
+      stat: {
+        parts: [
+          4.55
+        ],
+        decimals: 2,
+        template: "{0} million",
+        label: "acre-feet: Shasta Lake's capacity\n1 acre-foot \u2248 326,000 gallons \xB7 USBR"
+      },
+      day: [
+        4,
+        8
+      ],
       visual: "Real-terrain diorama of Shasta Lake. The shoreline climbs the canyons while dry grey hills turn green.",
-      camera: { shot: "Slow push-in toward Shasta Dam and the rising shoreline", lens: "50 mm", reason: "Lets the viewer watch the waterline creep up" },
-      sound: [{ at: 0, cue: "water-swell" }, { at: 24, cue: "ticks" }],
-      sources: ["F3", "F4"]
+      camera: {
+        shot: "Slow push-in toward Shasta Dam and the rising shoreline",
+        lens: "50 mm",
+        reason: "Lets the viewer watch the waterline creep up"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "water-swell"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F3",
+        "F4"
+      ]
     },
     {
       id: 4,
@@ -38427,12 +38508,37 @@ var beats_default = {
       set: "soil",
       point: "2 \xB7 The ground can't keep up",
       caption: "Winter 2022\u201323 brought **9** atmospheric\nrivers in just 3 weeks",
-      stat: { parts: [9], decimals: 0, template: "{0}", label: "atmospheric rivers,\nDec 26 2022 \u2013 Jan 17 2023 \xB7 NOAA" },
-      day: [8, 12],
+      stat: {
+        parts: [
+          9
+        ],
+        decimals: 0,
+        template: "{0}",
+        label: "atmospheric rivers,\nDec 26 2022 \u2013 Jan 17 2023 \xB7 NOAA"
+      },
+      day: [
+        8,
+        12
+      ],
       visual: "Cut-away block of hillside. Rain falls in pulses and the soil cross-section fills with water from the top down.",
-      camera: { shot: "Slow push-in on the soil cross-section", lens: "50 mm", reason: "Builds tension as the soil runs out of room" },
-      sound: [{ at: 0, cue: "rain-heavy" }, { at: 70, cue: "soil-gulp" }],
-      sources: ["F5"]
+      camera: {
+        shot: "Slow push-in on the soil cross-section",
+        lens: "50 mm",
+        reason: "Builds tension as the soil runs out of room"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "rain-heavy"
+        },
+        {
+          at: 70,
+          cue: "soil-gulp"
+        }
+      ],
+      sources: [
+        "F5"
+      ]
     },
     {
       id: 5,
@@ -38441,12 +38547,37 @@ var beats_default = {
       set: "soil",
       point: "2 \xB7 The ground can't keep up",
       caption: "Soaked slopes can slide. That winter,\n**700+** landslides were reported",
-      stat: { parts: [700], decimals: 0, template: "{0}+", label: "landslides reported,\nwinter 2022\u201323 \xB7 NOAA, USGS" },
-      day: [12, 15],
+      stat: {
+        parts: [
+          700
+        ],
+        decimals: 0,
+        template: "{0}+",
+        label: "landslides reported,\nwinter 2022\u201323 \xB7 NOAA, USGS"
+      },
+      day: [
+        12,
+        15
+      ],
       visual: "Runoff sheets downhill into the creek and street. Slide-prone slope outlined in amber; a small empty-hillside slump.",
-      camera: { shot: "Orbit around the hillside block", lens: "35 mm", reason: "Shows the slope in 3d and where the water goes" },
-      sound: [{ at: 0, cue: "rush-rise" }, { at: 40, cue: "warning-tone" }],
-      sources: ["F6"]
+      camera: {
+        shot: "Orbit around the hillside block",
+        lens: "35 mm",
+        reason: "Shows the slope in 3d and where the water goes"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "rush-rise"
+        },
+        {
+          at: 40,
+          cue: "warning-tone"
+        }
+      ],
+      sources: [
+        "F6"
+      ]
     },
     {
       id: 6,
@@ -38455,13 +38586,47 @@ var beats_default = {
       set: "map",
       point: "3 \xB7 Parts of the valley could become a lake",
       caption: "Sierra runoff pours into one valley,\nabout **400 miles** long",
-      stat: { parts: [400], decimals: 0, template: "{0} miles", label: "length of the Central Valley \xB7 USGS" },
-      day: [15, 19],
+      stat: {
+        parts: [
+          400
+        ],
+        decimals: 0,
+        template: "{0} miles",
+        label: "length of the Central Valley \xB7 USGS"
+      },
+      day: [
+        15,
+        19
+      ],
       visual: "Visual reset to the state relief map. Flow pulses run down Sierra rivers into the Sacramento and San Joaquin.",
-      camera: { shot: "Crane up from the Sierra slopes to the whole valley", lens: "35 \u2192 28 mm", reason: "'It keeps going': reveals how much land drains to one place" },
-      sound: [{ at: 0, cue: "whoosh-big" }, { at: 0, cue: "pulse-start" }, { at: 24, cue: "ticks" }],
-      sources: ["F7"],
-      legend: [{ swatch: "water", text: "River flow" }]
+      camera: {
+        shot: "Crane up from the Sierra slopes to the whole valley",
+        lens: "35 \u2192 28 mm",
+        reason: "'It keeps going': reveals how much land drains to one place"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "whoosh-big"
+        },
+        {
+          at: 0,
+          cue: "pulse-start"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F7"
+      ],
+      legend: [
+        {
+          swatch: "water",
+          text: "River flow"
+        }
+      ]
     },
     {
       id: 7,
@@ -38470,13 +38635,43 @@ var beats_default = {
       set: "map",
       point: "3 \xB7 Parts of the valley could become a lake",
       caption: "About **1,600 miles** of levees strain\nto hold the rivers",
-      stat: { parts: [1600], decimals: 0, template: "{0} miles", label: "of levees in the State Plan\nof Flood Control \xB7 DWR" },
-      day: [19, 23],
+      stat: {
+        parts: [
+          1600
+        ],
+        decimals: 0,
+        template: "{0} miles",
+        label: "of levees in the State Plan\nof Flood Control \xB7 DWR"
+      },
+      day: [
+        19,
+        23
+      ],
       visual: "Push-in on the Sacramento\u2013San Joaquin Delta. Levee lines glow amber as rivers rise against them.",
-      camera: { shot: "Slow push-in on the Delta", lens: "50 mm", reason: "Tension: the pressure point of the whole system" },
-      sound: [{ at: 20, cue: "warning-tone" }, { at: 24, cue: "ticks" }],
-      sources: ["F8"],
-      legend: [{ swatch: "accent", text: "Levees under strain" }]
+      camera: {
+        shot: "Slow push-in on the Delta",
+        lens: "50 mm",
+        reason: "Tension: the pressure point of the whole system"
+      },
+      sound: [
+        {
+          at: 20,
+          cue: "warning-tone"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F8"
+      ],
+      legend: [
+        {
+          swatch: "accent",
+          text: "Levees under strain"
+        }
+      ]
     },
     {
       id: 8,
@@ -38485,13 +38680,52 @@ var beats_default = {
       set: "map",
       point: "3 \xB7 Parts of the valley could become a lake",
       caption: "In a USGS megastorm scenario, floods\nstretch **300 miles** down the valley",
-      stat: { parts: [300], decimals: 0, template: "{0} miles", label: "of modeled flooding, 20+ miles wide\nUSGS ARkStorm scenario" },
-      day: [23, 30],
+      stat: {
+        parts: [
+          300
+        ],
+        decimals: 0,
+        template: "{0} miles",
+        label: "of modeled flooding, 20+ miles wide\nUSGS ARkStorm scenario"
+      },
+      day: [
+        23,
+        30
+      ],
       visual: "Biggest visual. Separate flooded patches spread from the rivers and join into one long inland sea, reaching the Tulare Lake basin.",
-      camera: { shot: "Top-down crane up (pull back) along the whole valley", lens: "35 \u2192 24 mm", reason: "'It keeps going': the flood outgrows the frame" },
-      sound: [{ at: 0, cue: "swell-deep" }, { at: 100, cue: "boom-soft" }, { at: 24, cue: "ticks" }],
-      sources: ["F9", "F10"],
-      legend: [{ swatch: "water", text: "Flood water" }, { swatch: "outline", text: "Tulare Lake basin" }],
+      camera: {
+        shot: "Top-down crane up (pull back) along the whole valley",
+        lens: "35 \u2192 24 mm",
+        reason: "'It keeps going': the flood outgrows the frame"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "swell-deep"
+        },
+        {
+          at: 100,
+          cue: "boom-soft"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F9",
+        "F10"
+      ],
+      legend: [
+        {
+          swatch: "water",
+          text: "Flood water"
+        },
+        {
+          swatch: "outline",
+          text: "Tulare Lake basin"
+        }
+      ],
       tag: "Illustrative scenario, not a flood model"
     },
     {
@@ -38501,13 +38735,47 @@ var beats_default = {
       set: "route",
       point: "4 \xB7 The effects reach your everyday life",
       caption: "In early 2023, PG&E restored power\nto **2 million+** customers",
-      stat: { parts: [2], decimals: 0, template: "{0} million+", label: "customers' power restored,\nDec 30 2022 \u2013 Jan 10 2023 \xB7 PG&E" },
-      day: [30, 30],
+      stat: {
+        parts: [
+          2
+        ],
+        decimals: 0,
+        template: "{0} million+",
+        label: "customers' power restored,\nDec 30 2022 \u2013 Jan 10 2023 \xB7 PG&E"
+      },
+      day: [
+        30,
+        30
+      ],
       visual: "A delivery truck leaves a valley farm. Ahead, a flooded highway (amber barrier) and a power line with an amber outage glow.",
-      camera: { shot: "Tracking dolly along the delivery route", lens: "35 mm", reason: "Follows one trip so the impact feels personal" },
-      sound: [{ at: 0, cue: "whoosh-map" }, { at: 60, cue: "power-down" }, { at: 24, cue: "ticks" }],
-      sources: ["F11"],
-      legend: [{ swatch: "accent", text: "Interrupted route" }]
+      camera: {
+        shot: "Tracking dolly along the delivery route",
+        lens: "35 mm",
+        reason: "Follows one trip so the impact feels personal"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "whoosh-map"
+        },
+        {
+          at: 60,
+          cue: "power-down"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F11"
+      ],
+      legend: [
+        {
+          swatch: "accent",
+          text: "Interrupted route"
+        }
+      ]
     },
     {
       id: 10,
@@ -38516,13 +38784,43 @@ var beats_default = {
       set: "route",
       point: "4 \xB7 The effects reach your everyday life",
       caption: "About **25%** of America's food comes\nfrom the Central Valley",
-      stat: { parts: [25], decimals: 0, template: "{0}%", label: "of the nation's food \xB7 USGS" },
-      day: [30, 30],
+      stat: {
+        parts: [
+          25
+        ],
+        decimals: 0,
+        template: "{0}%",
+        label: "of the nation's food \xB7 USGS"
+      },
+      day: [
+        30,
+        30
+      ],
       visual: "The detoured route crosses the mountains to a Los Angeles grocery store whose produce shelf has amber gaps.",
-      camera: { shot: "Continue the dolly south, then push in on the store", lens: "35 \u2192 50 mm", reason: "Lands the ripple at the viewer's own grocery store" },
-      sound: [{ at: 30, cue: "whoosh-soft" }, { at: 24, cue: "ticks" }],
-      sources: ["F12"],
-      legend: [{ swatch: "accent", text: "Interrupted route" }]
+      camera: {
+        shot: "Continue the dolly south, then push in on the store",
+        lens: "35 \u2192 50 mm",
+        reason: "Lands the ripple at the viewer's own grocery store"
+      },
+      sound: [
+        {
+          at: 30,
+          cue: "whoosh-soft"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F12"
+      ],
+      legend: [
+        {
+          swatch: "accent",
+          text: "Interrupted route"
+        }
+      ]
     },
     {
       id: 11,
@@ -38531,13 +38829,44 @@ var beats_default = {
       set: "recharge",
       point: "5 \xB7 Two different legacies",
       caption: "In 2023, California recharged about\n**4.1 million** acre-feet underground",
-      stat: { parts: [4.1], decimals: 1, template: "{0} million", label: "acre-feet of managed recharge,\nwater year 2023 \xB7 DWR" },
+      stat: {
+        parts: [
+          4.1
+        ],
+        decimals: 1,
+        template: "{0} million",
+        label: "acre-feet of managed recharge,\nwater year 2023 \xB7 DWR"
+      },
       dayText: "After the storms",
       visual: "Clouds part, light warms. One side: a muddy town mid-cleanup. Other side: a gate sends floodwater into a recharge basin; the aquifer below fills green.",
-      camera: { shot: "Crane down from the basin into the cross-section", lens: "35 \u2192 50 mm", reason: "Follows the water underground, where it becomes useful" },
-      sound: [{ at: 0, cue: "clear-shimmer" }, { at: 0, cue: "piano-in" }, { at: 24, cue: "ticks" }],
-      sources: ["F13"],
-      legend: [{ swatch: "highlight", text: "Recharged groundwater" }]
+      camera: {
+        shot: "Crane down from the basin into the cross-section",
+        lens: "35 \u2192 50 mm",
+        reason: "Follows the water underground, where it becomes useful"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "clear-shimmer"
+        },
+        {
+          at: 0,
+          cue: "piano-in"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F13"
+      ],
+      legend: [
+        {
+          swatch: "highlight",
+          text: "Recharged groundwater"
+        }
+      ]
     },
     {
       id: 12,
@@ -38547,12 +38876,34 @@ var beats_default = {
       point: "Payoff",
       title: "California has seen\nsomething like this before",
       caption: "In 1861\u201362, about **45 days** of storms\nflooded the Sacramento Valley",
-      stat: { parts: [45], decimals: 0, template: "{0} days", label: "of storms. The state capital moved\nto San Francisco, Jan\u2013May 1862" },
+      stat: {
+        parts: [
+          45
+        ],
+        decimals: 0,
+        template: "{0} days",
+        label: "of storms. The state capital moved\nto San Francisco, Jan\u2013May 1862"
+      },
       dayText: "1861\u201362 \xB7 historical record",
       visual: "Low hero angle on an 1860s river town diorama, water up to the first floors, an empty rowboat tied to a porch.",
-      camera: { shot: "Low hero angle, slow rise", lens: "24 mm", reason: "Gives the history its weight: the big reveal" },
-      sound: [{ at: 0, cue: "reveal-boom" }, { at: 30, cue: "ticks" }],
-      sources: ["F14"]
+      camera: {
+        shot: "Low hero angle, slow rise",
+        lens: "24 mm",
+        reason: "Gives the history its weight: the big reveal"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "reveal-boom"
+        },
+        {
+          at: 28,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F14"
+      ]
     },
     {
       id: 13,
@@ -38562,12 +38913,43 @@ var beats_default = {
       point: "Ending",
       title: "Thirty days of rain\ncould change California",
       caption: "How we make room for water\nchanges what happens next",
-      stat: { parts: [1e3], decimals: 0, template: "{0}+ acres", label: "of basins soak Santa Ana River\nwater into the ground \xB7 OCWD" },
+      stat: {
+        parts: [
+          1e3
+        ],
+        decimals: 0,
+        template: "{0}+ acres",
+        label: "of basins soak Santa Ana River\nwater into the ground \xB7 OCWD"
+      },
       visual: "Warm light over Southern California: the Santa Ana River watershed glows, recharge basins turn green, then the camera rises to the whole state.",
-      camera: { shot: "Crane up from the Santa Ana basins to the whole state", lens: "35 \u2192 24 mm", reason: "Ends wide and open: the choice is statewide" },
-      sound: [{ at: 0, cue: "whoosh-soft" }, { at: 30, cue: "ticks" }],
-      sources: ["F15"],
-      legend: [{ swatch: "highlight", text: "Recharge basins" }, { swatch: "outline-highlight", text: "Santa Ana River watershed" }]
+      camera: {
+        shot: "Crane up from the Santa Ana basins to the whole state",
+        lens: "35 \u2192 24 mm",
+        reason: "Ends wide and open: the choice is statewide"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "whoosh-soft"
+        },
+        {
+          at: 28,
+          cue: "ticks"
+        }
+      ],
+      sources: [
+        "F15"
+      ],
+      legend: [
+        {
+          swatch: "highlight",
+          text: "Recharge basins"
+        },
+        {
+          swatch: "outline-highlight",
+          text: "Santa Ana River watershed"
+        }
+      ]
     },
     {
       id: "end",
@@ -38577,8 +38959,17 @@ var beats_default = {
       point: "End card",
       endCard: "California's next big\ninvestment: more water\nstorage\u2014or more room\nfor rivers?",
       visual: "The scene dims behind a large neutral question.",
-      camera: { shot: "Hold, slow drift", lens: "24 mm", reason: "Gives the question room to land" },
-      sound: [{ at: 0, cue: "button-note" }],
+      camera: {
+        shot: "Hold, slow drift",
+        lens: "24 mm",
+        reason: "Gives the question room to land"
+      },
+      sound: [
+        {
+          at: 0,
+          cue: "button-note"
+        }
+      ],
       sources: []
     }
   ]
@@ -39630,7 +40021,7 @@ var Overlay = class {
       const pin = ease.outCubic(prog(t, 0.2, 0.55));
       const pout = ease.inCubic(prog(t, tOut, tOut + OUT));
       this.setPanel(stat, pin * (1 - pout), (1 - pin) * 14);
-      const tc = b.id === 12 || b.id === 13 ? 1 : 0.8;
+      const tc = b.id === 12 || b.id === 13 ? 0.95 : 0.35;
       this.setStatText(b, ease.outCubic(prog(t, tc, tc + 0.9)));
     } else this.setPanel(stat, 0);
     const hasDay = (x) => x && (x.day || x.dayText);
@@ -39788,9 +40179,9 @@ ${NOISE}`).replace("#include <color_fragment>", `#include <color_fragment>
     U.uFocus.value = smoothstep2(40, 80, f2);
     let s;
     if (f2 < 180) {
-      s = orbit(f2, 0, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
+      s = orbit(f2, 15, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
     } else {
-      const A = orbit(180, 0, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
+      const A = orbit(180, 15, 180, { center: [0, 0, 0], a0: -2.5, a1: -2.25, r0: 33, r1: 30, h0: 17, h1: 16, lens0: 35, target: onSphere(-138, 30, 3.5) });
       const B = { pos: caPt.clone().multiplyScalar(1.22), target: caPt.clone(), lens: 50 };
       s = move(f2, 195, 234, A, B, { fn: ease.inCubic, via: onSphere(-132, 37, 30) });
     }
@@ -39802,7 +40193,7 @@ ${NOISE}`).replace("#include <color_fragment>", `#include <color_fragment>
     labels.update(cam, want, ctx.avoid);
     return { scene, camera: cam, labels: labels.scene, bloom: 0.3 };
   }
-  return { scene, frame };
+  return { scene, frame, labels };
 }
 
 // scene/src/sets/camap.js
@@ -40051,7 +40442,7 @@ async function createMap(pipe) {
         float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
           return mix(mix(h21(i), h21(i+vec2(1,0)), u.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), u.x), u.y); }
         float fb(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<3;i++){ s+=a*vn(p); p=p*2.1+7.3; a*=0.5;} return s; }
-        float gWater = 0.0; float gOcean = 0.0;
+        float gWater = 0.0; float gOcean = 0.0; float gEdge = 1.0;
         ${SKY_REFL}`
     ).replace(
       "#include <color_fragment>",
@@ -40069,7 +40460,7 @@ async function createMap(pipe) {
           float cl = uCloud * smoothstep(0.45, 0.75, fb(vWPos.xz * 0.045 + vec2(uTime * 0.05, uTime * 0.02)));
           landCol *= 1.0 - 0.28 * cl;
         }
-        vec3 oceanCol = mix(uWaterCol * 0.46, uBg * 1.25, smoothstep(0.0, 0.5, ex.g));
+        vec3 oceanCol = mix(uWaterCol * 0.46, uBg * 0.62, smoothstep(0.0, 0.5, ex.g));
         float lake = smoothstep(0.35, 0.65, lakeM) * land;
         float flood = 0.0, depth = 0.0;
         if (uFlood > 0.0005 && mk.b < uFlood + 0.03) {
@@ -40083,13 +40474,12 @@ async function createMap(pipe) {
         col = mix(col, oceanCol, 1.0 - land);
         gWater = max(max(lake, flood), 1.0 - land);
         gOcean = 1.0 - land;
-        float edgeFade = smoothstep(0.0, 0.07, min(vMapUv.x, 1.0 - vMapUv.x)) * smoothstep(0.0, 0.07, min(vMapUv.y, 1.0 - vMapUv.y));
-        col = mix(uBg, col, edgeFade);
+        gEdge = smoothstep(0.0, 0.08, min(vMapUv.x, 1.0 - vMapUv.x)) * smoothstep(0.0, 0.08, min(vMapUv.y, 1.0 - vMapUv.y));
         col = mix(col, uAccent, clamp(ex.r * uLevee * 1.4, 0.0, 1.0));
         diffuseColor.rgb = col;`
     ).replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
-        roughnessFactor = mix(roughnessFactor, mix(0.12, 0.32, gOcean), gWater);`).replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
-        normal = normalize(mix(normal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz), max(gWater * 0.92, gOcean)));`).replace("#include <opaque_fragment>", "outgoingLight += skyReflect(normal, geometryViewDir, gWater * mix(1.0, 0.22, gOcean));\n#include <opaque_fragment>").replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+        roughnessFactor = mix(roughnessFactor, mix(0.12, 0.75, gOcean), gWater);`).replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+        normal = normalize(mix(normal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz), max(gWater * 0.92, gOcean)));`).replace("#include <opaque_fragment>", "outgoingLight += skyReflect(normal, geometryViewDir, gWater * mix(1.0, 0.22, gOcean));\n// map edges melt into the background after lighting\noutgoingLight = mix(uBg, outgoingLight, gEdge);\n#include <opaque_fragment>").replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
         float lev = ex.r * uLevee * (0.75 + 0.25 * sin(uTime * 5.0));
         totalEmissiveRadiance += uAccent * lev * 0.9;`);
   };
@@ -40327,7 +40717,7 @@ async function createMap(pipe) {
   const labels = new Labels();
   const L = (id, text, lon, lat, o = {}) => labels.add(id, { text, pos: ll(lon, lat, 0.02), ...o });
   L("california", "California", -119.9, 37.2, { size: 34, priority: 5 });
-  L("pacific", "Pacific Ocean", -124.3, 36.3, { italic: true, size: 32, priority: 4 });
+  L("pacific", "Pacific Ocean", -123.2, 35, { italic: true, size: 32, priority: 4 });
   L("sierra", "Sierra Nevada", -119.25, 37.75, { size: 32, priority: 5 });
   L("valley", "Central Valley", -120.95, 37.55, { size: 32, priority: 5 });
   L("sacR", "Sacramento River", -122.25, 39.55, { italic: true, size: 28, priority: 3 });
@@ -40420,7 +40810,7 @@ async function createMap(pipe) {
       cloud2 = 0;
       flow = 0.6;
       exposureMap = 0.9;
-      s = move(f2, 1635, 1700, SHOT.saLow, SHOT.saPush, { fn: ease.inOutSine });
+      s = move(f2, 1652, 1700, SHOT.saLow, SHOT.saPush, { fn: ease.inOutSine });
       if (f2 > 1702) s = move(f2, 1702, 1796, SHOT.saPush, SHOT.caEnd, { via: ll(-118.4, 34.6, 45), viaT: ll(-118.6, 35.4) });
       if (f2 >= 1800) s = move(f2, 1800, 1920, SHOT.caEnd, { ...SHOT.caEnd, pos: SHOT.caEnd.pos.clone().multiplyScalar(1.03) }, { fn: ease.inOutSine });
       flood = lerp2(0.2, 0.1, prog(f2, 1620, 1800));
@@ -40565,11 +40955,12 @@ async function boot() {
     overlay.update(f2);
     const name = (SCHEDULE.find(([a2, b]) => f2 >= a2 && f2 < b) || SCHEDULE[SCHEDULE.length - 1])[2];
     const set = sets[name] || sets.map;
-    const out = set.frame(f2, { avoid: overlay.rects() });
+    const avoid = overlay.rects();
+    const out = set.frame(f2, { avoid });
     const w = wipe(f2);
     pipe.render({ ...out, frame: f2, cover: w.cover, wipeTime: w.t });
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px2);
-    last = { frame: f2, set: name, cover: w.cover };
+    last = { frame: f2, set: name, cover: +w.cover.toFixed(3), labels: set.labels && set.labels.visible ? set.labels.visible() : [], panels: avoid };
     return last;
   }
   window.__video = {

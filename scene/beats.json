@@ -6,151 +6,598 @@
   "note": "Single source of truth for timing, text, stats, camera and sound. docs/beat-sheet.md is generated from this file (render/make_beat_sheet.mjs). Captions use **bold** for the key number and \\n for the line break.",
   "beats": [
     {
-      "id": 1, "start": 0, "end": 180, "set": "globe", "point": "Hook",
+      "id": 1,
+      "start": 0,
+      "end": 180,
+      "set": "globe",
+      "point": "Hook",
       "title": "What if California got\n30 days of extreme rain?",
       "caption": "At first, everyone celebrates.\nThen the water keeps rising",
-      "stat": { "parts": [30], "decimals": 0, "template": "{0} days", "label": "a storm sequence scientists\nsimulated in a 2022 study" },
-      "day": [1, 2],
+      "stat": {
+        "parts": [
+          30
+        ],
+        "decimals": 0,
+        "template": "{0} days",
+        "label": "a storm sequence scientists\nsimulated in a 2022 study"
+      },
+      "day": [
+        1,
+        2
+      ],
       "visual": "Night-blue globe. A glowing moisture plume streams from near Hawaii to California within 2 s.",
-      "camera": { "shot": "Establishing wide, slow orbit east", "lens": "35 mm", "reason": "Shows where in the world the water comes from" },
-      "sound": [{ "at": 0, "cue": "rain-bed-in" }, { "at": 60, "cue": "whoosh-soft" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F1"]
+      "camera": {
+        "shot": "Establishing wide, slow orbit east",
+        "lens": "35 mm",
+        "reason": "Shows where in the world the water comes from"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "rain-bed-in"
+        },
+        {
+          "at": 60,
+          "cue": "whoosh-soft"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F1"
+      ]
     },
     {
-      "id": 2, "start": 180, "end": 300, "set": "globe-to-map", "point": "1 · The rain feels like a gift",
+      "id": 2,
+      "start": 180,
+      "end": 300,
+      "set": "globe-to-map",
+      "point": "1 · The rain feels like a gift",
       "caption": "Atmospheric rivers bring about **30–50%**\nof West Coast precipitation",
-      "stat": { "parts": [30, 50], "decimals": 0, "template": "{0}–{1}%", "label": "of yearly West Coast\nprecipitation · NOAA" },
-      "day": [2, 4],
+      "stat": {
+        "parts": [
+          30,
+          50
+        ],
+        "decimals": 0,
+        "template": "{0}–{1}%",
+        "label": "of yearly West Coast\nprecipitation · NOAA"
+      },
+      "day": [
+        2,
+        4
+      ],
       "visual": "Fly-to: the camera follows the plume down through the cloud deck and emerges over the California relief map.",
-      "camera": { "shot": "Fly-to: zoom in along the plume, cloud pass, settle over California", "lens": "50 → 35 mm", "reason": "Carries the viewer from the Pacific source to the destination" },
-      "sound": [{ "at": 15, "cue": "whoosh-map" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F2"]
+      "camera": {
+        "shot": "Fly-to: zoom in along the plume, cloud pass, settle over California",
+        "lens": "50 → 35 mm",
+        "reason": "Carries the viewer from the Pacific source to the destination"
+      },
+      "sound": [
+        {
+          "at": 15,
+          "cue": "whoosh-map"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F2"
+      ]
     },
     {
-      "id": 3, "start": 300, "end": 420, "set": "shasta", "point": "1 · The rain feels like a gift",
+      "id": 3,
+      "start": 300,
+      "end": 420,
+      "set": "shasta",
+      "point": "1 · The rain feels like a gift",
       "caption": "Reservoirs rise fast. Shasta Lake\ncan hold **4.55 million** acre-feet",
-      "stat": { "parts": [4.55], "decimals": 2, "template": "{0} million", "label": "acre-feet: Shasta Lake's capacity\n1 acre-foot ≈ 326,000 gallons · USBR" },
-      "day": [4, 8],
+      "stat": {
+        "parts": [
+          4.55
+        ],
+        "decimals": 2,
+        "template": "{0} million",
+        "label": "acre-feet: Shasta Lake's capacity\n1 acre-foot ≈ 326,000 gallons · USBR"
+      },
+      "day": [
+        4,
+        8
+      ],
       "visual": "Real-terrain diorama of Shasta Lake. The shoreline climbs the canyons while dry grey hills turn green.",
-      "camera": { "shot": "Slow push-in toward Shasta Dam and the rising shoreline", "lens": "50 mm", "reason": "Lets the viewer watch the waterline creep up" },
-      "sound": [{ "at": 0, "cue": "water-swell" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F3", "F4"]
+      "camera": {
+        "shot": "Slow push-in toward Shasta Dam and the rising shoreline",
+        "lens": "50 mm",
+        "reason": "Lets the viewer watch the waterline creep up"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "water-swell"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F3",
+        "F4"
+      ]
     },
     {
-      "id": 4, "start": 420, "end": 540, "set": "soil", "point": "2 · The ground can't keep up",
+      "id": 4,
+      "start": 420,
+      "end": 540,
+      "set": "soil",
+      "point": "2 · The ground can't keep up",
       "caption": "Winter 2022–23 brought **9** atmospheric\nrivers in just 3 weeks",
-      "stat": { "parts": [9], "decimals": 0, "template": "{0}", "label": "atmospheric rivers,\nDec 26 2022 – Jan 17 2023 · NOAA" },
-      "day": [8, 12],
+      "stat": {
+        "parts": [
+          9
+        ],
+        "decimals": 0,
+        "template": "{0}",
+        "label": "atmospheric rivers,\nDec 26 2022 – Jan 17 2023 · NOAA"
+      },
+      "day": [
+        8,
+        12
+      ],
       "visual": "Cut-away block of hillside. Rain falls in pulses and the soil cross-section fills with water from the top down.",
-      "camera": { "shot": "Slow push-in on the soil cross-section", "lens": "50 mm", "reason": "Builds tension as the soil runs out of room" },
-      "sound": [{ "at": 0, "cue": "rain-heavy" }, { "at": 70, "cue": "soil-gulp" }],
-      "sources": ["F5"]
+      "camera": {
+        "shot": "Slow push-in on the soil cross-section",
+        "lens": "50 mm",
+        "reason": "Builds tension as the soil runs out of room"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "rain-heavy"
+        },
+        {
+          "at": 70,
+          "cue": "soil-gulp"
+        }
+      ],
+      "sources": [
+        "F5"
+      ]
     },
     {
-      "id": 5, "start": 540, "end": 660, "set": "soil", "point": "2 · The ground can't keep up",
+      "id": 5,
+      "start": 540,
+      "end": 660,
+      "set": "soil",
+      "point": "2 · The ground can't keep up",
       "caption": "Soaked slopes can slide. That winter,\n**700+** landslides were reported",
-      "stat": { "parts": [700], "decimals": 0, "template": "{0}+", "label": "landslides reported,\nwinter 2022–23 · NOAA, USGS" },
-      "day": [12, 15],
+      "stat": {
+        "parts": [
+          700
+        ],
+        "decimals": 0,
+        "template": "{0}+",
+        "label": "landslides reported,\nwinter 2022–23 · NOAA, USGS"
+      },
+      "day": [
+        12,
+        15
+      ],
       "visual": "Runoff sheets downhill into the creek and street. Slide-prone slope outlined in amber; a small empty-hillside slump.",
-      "camera": { "shot": "Orbit around the hillside block", "lens": "35 mm", "reason": "Shows the slope in 3d and where the water goes" },
-      "sound": [{ "at": 0, "cue": "rush-rise" }, { "at": 40, "cue": "warning-tone" }],
-      "sources": ["F6"]
+      "camera": {
+        "shot": "Orbit around the hillside block",
+        "lens": "35 mm",
+        "reason": "Shows the slope in 3d and where the water goes"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "rush-rise"
+        },
+        {
+          "at": 40,
+          "cue": "warning-tone"
+        }
+      ],
+      "sources": [
+        "F6"
+      ]
     },
     {
-      "id": 6, "start": 660, "end": 780, "set": "map", "point": "3 · Parts of the valley could become a lake",
+      "id": 6,
+      "start": 660,
+      "end": 780,
+      "set": "map",
+      "point": "3 · Parts of the valley could become a lake",
       "caption": "Sierra runoff pours into one valley,\nabout **400 miles** long",
-      "stat": { "parts": [400], "decimals": 0, "template": "{0} miles", "label": "length of the Central Valley · USGS" },
-      "day": [15, 19],
+      "stat": {
+        "parts": [
+          400
+        ],
+        "decimals": 0,
+        "template": "{0} miles",
+        "label": "length of the Central Valley · USGS"
+      },
+      "day": [
+        15,
+        19
+      ],
       "visual": "Visual reset to the state relief map. Flow pulses run down Sierra rivers into the Sacramento and San Joaquin.",
-      "camera": { "shot": "Crane up from the Sierra slopes to the whole valley", "lens": "35 → 28 mm", "reason": "'It keeps going': reveals how much land drains to one place" },
-      "sound": [{ "at": 0, "cue": "whoosh-big" }, { "at": 0, "cue": "pulse-start" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F7"],
-      "legend": [{ "swatch": "water", "text": "River flow" }]
+      "camera": {
+        "shot": "Crane up from the Sierra slopes to the whole valley",
+        "lens": "35 → 28 mm",
+        "reason": "'It keeps going': reveals how much land drains to one place"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-big"
+        },
+        {
+          "at": 0,
+          "cue": "pulse-start"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F7"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "River flow"
+        }
+      ]
     },
     {
-      "id": 7, "start": 780, "end": 900, "set": "map", "point": "3 · Parts of the valley could become a lake",
+      "id": 7,
+      "start": 780,
+      "end": 900,
+      "set": "map",
+      "point": "3 · Parts of the valley could become a lake",
       "caption": "About **1,600 miles** of levees strain\nto hold the rivers",
-      "stat": { "parts": [1600], "decimals": 0, "template": "{0} miles", "label": "of levees in the State Plan\nof Flood Control · DWR" },
-      "day": [19, 23],
+      "stat": {
+        "parts": [
+          1600
+        ],
+        "decimals": 0,
+        "template": "{0} miles",
+        "label": "of levees in the State Plan\nof Flood Control · DWR"
+      },
+      "day": [
+        19,
+        23
+      ],
       "visual": "Push-in on the Sacramento–San Joaquin Delta. Levee lines glow amber as rivers rise against them.",
-      "camera": { "shot": "Slow push-in on the Delta", "lens": "50 mm", "reason": "Tension: the pressure point of the whole system" },
-      "sound": [{ "at": 20, "cue": "warning-tone" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F8"],
-      "legend": [{ "swatch": "accent", "text": "Levees under strain" }]
+      "camera": {
+        "shot": "Slow push-in on the Delta",
+        "lens": "50 mm",
+        "reason": "Tension: the pressure point of the whole system"
+      },
+      "sound": [
+        {
+          "at": 20,
+          "cue": "warning-tone"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F8"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Levees under strain"
+        }
+      ]
     },
     {
-      "id": 8, "start": 900, "end": 1080, "set": "map", "point": "3 · Parts of the valley could become a lake",
+      "id": 8,
+      "start": 900,
+      "end": 1080,
+      "set": "map",
+      "point": "3 · Parts of the valley could become a lake",
       "caption": "In a USGS megastorm scenario, floods\nstretch **300 miles** down the valley",
-      "stat": { "parts": [300], "decimals": 0, "template": "{0} miles", "label": "of modeled flooding, 20+ miles wide\nUSGS ARkStorm scenario" },
-      "day": [23, 30],
+      "stat": {
+        "parts": [
+          300
+        ],
+        "decimals": 0,
+        "template": "{0} miles",
+        "label": "of modeled flooding, 20+ miles wide\nUSGS ARkStorm scenario"
+      },
+      "day": [
+        23,
+        30
+      ],
       "visual": "Biggest visual. Separate flooded patches spread from the rivers and join into one long inland sea, reaching the Tulare Lake basin.",
-      "camera": { "shot": "Top-down crane up (pull back) along the whole valley", "lens": "35 → 24 mm", "reason": "'It keeps going': the flood outgrows the frame" },
-      "sound": [{ "at": 0, "cue": "swell-deep" }, { "at": 100, "cue": "boom-soft" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F9", "F10"],
-      "legend": [{ "swatch": "water", "text": "Flood water" }, { "swatch": "outline", "text": "Tulare Lake basin" }],
+      "camera": {
+        "shot": "Top-down crane up (pull back) along the whole valley",
+        "lens": "35 → 24 mm",
+        "reason": "'It keeps going': the flood outgrows the frame"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "swell-deep"
+        },
+        {
+          "at": 100,
+          "cue": "boom-soft"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F9",
+        "F10"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Flood water"
+        },
+        {
+          "swatch": "outline",
+          "text": "Tulare Lake basin"
+        }
+      ],
       "tag": "Illustrative scenario, not a flood model"
     },
     {
-      "id": 9, "start": 1080, "end": 1200, "set": "route", "point": "4 · The effects reach your everyday life",
+      "id": 9,
+      "start": 1080,
+      "end": 1200,
+      "set": "route",
+      "point": "4 · The effects reach your everyday life",
       "caption": "In early 2023, PG&E restored power\nto **2 million+** customers",
-      "stat": { "parts": [2], "decimals": 0, "template": "{0} million+", "label": "customers' power restored,\nDec 30 2022 – Jan 10 2023 · PG&E" },
-      "day": [30, 30],
+      "stat": {
+        "parts": [
+          2
+        ],
+        "decimals": 0,
+        "template": "{0} million+",
+        "label": "customers' power restored,\nDec 30 2022 – Jan 10 2023 · PG&E"
+      },
+      "day": [
+        30,
+        30
+      ],
       "visual": "A delivery truck leaves a valley farm. Ahead, a flooded highway (amber barrier) and a power line with an amber outage glow.",
-      "camera": { "shot": "Tracking dolly along the delivery route", "lens": "35 mm", "reason": "Follows one trip so the impact feels personal" },
-      "sound": [{ "at": 0, "cue": "whoosh-map" }, { "at": 60, "cue": "power-down" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F11"],
-      "legend": [{ "swatch": "accent", "text": "Interrupted route" }]
+      "camera": {
+        "shot": "Tracking dolly along the delivery route",
+        "lens": "35 mm",
+        "reason": "Follows one trip so the impact feels personal"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-map"
+        },
+        {
+          "at": 60,
+          "cue": "power-down"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F11"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Interrupted route"
+        }
+      ]
     },
     {
-      "id": 10, "start": 1200, "end": 1320, "set": "route", "point": "4 · The effects reach your everyday life",
+      "id": 10,
+      "start": 1200,
+      "end": 1320,
+      "set": "route",
+      "point": "4 · The effects reach your everyday life",
       "caption": "About **25%** of America's food comes\nfrom the Central Valley",
-      "stat": { "parts": [25], "decimals": 0, "template": "{0}%", "label": "of the nation's food · USGS" },
-      "day": [30, 30],
+      "stat": {
+        "parts": [
+          25
+        ],
+        "decimals": 0,
+        "template": "{0}%",
+        "label": "of the nation's food · USGS"
+      },
+      "day": [
+        30,
+        30
+      ],
       "visual": "The detoured route crosses the mountains to a Los Angeles grocery store whose produce shelf has amber gaps.",
-      "camera": { "shot": "Continue the dolly south, then push in on the store", "lens": "35 → 50 mm", "reason": "Lands the ripple at the viewer's own grocery store" },
-      "sound": [{ "at": 30, "cue": "whoosh-soft" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F12"],
-      "legend": [{ "swatch": "accent", "text": "Interrupted route" }]
+      "camera": {
+        "shot": "Continue the dolly south, then push in on the store",
+        "lens": "35 → 50 mm",
+        "reason": "Lands the ripple at the viewer's own grocery store"
+      },
+      "sound": [
+        {
+          "at": 30,
+          "cue": "whoosh-soft"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F12"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Interrupted route"
+        }
+      ]
     },
     {
-      "id": 11, "start": 1320, "end": 1440, "set": "recharge", "point": "5 · Two different legacies",
+      "id": 11,
+      "start": 1320,
+      "end": 1440,
+      "set": "recharge",
+      "point": "5 · Two different legacies",
       "caption": "In 2023, California recharged about\n**4.1 million** acre-feet underground",
-      "stat": { "parts": [4.1], "decimals": 1, "template": "{0} million", "label": "acre-feet of managed recharge,\nwater year 2023 · DWR" },
+      "stat": {
+        "parts": [
+          4.1
+        ],
+        "decimals": 1,
+        "template": "{0} million",
+        "label": "acre-feet of managed recharge,\nwater year 2023 · DWR"
+      },
       "dayText": "After the storms",
       "visual": "Clouds part, light warms. One side: a muddy town mid-cleanup. Other side: a gate sends floodwater into a recharge basin; the aquifer below fills green.",
-      "camera": { "shot": "Crane down from the basin into the cross-section", "lens": "35 → 50 mm", "reason": "Follows the water underground, where it becomes useful" },
-      "sound": [{ "at": 0, "cue": "clear-shimmer" }, { "at": 0, "cue": "piano-in" }, { "at": 24, "cue": "ticks" }],
-      "sources": ["F13"],
-      "legend": [{ "swatch": "highlight", "text": "Recharged groundwater" }]
+      "camera": {
+        "shot": "Crane down from the basin into the cross-section",
+        "lens": "35 → 50 mm",
+        "reason": "Follows the water underground, where it becomes useful"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "clear-shimmer"
+        },
+        {
+          "at": 0,
+          "cue": "piano-in"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F13"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Recharged groundwater"
+        }
+      ]
     },
     {
-      "id": 12, "start": 1440, "end": 1620, "set": "town1862", "point": "Payoff",
+      "id": 12,
+      "start": 1440,
+      "end": 1620,
+      "set": "town1862",
+      "point": "Payoff",
       "title": "California has seen\nsomething like this before",
       "caption": "In 1861–62, about **45 days** of storms\nflooded the Sacramento Valley",
-      "stat": { "parts": [45], "decimals": 0, "template": "{0} days", "label": "of storms. The state capital moved\nto San Francisco, Jan–May 1862" },
+      "stat": {
+        "parts": [
+          45
+        ],
+        "decimals": 0,
+        "template": "{0} days",
+        "label": "of storms. The state capital moved\nto San Francisco, Jan–May 1862"
+      },
       "dayText": "1861–62 · historical record",
       "visual": "Low hero angle on an 1860s river town diorama, water up to the first floors, an empty rowboat tied to a porch.",
-      "camera": { "shot": "Low hero angle, slow rise", "lens": "24 mm", "reason": "Gives the history its weight: the big reveal" },
-      "sound": [{ "at": 0, "cue": "reveal-boom" }, { "at": 30, "cue": "ticks" }],
-      "sources": ["F14"]
+      "camera": {
+        "shot": "Low hero angle, slow rise",
+        "lens": "24 mm",
+        "reason": "Gives the history its weight: the big reveal"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "reveal-boom"
+        },
+        {
+          "at": 28,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F14"
+      ]
     },
     {
-      "id": 13, "start": 1620, "end": 1800, "set": "santa-ana", "point": "Ending",
+      "id": 13,
+      "start": 1620,
+      "end": 1800,
+      "set": "santa-ana",
+      "point": "Ending",
       "title": "Thirty days of rain\ncould change California",
       "caption": "How we make room for water\nchanges what happens next",
-      "stat": { "parts": [1000], "decimals": 0, "template": "{0}+ acres", "label": "of basins soak Santa Ana River\nwater into the ground · OCWD" },
+      "stat": {
+        "parts": [
+          1000
+        ],
+        "decimals": 0,
+        "template": "{0}+ acres",
+        "label": "of basins soak Santa Ana River\nwater into the ground · OCWD"
+      },
       "visual": "Warm light over Southern California: the Santa Ana River watershed glows, recharge basins turn green, then the camera rises to the whole state.",
-      "camera": { "shot": "Crane up from the Santa Ana basins to the whole state", "lens": "35 → 24 mm", "reason": "Ends wide and open: the choice is statewide" },
-      "sound": [{ "at": 0, "cue": "whoosh-soft" }, { "at": 30, "cue": "ticks" }],
-      "sources": ["F15"],
-      "legend": [{ "swatch": "highlight", "text": "Recharge basins" }, { "swatch": "outline-highlight", "text": "Santa Ana River watershed" }]
+      "camera": {
+        "shot": "Crane up from the Santa Ana basins to the whole state",
+        "lens": "35 → 24 mm",
+        "reason": "Ends wide and open: the choice is statewide"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-soft"
+        },
+        {
+          "at": 28,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "F15"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Recharge basins"
+        },
+        {
+          "swatch": "outline-highlight",
+          "text": "Santa Ana River watershed"
+        }
+      ]
     },
     {
-      "id": "end", "start": 1800, "end": 1920, "set": "endcard", "point": "End card",
+      "id": "end",
+      "start": 1800,
+      "end": 1920,
+      "set": "endcard",
+      "point": "End card",
       "endCard": "California's next big\ninvestment: more water\nstorage—or more room\nfor rivers?",
       "visual": "The scene dims behind a large neutral question.",
-      "camera": { "shot": "Hold, slow drift", "lens": "24 mm", "reason": "Gives the question room to land" },
-      "sound": [{ "at": 0, "cue": "button-note" }],
+      "camera": {
+        "shot": "Hold, slow drift",
+        "lens": "24 mm",
+        "reason": "Gives the question room to land"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "button-note"
+        }
+      ],
       "sources": []
     }
   ]
