@@ -1,0 +1,18 @@
+{
+  "name": "whatif-2008",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "stills": "node render/stills.mjs",
+    "audio": "node render/audio.mjs",
+    "video": "node render/video.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "type": "module"
+}

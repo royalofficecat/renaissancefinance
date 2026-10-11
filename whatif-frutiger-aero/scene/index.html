@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>What If Frutiger Aero</title>
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: Inter, sans-serif; }
+  #c { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+  .tag { display: inline-block; font-weight: 900; letter-spacing: 0.06em; border-radius: 10px; padding: 6px 14px; font-size: 24px; line-height: 1; }
+  .gold { background: #ffc93c; color: #3a2a00; }
+  .teal { background: #19c3b1; color: #00332e; }
+  .napkin { background: #ff9f5c; color: #3a1a00; }
+  /* glossy "Aero" glass panels */
+  .glass { background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.22) 48%, rgba(190,235,255,0.28) 52%, rgba(120,200,255,0.32) 100%); border: 2px solid rgba(255,255,255,0.75); box-shadow: 0 10px 24px rgba(0,60,120,0.25), inset 0 1px 0 rgba(255,255,255,0.9); backdrop-filter: blur(6px); }
+  #title {
+    position: absolute; left: 50px; right: 50px; top: 70px; padding: 26px 30px; border-radius: 34px; text-align: center;
+    background: linear-gradient(180deg, #5ec3ff 0%, #1e8fe6 48%, #0f6fc9 52%, #1f9be8 100%); border: 3px solid rgba(255,255,255,0.85);
+    color: #fff; font-weight: 900; font-size: 64px; line-height: 1.08; letter-spacing: -0.01em; text-shadow: 0 2px 4px rgba(0,40,90,0.45);
+    box-shadow: 0 12px 28px rgba(0,60,120,0.3), inset 0 2px 0 rgba(255,255,255,0.9);
+  }
+  #title b { color: #c9ff5c; }
+  #stats { position: absolute; left: 50px; top: 330px; width: 780px; padding: 18px 22px; border-radius: 24px; color: #0e2d52; transform-origin: 0 0; }
+  #stats .row { display: flex; align-items: center; gap: 14px; font-size: 29px; font-weight: 800; }
+  #stats .row + .row { margin-top: 12px; }
+  #stats .row span:last-child { flex: 1; }
+  #stats .whatif span:last-child { font-style: italic; font-weight: 700; color: #0b6e64; }
+  #badge { position: absolute; left: 50px; top: 540px; font-size: 22px; }
+  #caption { position: absolute; left: 50px; right: 140px; top: 1270px; padding: 24px 28px 20px; border-radius: 30px; color: #0e2d52; transform-origin: 50% 100%; }
+  #capText { font-size: 46px; font-weight: 900; line-height: 1.15; margin-top: 12px; }
+  #capSrc { font-size: 22px; font-weight: 600; color: #3b5f86; margin-top: 10px; }
+  #twist { margin-left: 10px; background: #ff5d8f; color: #fff; }
+  #takeaway {
+    position: absolute; left: 50px; right: 140px; top: 1090px; padding: 20px 26px; border-radius: 26px; font-weight: 900; font-size: 40px; line-height: 1.15;
+    background: linear-gradient(180deg, #e2ff8a 0%, #9ee83a 50%, #7ccf1f 52%, #a6ec4a 100%); color: #163300; border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 8px 20px rgba(0,60,0,0.25), inset 0 2px 0 rgba(255,255,255,0.9); transform-origin: 50% 100%;
+  }
+  #sticker { position: absolute; left: 160px; right: 160px; top: 570px; padding: 18px 20px; text-align: center; background: linear-gradient(180deg, #ffd27a, #ff9a2e); color: #3a1a00; border-radius: 26px; font-weight: 900; font-size: 50px; border: 3px solid rgba(255,255,255,0.85); box-shadow: 0 8px 0 rgba(0,0,0,0.15); }
+  #end { position: absolute; left: 50px; right: 50px; top: 1180px; padding: 34px 34px 28px; text-align: center; border-radius: 36px; transform-origin: 50% 50%; color: #0e2d52; }
+  #endQ { font-size: 64px; font-weight: 900; line-height: 1.1; }
+  #endQ .a { color: #1e8fe6; }
+  #endCta { font-size: 40px; font-weight: 800; margin-top: 20px; color: #0b6e64; }
+  #endSrc { font-size: 20px; font-weight: 600; margin-top: 18px; color: #3b5f86; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 85% 70% at 50% 46%, rgba(0,0,0,0) 60%, rgba(0,40,90,0.18) 100%); }
+  #progress { position: absolute; left: 70px; right: 70px; top: 40px; display: flex; gap: 8px; }
+  #progress i { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.45); box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
+  #progress i.on { background: #c9ff5c; }
+  #progress i.now { background: #ffffff; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="c" width="1080" height="1920"></canvas>
+  <div id="vignette"></div>
+  <div id="progress"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div id="title">What if the world went full <b>Frutiger Aero</b>?</div>
+  <div id="stats" class="glass">
+    <div class="row real"><span id="realTag" class="tag gold">REAL</span><span id="statReal"></span></div>
+    <div class="row whatif"><span class="tag teal">WHAT IF</span><span id="statWhatIf"></span></div>
+  </div>
+  <div id="badge" class="tag teal">WHAT IF CITY · imagined</div>
+  <div id="takeaway" class="hidden"></div>
+  <div id="sticker" class="hidden">Gloss needs a recycling bin</div>
+  <div id="caption" class="glass">
+    <span class="tag gold">REAL</span><span id="twist" class="tag hidden">THE TWIST</span>
+    <div id="capText"></div>
+    <div id="capSrc"></div>
+  </div>
+  <div id="end" class="glass hidden">
+    <div id="endQ"></div>
+    <div id="endCta"></div>
+    <div id="endSrc"></div>
+  </div>
+</div>
+<script type="importmap">{ "imports": { "three": "/node_modules/three/build/three.module.js", "three/addons/": "/node_modules/three/examples/jsm/" } }</script>
+<script type="module" src="./city.js"></script>
+</body>
+</html>
