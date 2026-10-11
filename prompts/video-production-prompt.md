@@ -105,8 +105,7 @@ Before building anything, write a one-page style bible in
    font from a file in the project folder rather than from the internet at
    render time, and check that every frame really uses it rather than a
    fallback.
-2. **Type scale.** Set the sizes for vertical video and scale them for other
-   sizes: title 72–88 px, captions 52–60 px, stat numbers 64–80 px, stat
+2. **Type scale.** Title 72–88 px, captions 52–60 px, stat numbers 64–80 px, stat
    labels 28–32 px, map labels 26–34 px. Line height is 1.1 for titles and
    1.25 for body text.
 3. **Captions.** One idea per caption, two lines max, about 38 characters per
@@ -225,8 +224,8 @@ downloaded audio.
 ## Part 8 — technical pipeline
 
 1. **Scene:** three.js in a browser page, using a fixed virtual clock so
-   frame number N always looks identical (no real-time timers, and all
-   randomness comes from a fixed seed).
+   any given frame looks identical every time it is rendered (no real-time
+   timers, and all randomness comes from a fixed seed).
 2. **Capture:** Playwright steps the clock one frame at a time and saves a
    lossless png of every frame, with the text overlay included.
 3. **Encode:** ffmpeg joins the frames and audio into an mp4: h.264 high
