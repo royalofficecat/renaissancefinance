@@ -134,14 +134,14 @@ const meterHouse = houses[3]; // (-24, 9): the porch meter lives here
 // community roof: a long low hall with a tile grid on top
 const hall = new THREE.Group(); scene.add(at(hall, -5, 0, 10));
 hall.add(at(glossBox(18, 3.6, 9, '#c9f2ff', { rough: 0.1, opacity: 0.92 }), 0, 1.8, 0));
-hall.add(at(textPlane('COMMUNITY HALL', 9, 1.1, { bg: DEEP, fg: '#ffffff', font: '900 90px Inter', radius: 24 }), 0, 2.4, -4.56));
+{ const sg = at(textPlane('COMMUNITY HALL', 9, 1.1, { bg: DEEP, fg: '#ffffff', font: '900 90px Inter', radius: 24 }), 0, 2.4, -4.56); sg.rotation.y = Math.PI; hall.add(sg); }
 const tiles = [];
 for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) { const tl = mesh(new THREE.BoxGeometry(1.8, 0.14, 2.2), M('#1a3a7a', { roughness: 0.15, metalness: 0.4, emissive: '#2a7bff', emissiveIntensity: 0 })); hall.add(at(tl, -7.5 + c * 2.1, 3.8, -2.6 + r * 2.6)); tl.visible = false; tiles.push(tl); }
 const ramp = box(2.2, 0.3, 7, M(WHITE)); ramp.rotation.x = 0.5; hall.add(at(ramp, 10.5, 1.9, 1.4));
 // workshop: glass box with a bench, for beat 7
 const shop = new THREE.Group(); scene.add(at(shop, 34, 0, 10));
 shop.add(at(glossBox(10, 4.4, 8, '#dff6ff', { rough: 0.06, opacity: 0.55 }), 0, 2.2, 0));
-shop.add(at(textPlane('REPAIR CAFÉ', 7, 1.0, { bg: ORANGE, fg: '#ffffff', font: '900 90px Inter', radius: 24 }), 0, 5.1, -4.0));
+{ const sg = at(textPlane('REPAIR CAFÉ', 7, 1.0, { bg: ORANGE, fg: '#ffffff', font: '900 90px Inter', radius: 24 }), 0, 5.1, -4.0); sg.rotation.y = Math.PI; shop.add(sg); }
 shop.add(at(box(6, 0.3, 2, M('#b08a5a')), 0, 1.3, 0), at(box(0.3, 1.2, 1.8, M('#7a5a3a')), -2.6, 0.6, 0), at(box(0.3, 1.2, 1.8, M('#7a5a3a')), 2.6, 0.6, 0));
 const fixer = person({ shirt: ORANGE, hat: false }); shop.add(at(fixer, 0, 0.16, -1.6));
 // dome hub (library / share hub) on the plaza
@@ -299,16 +299,16 @@ for (let i = 0; i < 3; i++) {
 const pile = new THREE.Group(); scene.add(at(pile, -10, 0, -44));
 {
   const r2 = (sd => () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; })(5);
-  for (let i = 0; i < 160; i++) {
+  for (let i = 0; i < 240; i++) {
     const kind = i % 4, g = new THREE.Group();
     if (kind === 0) { g.add(box(0.9, 1.6, 0.25, M(cyc(['#e8eef2', '#2f3a4a', '#9ad7ff'], i)))); g.add(at(mesh(new THREE.PlaneGeometry(0.6, 0.5), M('#1a1f2b')), 0, 0.35, 0.14)); g.add(at(mesh(new THREE.TorusGeometry(0.22, 0.05, 6, 16), M('#dde')), 0, -0.4, 0.14)); } // music player
     else if (kind === 1) { g.add(box(0.7, 1.4, 0.3, M(cyc(['#c9d3dc', '#ff5fa0', '#2f3a4a'], i)))); g.add(at(mesh(new THREE.PlaneGeometry(0.5, 0.5), M('#1a1f2b')), 0, 0.3, 0.16)); } // flip phone
     else if (kind === 2) { g.add(box(2.0, 1.3, 0.2, M('#2f3a4a'))); g.add(at(mesh(new THREE.PlaneGeometry(1.7, 1.0), M('#1a1f2b')), 0, 0, 0.11)); } // monitor
     else { g.add(box(1.4, 0.4, 1.0, M('#aab4c0'))); } // old console
-    const a = r2() * Math.PI * 2, rad = r2() * 11, h = Math.max(0, 7 - rad * 0.6) * r2() + 0.3;
+    const a = r2() * Math.PI * 2, rad = Math.sqrt(r2()) * 10.5, h = -1 + 0.6 * Math.sqrt(Math.max(0, 121 - rad * rad)) + 0.45; // sit on the mound's surface
     g.position.set(Math.cos(a) * rad, h, Math.sin(a) * rad * 0.7); g.rotation.set(r2() * 1.5, r2() * 6, r2() * 1.5); pile.add(g);
   }
-  const mound = mesh(new THREE.SphereGeometry(11, 24, 16), M('#6c757d')); mound.scale.set(1, 0.6, 0.7); pile.add(at(mound, 0, -1, 0));
+  const mound = mesh(new THREE.SphereGeometry(11, 24, 16), M('#4b5560')); mound.scale.set(1, 0.6, 0.7); pile.add(at(mound, 0, -1, 0));
 }
 const bot = new THREE.Group(); scene.add(bot);
 bot.add(at(box(1.6, 1.4, 1.4, M(WHITE)), 0, 1.2, 0), at(mesh(new THREE.SphereGeometry(0.55, 16, 12), M(AQUA)), 0, 2.3, 0), at(box(1.8, 0.5, 1.6, M('#2f3a4a')), 0, 0.3, 0));
@@ -385,7 +385,7 @@ const endSet = new THREE.Group(); scene.add(at(endSet, 0, 0, 150));
   items.forEach(([label, obj], i) => {
     const g = new THREE.Group(); const sph = new THREE.Mesh(new THREE.SphereGeometry(3.2, 32, 24), bubbleMat); g.add(sph); g.add(at(obj, 0, -1.4, 0));
     g.add(at(sprite(label, 5.4, 1.4, { bg: WHITE, fg: DEEP, font: '900 76px Inter', radius: 40, w: 640, h: 170 }), 0, -4.4, 0));
-    g.position.set((i - 1) * 7.5, 5.5 + (i % 2) * 1.5, -6 - i * 1.5); endSet.add(g); (endSet.userData.icons ||= []).push(g);
+    g.position.set((i - 1) * 6.6, 5.5 + (i % 2) * 1.5, -6 - i * 1.5); endSet.add(g); (endSet.userData.icons ||= []).push(g);
   });
 }
 onUpdate(t => { const on = beatOf(t) === 13; endSet.visible = on; if (!on) return; const lt = t - 13 * BEAT_LEN; endSet.userData.icons.forEach((g, i) => { const s = easeOutBack((lt - 0.1 - i * 0.2) / 0.5); g.scale.setScalar(Math.max(0.001, s)); g.position.y = 5.5 + (i % 2) * 1.5 + Math.sin(lt * 1.5 + i) * 0.3; }); });
@@ -394,7 +394,7 @@ onUpdate(t => { const on = beatOf(t) === 13; endSet.visible = on; if (!on) retur
 setShots([
   { p0: V(-10, 62, 98), p1: V(-8, 54, 82), t0: V(-6, 8, -10), t1: V(-6, 8, -10) },                                // 1 wide push-in as the gloss sweeps
   { p0: V(-70, 9, 34), p1: V(-20, 9, 34), t0: V(-50, 8, -12), t1: V(0, 9, -12) },                                // 2 dolly past the glass row
-  { p0: V(-30, 4, 18), p1: V(-26, 31, 19), t0: V(-28, 6, -12), t1: V(-26, 17, -12) },                             // 3 crane up to the rooftops
+  { p0: V(-30, 4, 24), p1: V(-26, 36, 24), t0: V(-28, 6, -12), t1: V(-27, 22, -12) },                             // 3 crane up to the rooftops
   { p0: V(-24.5, 3.4, -8.5), p1: V(-24.2, 3.1, -7.0), t0: V(-24.6, 2.2, 6.5), t1: V(-24.6, 2.4, 6.5) },           // 4 porch meter and the bill
   { p0: V(2, 34, 12), p1: V(-6, 30, 11), t0: V(0, 2, 10), t1: V(-5, 3, 10), up: V(1, 0, 0) },                     // 5 top-down over the hall roof
   { p0: V(-30, 3.6, -0.5), p1: V(-29, 3.6, 1.0), t0: V(-38.5, 2.2, 5.2), t1: V(-38.5, 2.4, 5.2) },             // 6 share-boxes on the corner
@@ -405,7 +405,7 @@ setShots([
   { p0: V(-10, 8, -72), p1: V(-10, 24, -94), t0: V(-10, 4, -44), t1: V(-10, 6, -40) },                                 // 11 pull back to reveal the pile
   { p0: V(-9, 3.5, 3), p1: V(-5, 3.3, 3), t0: V(-6, 1.6, -7), t1: V(-3, 1.6, -7) },                      // 12 close on the polishers
   { p0: V(-6, 8, 16), p1: V(0, 60, 100), t0: V(-6, 6, 0), t1: V(0, 8, -10) },                                     // 13 pull back
-  { p0: V(0, 7, 188), p1: V(0, 7, 188), t0: V(0, 5, 144), t1: V(0, 5, 144) },                                     // end card
+  { p0: V(0, 7, 196), p1: V(0, 7, 196), t0: V(0, 5, 144), t1: V(0, 5, 144) },                                     // end card
 ]);
 
 setExtraHide(t => { if (beatOf(t) === 3) for (const [o] of blockers) if (o.userData.wheels && Math.abs(o.position.x + 24) < 10) o.visible = false; });
