@@ -3,7 +3,16 @@
   "private": true,
   "type": "module",
   "description": "3d explainer video pipeline: three.js scene, Playwright capture, ffmpeg encode",
-  "scripts": {},
+  "scripts": {
+    "data": ".venv/bin/python data/prep_map.py && .venv/bin/python data/prep_shasta.py",
+    "audio": ".venv/bin/python audio/generate.py",
+    "stills": "node render/stills.mjs out/stills",
+    "contact": "node render/contact.mjs",
+    "beatsheet": "node render/make_beat_sheet.mjs",
+    "frames": "node render/render_all.mjs --workers=2",
+    "qa": "node render/qa.mjs && .venv/bin/python render/qa_motion.py out/frames && .venv/bin/python render/qa_contrast.py",
+    "render": "node render/setup_check.mjs && node render/render_all.mjs --workers=2 && npm run qa"
+  },
   "dependencies": {
     "three": "0.170.0",
     "troika-three-text": "0.52.0",

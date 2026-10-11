@@ -53,4 +53,16 @@ How these were checked: each figure was cross-checked against the agency or pape
 
 ## Software
 
-three.js (MIT) · troika-three-text (MIT) · Playwright (Apache 2.0) · ffmpeg (LGPL/GPL) · NumPy (BSD).
+three.js (MIT) · troika-three-text (MIT) · esbuild (MIT) · Playwright (Apache 2.0) · ffmpeg (LGPL/GPL) · NumPy, SciPy, Shapely (BSD) · pyproj (MIT) · Pillow (HPND).
+
+## Audio
+
+All music and sound effects are synthesised by `audio/generate.py`; no recorded or downloaded audio is used.
+
+## Illustrative elements (not data)
+
+- **Flood spread (beats 7–10, 13):** an illustrative fill of the real valley floor that grows outward from the rivers (height above the nearest river, plus distance). It is **not** a hydraulic flood model, and the video labels it "illustrative scenario". Its final extent (about 17,000 km²) was sized to match the USGS ARkStorm scenario's "300 miles long and 20 or more miles wide".
+- **Shasta Lake bed (beat 3):** elevation models store a reservoir as a flat surface, so a smooth bowl was carved below it to show the shoreline climbing. Everything above the water line is real terrain.
+- **The 30-day timeline / day counter:** an imagined sequence, not a forecast.
+- **Delivery route (beats 9–10):** a plausible farm-to-store trip (Highway 99 and Interstate 5) drawn over real geography; the flooded road and outage are illustrative.
+- **1862 river town (beat 12):** a generic period streetscape, not a reconstruction of a specific street.

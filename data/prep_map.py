@@ -213,8 +213,13 @@ def chaikin(pts, n=2):
 
 
 # ---------------------------------------------------------------- main
+NE_LAYERS = ["ne_10m_rivers_lake_centerlines", "ne_10m_rivers_north_america", "ne_10m_lakes", "ne_10m_lakes_north_america",
+             "ne_10m_populated_places_simple", "ne_10m_admin_1_states_provinces", "ne_50m_land"]
+
+
 def main():
     print(f"grid {NX} x {NY} at {RES} m")
+    curl_many([(f"https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/{n}.geojson", RAW / "naturalearth" / f"{n}.geojson") for n in NE_LAYERS])
     height = build_height()
 
     # Land, California, neighbours

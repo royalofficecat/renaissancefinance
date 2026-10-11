@@ -30,8 +30,8 @@ html, body { margin: 0; padding: 0; background: var(--deep-blue); overflow: hidd
 .w { display: inline-block; white-space: pre; will-change: opacity, transform; }
 .line { display: block; white-space: nowrap; }
 
-/* Title: bold 80, line height 1.1 */
-#title { left: 48px; top: 154px; width: 900px; padding: 24px 34px 28px; font-weight: 700; font-size: 80px; line-height: 1.1; letter-spacing: -0.005em; }
+/* Title: bold 76, line height 1.1 */
+#title { left: 48px; top: 154px; width: 900px; padding: 24px 34px 28px; font-weight: 700; font-size: 76px; line-height: 1.1; letter-spacing: -0.005em; }
 
 /* Caption: regular 52, line height 1.25, key number bold */
 #caption { left: 48px; bottom: 384px; width: 900px; padding: 26px 34px 30px; font-size: 52px; line-height: 1.25; }

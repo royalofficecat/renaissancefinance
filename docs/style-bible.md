@@ -35,15 +35,15 @@ The world is a tabletop model: California as a carved relief slab, close-ups as 
 
 ## 3. Lighting (same rig in every scene)
 
-- **Key:** directional, upper left, 40° high, overcast daylight (about 6,500 K, `#E9EEF4`), soft 4096 px shadows.
+- **Key:** directional, upper left, about 40° high, overcast daylight (about 6,500 K, `#E9EEF4`), 4096 px shadow map with soft filtering.
 - **Fill:** a sky/ground hemisphere light, cool blue above and warm grey below, at 35% of the key.
 - **Rim:** directional from behind, 60% of the key, which separates the terrain edges and clouds from the dark background.
-- **Environment:** a soft gradient sky generated in code and pre-filtered for reflections. It only shows in water and gloss.
+- **Environment:** a soft gradient sky (deep-blue zenith to storm-grey horizon, with a faint key-light glint) generated in code and evaluated directly in the water shaders. A pre-filtered environment map looked the same but cost about 4 s a frame on this GPU-less render machine. Matte land doesn't need it, so only water reflects the sky.
 - **The one story change:** from beat 11 (“two legacies”) the clouds part and the key warms to about 5,000 K (`#FFE7C7`) to mark the recovery. Nothing else changes temperature.
 
 ## 4. Finishing (subtle)
 
-ACES filmic tone mapping · bloom only on the brightest highlights (threshold 0.9, strength 0.25) · vignette 0.25 · film grain 2.5%, seeded per frame so re-renders are identical · scene rendered at 2× pixel density, then scaled down, plus SMAA. **No** chromatic aberration. **No** depth of field.
+ACES filmic tone mapping · bloom only on the brightest highlights (threshold 1.6, strength 0.2–0.3, computed at quarter resolution) · vignette 0.25 · film grain 2.5%, one grain per output pixel, re-seeded every frame but identical on every re-render · the 3d scene is rendered at 2× pixel density (2160 × 3840) and scaled down 2:1, which gives 4 samples per pixel of anti-aliasing. **No** chromatic aberration. **No** depth of field.
 
 ## 5. Motion
 
@@ -56,7 +56,7 @@ ACES filmic tone mapping · bloom only on the brightest highlights (threshold 0.
 ## 6. Type and layout
 
 - **Font:** Times New Roman isn't installed and can't legally be bundled, so we use **Liberation Serif**, its metric-matched open-licence twin (identical letter widths). It is loaded from `scene/fonts/` for both the web text and the 3d labels. Drop a licensed `TimesNewRoman*.ttf` into that folder and the pipeline will use it instead.
-- **Scale:** title Bold 80 / line height 1.1 · caption Regular 52 / 1.25 with the key number Bold · stat number Regular 72 (tabular figures) · stat label Italic 30 · map labels Regular 30 (water names Italic 30) · end card Bold 78.
+- **Scale:** title Bold 76 / line height 1.1 · caption Regular 52 / 1.25 with the key number Bold · stat number Regular 72 (tabular figures) · stat label Italic 30 · map labels Regular 30 (water names Italic 30) · end card Bold 78.
 - **Captions:** one idea, at most 2 lines of about 36 characters (hard limit 38), sentence case, no full stop at the end, and on screen for at least (words ÷ 3) seconds.
 - **Safe zones (1080 × 1920):** all text sits between y = 154 and y = 1536 and left of x = 950. Panels run from x = 48 to x = 948. A debug overlay (`?safe=1`) draws these zones.
 - **Fixed slots:** title or stats panel at the top left, scenario day-chip at the top right, legend under the stats panel, caption panel bottom-anchored at y = 1536. The middle of the frame is kept clear for the 3d scene.
