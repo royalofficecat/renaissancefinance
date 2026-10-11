@@ -1,0 +1,20 @@
+{
+  "name": "ca-30-days-of-rain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vertical 3D explainer video: What if California got 30 days of extreme rain?",
+  "type": "module",
+  "scripts": {
+    "data": "node render/fetch-data.mjs",
+    "audio": "node audio/build-audio.mjs",
+    "styleframes": "node render/capture.mjs --styleframes",
+    "contact": "node render/capture.mjs --contact",
+    "frames": "node render/capture.mjs --all",
+    "encode": "node render/encode.mjs",
+    "render": "npm run data && npm run audio && npm run frames && npm run encode"
+  },
+  "dependencies": {
+    "three": "0.186.1",
+    "troika-three-text": "0.52.5"
+  }
+}
