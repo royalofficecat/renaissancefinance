@@ -17,9 +17,9 @@ export const BEATS = [
   { cap: 'Nutrition labels use 2,000 calories a day as a reference.', src: 'FDA', real: '14 breadsticks × 140 = 1,960 cal', napkin: true, whatif: 'Pants everywhere feel tighter' },
   { cap: 'In 2015, 2,000 Pasta Passes sold out in 1 second.', src: 'TODAY / Fox News', real: '$100 for 7 weeks of pasta (2015)', whatif: 'Everyone gets a lifetime pass' },
   { cap: 'The Never Ending Pasta Bowl came back in 2025 at $13.99.', src: 'Olive Garden, Aug 2025', real: '$13.99 (2025 promo)', whatif: 'The pasta literally never ends' },
-  { cap: 'General Mills spun off its restaurants as Darden in 1995.', src: 'Darden Restaurants', real: '1995 spin-off', whatif: 'The parent company keeps growing' },
-  { cap: 'The world has about 8.2 billion people.', src: 'United Nations, 2024', real: '1 each = 8.2 billion breadsticks a day', napkin: true, whatif: 'Breadstick belts circle the globe' },
-  { cap: 'US antitrust law began with the Sherman Act in 1890.', src: 'Federal Trade Commission', real: 'Sherman Act, 1890', whatif: 'One menu, no rivals, prices could creep', twist: true },
+  { cap: 'Walmart topped the 2025 Fortune 500 with $681 billion in revenue.', src: 'Fortune 500, 2025', real: '$1T restaurant sales ÷ $12.1B = ~83× today’s Darden', napkin: true, whatif: 'Bigger than Walmart. From breadsticks.' },
+  { cap: 'The Moon is about 238,855 miles from Earth.', src: 'NASA', real: '8.2B breadsticks end to end = to the Moon and back, daily', napkin: true, whatif: 'Deliveries go interplanetary' },
+  { cap: 'In 2019, 50 Lifetime Pasta Passes sold for $500 each.', src: 'Fox News / The Daily Meal', real: '$500 ÷ $13.99 = paid off after 36 bowls', napkin: true, whatif: 'The only retirement plan you need' },
   { cap: 'There are 0 Olive Gardens in Italy.', src: 'The Daily Meal', real: 'Italy: 0 locations', whatif: 'Italy: the last place with other food', twist: true },
   { cap: 'Unlimited breadsticks began at that first Orlando restaurant in 1982.', src: 'Fortune, 2025', real: 'Free refills since 1982', whatif: 'Variety is the real never-ending deal', twist: true,
     takeaway: 'Unlimited breadsticks: fun. Unlimited sameness: not so much.' },
@@ -28,7 +28,7 @@ export const BEATS = [
 export const END = {
   question: 'Which chain should take over the world next?',
   cta: 'Comment your pick 👇',
-  sources: 'Sources: Darden · NRA · FDA · UN · FTC · Fortune · TODAY',
+  sources: 'Sources: Darden · NRA · FDA · UN · NASA · Fortune · TODAY',
 };
 
 // Sound-effect cues (seconds) keyed to the visual jokes.
@@ -43,11 +43,11 @@ export const SFX = [
   { t: 31.5 + 0.6, kind: 'slurp' }, { t: 31.5 + 2.2, kind: 'boing' }, { t: 31.5 + 3.2, kind: 'boing' },
   { t: 36.0 + 0.3, kind: 'whistle' }, { t: 36.0 + 2.8, kind: 'ding' },
   { t: 40.5 + 0.2, kind: 'whoosh' }, { t: 40.5 + 1.6, kind: 'tada' },
-  { t: 45.0 + 0.1, kind: 'scratch' }, ...[0, 1, 2, 3, 4].map(i => ({ t: 45.0 + 1.0 + i * 0.5, kind: 'tick' })), { t: 45.0 + 3.6, kind: 'knock' },
+  { t: 45.0 + 0.4, kind: 'sparkle' }, ...[0, 1, 2, 3].map(i => ({ t: 45.0 + 1.2 + i * 0.5, kind: 'pop' })), { t: 45.0 + 3.2, kind: 'yay' },
   { t: 49.5 + 0.6, kind: 'gull' }, { t: 49.5 + 2.4, kind: 'horn' },
   ...[0, 1, 2, 3, 4, 5].map(i => ({ t: 54.0 + 0.5 + i * 0.3, kind: 'pop' })), { t: 54.0 + 2.6, kind: 'yay' },
   { t: 58.5 + 0.2, kind: 'pop' },
 ];
 
 // Beats where the band plays softer: the twist beats, so the turn lands.
-export const SOFT_BEATS = [10, 11];
+export const SOFT_BEATS = [11];

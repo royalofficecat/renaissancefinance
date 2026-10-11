@@ -40,10 +40,10 @@ for (let x = -30; x <= 14; x += 8) cypress(x + 4, -16, 1.1);
 for (let x = -30; x <= 14; x += 11) cypress(x, 25, 1.0);
 
 // ---------- restaurants (north row, facing the street) ----------
-const RESTS = [['TACOS', '#ffd166', '#e63946'], ['SUSHI', '#c6e2ff', '#2f4b8c'], ['BURGERS', '#ffc9a8', '#8a4b2a'], ['TRATTORIA', CREAM, '#3c1814'], ['PIZZA', '#ffe28a', '#e63946'], ['NOODLES', '#bfe8d8', '#1d6b5a'], ['BAKERY', '#ffc4d0', '#7a2a4a']];
+const RESTS = [['TACOS', '#ffd166', '#e63946'], ['SUSHI', '#c6e2ff', '#2f4b8c'], ['BURGERS', '#ffc9a8', '#8a4b2a'], ['DINER', CREAM, '#3c1814'], ['PIZZA', '#ffe28a', '#e63946'], ['NOODLES', '#bfe8d8', '#1d6b5a'], ['BAKERY', '#ffc4d0', '#7a2a4a']];
 const rests = [];
 function restaurant(i, name, wall, accent) {
-  const hero = name === 'TRATTORIA';
+  const hero = name === 'DINER';
   const w = hero ? 11 : 6.8, h = hero ? 6 : 4.6, d = 7, x = -30 + i * 8 + (i > 3 ? 2 : 0) + (hero ? 0 : 0);
   const g = new THREE.Group();
   g.add(at(box(w, h, d, M(wall)), 0, h / 2, 0));
@@ -201,6 +201,8 @@ towerSign.add(at(textPlane('PARENT CO.', 7.4, 1.4, { bg: '#3c1814', fg: '#ffd166
 towerSign.children.forEach(m => { m.material.side = THREE.FrontSide; }); // each face reads only from its own side
 const ticker = new THREE.Mesh(new THREE.BufferGeometry(), M('#19c3b1', { emissive: '#0d7d72', emissiveIntensity: 0.4 })); tower.add(ticker);
 const tickerHead = sprite('STOCK ↑', 3.4, 1.0, { bg: '#19c3b1', fg: '#00332e', font: '900 96px Inter', radius: 50 }); tower.add(tickerHead);
+const bigLabels = [sprite('83× BIGGER', 5.2, 1.2, { bg: '#ffc94a', fg: '#3a2a00', font: '900 96px Inter', radius: 50, w: 700 }), sprite('> WALMART', 5.2, 1.2, { bg: '#ff9f5c', fg: '#3a1a00', font: '900 96px Inter', radius: 50, w: 700 })];
+bigLabels.forEach(l => tower.add(l));
 const towerCloud = cloud(2.4); towerCloud.position.set(34, 30, -12);
 onUpdate(t => {
   const b = beatOf(t);
@@ -223,6 +225,7 @@ onUpdate(t => {
     ticker.geometry.dispose(); ticker.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 160, 0.22, 8, false);
     tickerHead.position.copy(pts[pts.length - 1]).add(V(0, 1.4, 0));
   }
+  bigLabels.forEach((l, i) => { const lk = b === 8 ? easeOutBack((local(t, 8) - 1.6 - i * 0.9) / 0.4) : 0; l.visible = lk > 0.01; l.scale.set(5.2 * lk, 1.2 * lk, 1); l.position.set(i ? 9 : -9, 22 + i * 8 + (b === 8 ? local(t, 8) * 1.5 : 0), 6); });
 });
 
 // ---------- beat 4: chefs trade hats for aprons ----------
@@ -362,30 +365,42 @@ const earth = new THREE.Group(); scene.add(at(earth, 0, 46, -42));
     earth.add(ring); (earth.userData.rings ||= []).push(ring);
   }
 }
+const moon = mesh(new THREE.SphereGeometry(2.4, 32, 24), M('#e9e4d8', { roughness: 0.95 })); scene.add(at(moon, 15, 56, -50));
+for (let i = 0; i < 5; i++) { const cr = mesh(new THREE.CircleGeometry(0.3 + (i % 3) * 0.15, 16), M('#cfc8ba')); cr.position.set(Math.sin(i * 1.9) * 1.6, Math.cos(i * 1.3) * 1.6, 1.4 + (i % 2) * 0.3); cr.lookAt(cr.position.clone().multiplyScalar(2).add(moon.position.clone().negate().add(moon.position))); moon.add(cr); }
+const moonLabel = sprite('MOON', 2.4, 0.8, { bg: '#ffffff', fg: '#3c1814', font: '900 100px Inter', radius: 40 }); scene.add(at(moonLabel, 15, 60, -50));
+const chain = Array.from({ length: 34 }, () => { const s = mesh(stickGeo, stickMat); s.scale.setScalar(1.2); scene.add(s); return s; });
 onUpdate(t => {
-  const on = inBeat(t, 9); earth.visible = on; if (!on) return;
+  const on = inBeat(t, 9); earth.visible = on; moon.visible = on; moonLabel.visible = on; chain.forEach(c => c.visible = false); if (!on) return;
   const lt = local(t, 9); earth.scale.setScalar(Math.max(0.01, easeOutBack(lt / 0.7)));
+  const mk = easeOutBack((lt - 0.8) / 0.5); moon.scale.setScalar(Math.max(0.01, mk)); moonLabel.scale.set(2.4 * mk, 0.8 * mk, 1);
+  const reach = clamp((lt - 1.4) / 2.2);
+  chain.forEach((c, i) => {
+    const u = (i + 0.5) / chain.length; c.visible = u < reach;
+    const a = V(0, 46, -42).lerp(V(15, 56, -50), u); a.y += Math.sin(u * Math.PI) * 6 + Math.sin(t * 4 + i) * 0.2;
+    c.position.copy(a); c.rotation.set(0, 0, 0); c.lookAt(V(15, 56, -50)); c.rotateX(Math.PI / 2);
+  });
   earth.userData.globe.rotation.y = lt * 0.5; earth.userData.rings.forEach((r, i) => { r.rotation.y = lt * (i ? -0.7 : 0.9); });
 });
 
 // ---------- beat 11: the price creeps, the inspector knocks ----------
-const menuBoard = new THREE.Group(); scene.add(at(menuBoard, hero.x + 5.0, 0, -3.3));
+const menuBoard = new THREE.Group(); scene.add(at(menuBoard, hero.x + 5.0, 0, -2.2));
 onUpdate(t => { menuBoard.visible = !inBeat(t, 3); });
 menuBoard.add(at(box(0.12, 2.6, 0.12, M('#2f3a66')), 0, 1.3, 0));
-menuBoard.add(at(textPlane('MENU\npasta · soup · salad\nbreadsticks', 2.6, 2.0, { bg: CREAM, fg: '#3c1814', font: '900 56px Inter', radius: 18, border: '#3c1814', w: 512, h: 400, pad: 8 }), 0, 2.9, 0.08));
-const priceTag = sprite('$', 1.4, 0.9, { bg: TOMATO, fg: '#ffffff', font: '900 110px Inter', radius: 50 }); menuBoard.add(at(priceTag, 0, 4.6, 0.2));
-const PRICE_TEX = ['$', '$$', '$$$', '$$$$', '$$$$$'].map(s => sprite(s, 1.4 + s.length * 0.35, 0.9, { bg: TOMATO, fg: '#ffffff', font: '900 110px Inter', radius: 50 }));
-PRICE_TEX.forEach(s => { menuBoard.add(at(s, 0, 4.6, 0.2)); s.visible = false; });
+menuBoard.add(at(textPlane('LIFETIME\nPASTA PASS\n$500', 2.6, 2.0, { bg: CREAM, fg: '#3c1814', font: '900 56px Inter', radius: 18, border: '#3c1814', w: 512, h: 400, pad: 8 }), 0, 2.3, 0.08));
+const priceTag = sprite('$', 1.4, 0.9, { bg: TOMATO, fg: '#ffffff', font: '900 110px Inter', radius: 50 }); menuBoard.add(at(priceTag, 0, 4.0, 0.2));
+const PRICE_TEX = ['∞ PASTA', '∞ SOUP', '∞ SALAD', '∞ BREADSTICKS', 'FOR LIFE'].map(s => sprite(s, 1.6 + s.length * 0.22, 0.9, { bg: '#f4c430', fg: '#3a2a00', font: '900 100px Inter', radius: 50, w: 900 }));
+PRICE_TEX.forEach((s, i) => { menuBoard.add(at(s, 0, 4.0, 0.2)); s.visible = false; s.userData.len = ['∞ PASTA', '∞ SOUP', '∞ SALAD', '∞ BREADSTICKS', 'FOR LIFE'][i].length; });
 priceTag.visible = false;
-const inspector = person({ shirt: '#2f4b8c', hat: true, hatColor: '#2f4b8c' }); scene.add(inspector);
-const glass = new THREE.Group(); glass.add(mesh(new THREE.TorusGeometry(0.22, 0.04, 8, 20), M('#2f3a66')), at(mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4, 8), M('#2f3a66')), 0.3, -0.25, 0)); glass.children[1].rotation.z = -0.8; glass.position.set(0.42, 0.9, 0.2); inspector.add(glass);
+const inspector = person({ shirt: '#ff7aa2', hat: true, hatColor: '#ffc94a' }); scene.add(inspector);
+const glass = new THREE.Group(); glass.add(mesh(new THREE.BoxGeometry(0.9, 0.03, 0.5), M('#f4c430', { metalness: 0.5, roughness: 0.3 }))); glass.rotation.x = Math.PI / 2; glass.position.set(0.42, 1.0, 0.2); inspector.add(glass); // the golden pass held up high
 onUpdate(t => {
   const on = inBeat(t, 10); inspector.visible = on; PRICE_TEX.forEach(s => s.visible = false); if (!on) return;
   const lt = local(t, 10), idx = Math.min(4, Math.max(0, Math.floor((lt - 1.0) / 0.5) + 1));
-  const s = PRICE_TEX[lt < 1.0 ? 0 : idx]; s.visible = true; const pk = easeOutBack(((lt - 1.0) % 0.5) / 0.25); s.scale.set((1.4 + s.material.map.image.width / 160 * 0.0 + (lt < 1 ? 0 : idx) * 0.35) * (lt < 1 ? 1 : 0.9 + 0.1 * pk), 0.9 * (lt < 1 ? 1 : 0.9 + 0.1 * pk), 1);
-  const k = ease(lt / 2.6); inspector.position.set(lerp(hero.x + 8, hero.x + 1.2, k), 0.16, -3.3); inspector.rotation.y = k < 0.98 ? -Math.PI / 2 : Math.PI;
-  if (k < 0.98) walkPose(inspector, lt * 8); else { inspector.userData.legL.rotation.x = 0; inspector.userData.legR.rotation.x = 0; }
-  const knock = lt > 3.5 ? Math.abs(Math.sin((lt - 3.5) * 14)) * 0.25 : 0; inspector.userData.body.rotation.x = knock; inspector.userData.head.position.z = knock * 0.3;
+  const s = PRICE_TEX[lt < 1.0 ? 0 : idx]; s.visible = lt > 0.4; const pk = easeOutBack(((lt - 1.0) % 0.5) / 0.25), base = 1.6 + s.userData.len * 0.22;
+  s.scale.set(base * (lt < 1 ? easeOutBack((lt - 0.4) / 0.4) : 0.9 + 0.1 * pk), 0.9 * (lt < 1 ? easeOutBack((lt - 0.4) / 0.4) : 0.9 + 0.1 * pk), 1);
+  const k = ease(lt / 2.2); inspector.position.set(lerp(hero.x + 9, hero.x + 2.4, k), 0.16, -3.0); inspector.rotation.y = k < 0.98 ? -Math.PI / 2 : 0;
+  if (k < 0.98) walkPose(inspector, lt * 8); else hopPose(inspector, ((lt - 2.2) * 1.5) % 1);
+  glass.rotation.z = k < 0.98 ? 0 : Math.sin(lt * 10) * 0.4;
 });
 
 // ---------- beat 12: Italy, the last island of variety ----------
@@ -487,8 +502,8 @@ setShots([
   { p0: V(-12, 20, 14), p1: V(-4, 17, 12), t0: V(-6, 2, -1), t1: V(-4, 2, -1) },                           // 7 high angle, confetti
   { orbit: { c: V(50, 5, 0), r: 44, h: 18, a0: 2.2, a1: 1.3 } },                                           // 8 orbit the giant bowl
   { p0: V(66, 8, 22), p1: V(66, 44, 22), t0: V(34, 8, -12), t1: V(34, 40, -12) },                          // 9 crane up the tower
-  { p0: V(0, 48, 14), p1: V(0, 52, 34), t0: V(0, 46, -42), t1: V(0, 46, -42) },                            // 10 pull out from the little Earth
-  { p0: V(HX + 6, 9.5, 14), p1: V(HX + 5.5, 8.5, 12), t0: V(HX + 3, 2.8, -3.3), t1: V(HX + 3, 2.8, -3.3) }, // 11 close on the menu board
+  { p0: V(4, 48, 14), p1: V(6, 52, 34), t0: V(5, 49, -45), t1: V(6, 49, -45) },                            // 10 pull out from the little Earth
+  { p0: V(HX + 5, 5.6, 15), p1: V(HX + 4.8, 5.0, 12.5), t0: V(HX + 3.8, 2.6, -3.0), t1: V(HX + 3.8, 2.6, -3.0) }, // 11 close on the menu board
   { p0: V(-20, 14, -78), p1: V(-20, 11, -92), t0: V(-20, 3, -150), t1: V(-20, 3, -150) },                 // 12 wide over the water to Italy
   { p0: V(-6, 6, 14), p1: V(0, 52, 92), t0: V(-6, 4, 0), t1: V(-4, 6, -8) },                              // 13 pull back
   { p0: V(0, 15, 190), p1: V(0, 15, 190), t0: V(0, 4, 140), t1: V(0, 4, 140) },                           // end card
