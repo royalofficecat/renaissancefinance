@@ -37,6 +37,7 @@ function makeTexture(land, states) {
   return tex;
 }
 
+let ctex;
 function makePlume() {
   // Ribbon of Pacific moisture from the tropics to the California coast, 40 km above the surface
   const way = [[-172, 16], [-160, 20], [-148, 25], [-138, 30], [-130, 34.5], [-125, 37], [-121.5, 38.8], [-119.5, 39.6]];
@@ -82,7 +83,7 @@ function makePlume() {
   const cg = cc.getContext('2d'); const grd = cg.createRadialGradient(128, 128, 10, 128, 128, 128);
   grd.addColorStop(0, 'rgba(200,208,216,0.95)'); grd.addColorStop(0.45, 'rgba(180,190,200,0.55)'); grd.addColorStop(1, 'rgba(160,170,180,0)');
   cg.fillStyle = grd; cg.fillRect(0, 0, 256, 256);
-  const ctex = new THREE.CanvasTexture(cc); ctex.colorSpace = THREE.SRGBColorSpace;
+  ctex = new THREE.CanvasTexture(cc); ctex.colorSpace = THREE.SRGBColorSpace;
   const rnd = seeded(7);
   for (let i = 0; i < 70; i++) {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: ctex, transparent: true, depthWrite: false, opacity: 0.3, color: 0xB6BEC6 }));
@@ -108,8 +109,8 @@ export async function build(ctx) {
   group.add(atmosphere);
   group.add(makePlume());
   // a faint landfall glow where the plume meets the coast
-  landfall = new THREE.Mesh(new THREE.CircleGeometry(520, 48), new THREE.MeshBasicMaterial({ color: 0x2F7FC2, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  const lf = lonLatToVec(-122.5, 38.4, R + 20); landfall.position.copy(lf); landfall.lookAt(lf.clone().multiplyScalar(2));
+  landfall = new THREE.Sprite(new THREE.SpriteMaterial({ map: ctex, color: 0x2F7FC2, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  landfall.position.copy(lonLatToVec(-122.3, 38.6, R + 30)); landfall.scale.setScalar(1500);
   group.add(landfall);
 }
 
@@ -150,7 +151,7 @@ export function update(t, beat, ctx) {
     aim(camera, lerp(-136, -121.5, k), lerp(31, 37.3, k), lerp(4800, 2600, k) + bump, lerp(65.5, 54.4, k), lerp(-200, 150, k));
     plumeMat.uniforms.uStrength.value = lerp(0.9, 1.15, k);
     plumeMat.uniforms.uReach.value = lerp(0.9, 1.0, easeInOut(span(local, 0.5, 3)));
-    landfall.material.opacity = 0.35 * easeInOut(span(local, 1.5, 3.5));
+    landfall.material.opacity = 0.55 * easeInOut(span(local, 1.5, 3.5));
   } else {
     // end card: calm, slow drift, the plume gone
     const k = easeInOut(span(local, 0, 4));

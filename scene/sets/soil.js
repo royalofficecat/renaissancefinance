@@ -19,7 +19,7 @@ export async function build() {
   const p = geo.attributes.position;
   for (let i = 0; i < p.count; i++) p.setY(i, hillHeight(n, p.getX(i), p.getZ(i)));
   geo.computeVertexNormals();
-  const hill = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x6E7B8A, roughness: 0.75 })); hill.receiveShadow = hill.castShadow = true; group.add(hill);
+  const hill = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x55606C, roughness: 0.85 })); hill.receiveShadow = hill.castShadow = true; group.add(hill);
 
   // the cross-section cube: three layers on the sides, a shader "pore" face in front
   cube = new THREE.Group(); cube.position.set(0.9, 0.02, 1.0);
@@ -27,25 +27,25 @@ export async function build() {
   let y = 0;
   for (const [c, h] of layers) { const b = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE * h, CUBE), new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 })); b.position.y = (y + h / 2) * CUBE; b.castShadow = b.receiveShadow = true; cube.add(b); y += h; }
   poreMat = new THREE.ShaderMaterial({
-    uniforms: { uFill: { value: 0 }, uWater: { value: new THREE.Color(0x2F7FC2) } },
+    uniforms: { uFill: { value: 0 }, uWater: { value: new THREE.Color(0x24609A) } },
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
     fragmentShader: `
       uniform float uFill; uniform vec3 uWater; varying vec2 vUv;
       float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void main(){
         // soil grains: a jittered grid of rounded blobs; the gaps are the pores
-        vec2 g = vUv * vec2(18.0, 18.0); vec2 cell = floor(g); vec2 f = fract(g);
+        vec2 g = vUv * vec2(30.0, 30.0); vec2 cell = floor(g); vec2 f = fract(g);
         float d = 1.0;
         for (int i = -1; i <= 1; i++) for (int j = -1; j <= 1; j++) {
           vec2 o = vec2(float(i), float(j)); vec2 c = cell + o; vec2 jit = vec2(hash(c), hash(c + 7.0)) * 0.6 + 0.2;
-          d = min(d, length(f - o - jit) / (0.42 + 0.18 * hash(c + 3.0)));
+          d = min(d, length(f - o - jit) / (0.5 + 0.22 * hash(c + 3.0)));
         }
-        float grain = 1.0 - smoothstep(0.78, 0.92, d);
+        float grain = 1.0 - smoothstep(0.7, 0.88, d);
         float depthTone = mix(0.62, 0.95, vUv.y);
-        vec3 soil = mix(vec3(0.33, 0.30, 0.26), vec3(0.43, 0.46, 0.50), 1.0 - vUv.y) * depthTone;
-        vec3 pore = vec3(0.12, 0.12, 0.13);
+        vec3 soil = mix(vec3(0.36, 0.30, 0.24), vec3(0.47, 0.42, 0.36), 1.0 - vUv.y) * depthTone * 0.85;
+        vec3 pore = vec3(0.16, 0.14, 0.12);
         float wet = step(1.0 - uFill, vUv.y) * (1.0 - grain);           // pores fill from the top down
-        vec3 col = mix(pore, soil, grain); col = mix(col, uWater, wet * 0.95);
+        vec3 col = mix(pore, soil, grain); col = mix(col, uWater, wet * 0.85); col = mix(col, soil * 0.75, step(1.0 - uFill, vUv.y) * grain * 0.35);
         gl_FragColor = vec4(col, 1.0);
       }`
   });
@@ -72,15 +72,16 @@ export async function build() {
   for (let i = 0; i < 7; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.16 + rnd() * 0.1, 0.07, 0.12 + rnd() * 0.08), new THREE.MeshStandardMaterial({ color: 0x5B544A, roughness: 0.85 })); b.userData = { x: -1.8 + rnd() * 2.4, z: -1.5 + rnd() * 0.8, n: n2, rot: rnd() * 6, d: rnd() }; b.castShadow = true; slideBlocks.push(b); group.add(b); }
   const pineMat = new THREE.MeshStandardMaterial({ color: 0x5C6E66, roughness: 0.75 }), trunkMat = new THREE.MeshStandardMaterial({ color: 0x4A4640, roughness: 0.8 });
   for (let i = 0; i < 90; i++) { const x = (rnd() - 0.5) * 6.4, z = -3.2 + rnd() * 3.6; if (z > -0.3 && Math.abs(x) < 2.6 && z < 0.9) continue; const tr = makePine(0.08 + rnd() * 0.06, pineMat, trunkMat); tr.position.set(x, hillHeight(n2, x, z) - 0.01, z); group.add(tr); }
-  clouds = makeClouds(group, 33, 10, { x: [-3, 3], z: [-3, 1.5], h: [1.6, 2.0], size: [1.6, 2.8] });
+  clouds = makeClouds(group, 33, 8, { x: [-4, 4], z: [-6, -4.2], h: [1.4, 2.0], size: [1.8, 3.0] });
   rain = makeRain(group, 34, 1200, { x: [-3, 3], z: [-2.5, 2.5], h: 2.2, speed: 2.4, len: 0.05, slant: 0.01 });
 }
 
 export function update(t, beat, ctx) {
   const { camera, placeLights, lights } = ctx;
-  placeLights(new THREE.Vector3(0, 0.3, 0), 4.5); lights.key.castShadow = true;
+  placeLights(new THREE.Vector3(0, 0.3, 0), 4.5); lights.key.castShadow = true; lights.key.intensity = 1.9;
+  ctx.scene.fog = new THREE.Fog(0x2E3B4C, 6.5, 13);
   const local = t - beat.start;
-  rain.update(t, rainAmount(t)); driftClouds(clouds, t, 0.7);
+  rain.update(t, rainAmount(t)); driftClouds(clouds, t, 0.45);
   const target = new THREE.Vector3(), from = new THREE.Vector3();
   if (beat.id === 4) {
     // orbit 40 degrees around the cube while the pores fill from the top down
@@ -88,7 +89,7 @@ export function update(t, beat, ctx) {
     for (const r of runoff) r.scale.set(1, 0.001, 1), r.visible = false;
     riskBand.material.opacity = 0;
     const k = easeInOut(span(local, 0.9, 3.9));
-    const hd = lerp(-32, 8, k) * Math.PI / 180, elev = 16 * Math.PI / 180, dist = 1.75;
+    const hd = lerp(-32, 8, k) * Math.PI / 180, elev = 17 * Math.PI / 180, dist = 2.15;
     target.set(0.9, 0.3, 1.0);
     camera.position.copy(target).add(new THREE.Vector3(Math.sin(hd) * Math.cos(elev), Math.sin(elev), Math.cos(elev) * Math.cos(hd)).multiplyScalar(dist));
     camera.fov = 39.6;

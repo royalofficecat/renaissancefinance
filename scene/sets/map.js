@@ -82,7 +82,7 @@ function buildTerrain(states) {
         vec3 land = mix(uOutside, uLand, vMask);
         float high = smoothstep(1400.0, 3200.0, vElev);
         land = mix(land, vec3(0.70, 0.74, 0.78), high * 0.55);                       // high Sierra lighter
-        land = mix(land, uGreenC, uGreen * vMask * (1.0 - high) * smoothstep(-10.0, 60.0, vElev));
+        land = mix(land, uGreenC, uGreen * vMask * (1.0 - high) * smoothstep(-10.0, 60.0, vElev) * (1.0 - smoothstep(300.0, 900.0, vElev)) * (0.35 + 0.65 * vValley));
         land = mix(land, vec3(0.56, 0.60, 0.65), smoothstep(30.0, 0.0, vElev) * 0.35 * vMask); // shoreline gradient
         float ocean = 1.0 - smoothstep(0.0, 1.5, vElev);
         float flood = vValley * (1.0 - smoothstep(uLevel - 2.0, uLevel + 2.0, vRelief)) * step(0.01, uLevel);
@@ -222,13 +222,15 @@ const LABEL_SETS = {
   6: ['Sacramento', 'Fresno', 'Bakersfield', 'San Francisco', 'Los Angeles', 'Redding', 'Pacific Ocean', 'Sierra Nevada', 'Central Valley', 'Sacramento–San Joaquin Delta', 'Shasta Lake', 'Lake Oroville'],
   7: ['Sacramento', 'Fresno', 'Bakersfield', 'San Francisco', 'Los Angeles', 'Pacific Ocean', 'Sierra Nevada', 'Sacramento–San Joaquin Delta', 'Tulare Lake basin'],
   8: ['Fresno', 'Bakersfield', 'Los Angeles', 'Santa Ana', 'Santa Ana River', 'Farm', 'Grocery store', 'Route closed', 'Tulare Lake basin'],
-  10: ['Fresno', 'Bakersfield', 'Tulare Lake basin', 'Sierra Nevada'],
+  10: ['Fresno', 'Tulare Lake basin', 'Sierra Nevada'],
   12: ['Sacramento', 'San Francisco', 'Sacramento Valley', 'Sacramento–San Joaquin Delta', 'Pacific Ocean'],
   13: ['Sacramento', 'Fresno', 'Los Angeles', 'San Francisco', 'Pacific Ocean', 'Sierra Nevada', 'Central Valley'],
 };
 
 /** Camera: look at a map point from a distance, with tilt (0 = straight down) and heading (0 = north up). */
+let labelScale = 1;
 function aim(camera, lonLat, dist, tiltDeg, headingDeg, vfov) {
+  labelScale = Math.min(1, Math.max(0.3, dist / 1050)) * (vfov / 54.4);   // labels shrink as the camera comes closer
   const [x, y] = project(lonLat[0], lonLat[1]);
   const target = new THREE.Vector3(x, terrainHeight(x, -y), -y);
   const tilt = tiltDeg * Math.PI / 180, hd = headingDeg * Math.PI / 180;
@@ -245,7 +247,7 @@ export function update(t, beat, ctx) {
   const { camera, placeLights, lights } = ctx;
   placeLights(new THREE.Vector3(0, 0, -50), 820); lights.key.castShadow = true;
   const u = terrainMat.userData.u, local = t - beat.start, r = recovery(t);
-  u.uGreen.value = r * 0.75; u.uSepia.value = 0; u.uRim.value = 1; u.uHalo.value = 0.35;
+  u.uGreen.value = r * 0.55; u.uSepia.value = 0; u.uRim.value = 1; u.uHalo.value = 0.35;
   for (const m of lineMats) m.resolution.set(1080 * ctx.renderer.getPixelRatio(), 1920 * ctx.renderer.getPixelRatio());
   const route = group.getObjectByName('route'); route.visible = false;
   for (const name in labels) setLabelOpacity(labels[name], 0);
@@ -270,7 +272,7 @@ export function update(t, beat, ctx) {
   } else if (beat.id === 8) {
     // fly south and tilt: the route animates from farm to store and stops at the flooded stretch
     const k = easeInOut(span(local, 0.6, 3.2));
-    aim(camera, [lerp(-120.2, -118.9, k), lerp(36.8, 35.2, k)], lerp(1020, 520, k), lerp(1, 36, k), lerp(0, 12, k), 54.4);
+    aim(camera, [lerp(-120.2, -118.75, k), lerp(36.8, 35.0, k)], lerp(1020, 640, k), lerp(1, 34, k), lerp(0, 10, k), 54.4);
     u.uLevel.value = 40;
     route.visible = true;
     const prog = easeInOut(span(local, 0.8, 3.2)) * route.userData.floodU;
@@ -286,12 +288,15 @@ export function update(t, beat, ctx) {
   } else if (beat.id === 12) {
     // 1861-62: low hero angle up the Sacramento Valley, sepia flood, camera rising
     const k = easeInOut(span(local, 0.8, 5.6));
-    aim(camera, [-121.8, 39.0], lerp(430, 470, k), lerp(74, 64, k), 190, 73.7);
+    aim(camera, [-121.8, 39.1], lerp(520, 560, k), lerp(66, 58, k), 190, 73.7);
     u.uLevel.value = 40; u.uSepia.value = 0.8; u.uRim.value = 0.15; u.uGreen.value = 0;
+    ctx.scene.fog = new THREE.Fog(0x1A2434, 350, 950);
   } else if (beat.id === 13) {
     // resolution: wide pull-back as the flood recedes and the land greens
     const k = easeInOut(span(local, 0.6, 5.6));
     aim(camera, [-120.4, 37.3], lerp(900, 1750, k), lerp(42, 28, k), lerp(12, 0, k), 65.5);
-    u.uLevel.value = lerp(40, 10, easeInOut(span(local, 0.5, 5.5))); u.uRim.value = 0.2; u.uGreen.value = 0.75 + 0.25 * k;
+    u.uLevel.value = lerp(40, 10, easeInOut(span(local, 0.5, 5.5))); u.uRim.value = 0.2; u.uGreen.value = 0.5 + 0.15 * k;
   }
+  for (const name in labels) labels[name].scale.setScalar(labelScale);
+  for (const d of cityDots) d.scale.set(labelScale, 1, labelScale);
 }
