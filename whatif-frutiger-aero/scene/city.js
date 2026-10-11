@@ -244,7 +244,7 @@ const shareBoxes = [];
 // ---------- beat 7: broken things roll into the workshop and come out shiny ----------
 const fixItems = [];
 {
-  const toaster = new THREE.Group(); toaster.add(box(1.2, 0.9, 0.8, M('#8d99ae', { metalness: 0.5, roughness: 0.4 })); for (const sx of [-0.25, 0.25]) toaster.add(at(box(0.3, 0.1, 0.5, M('#333')), sx, 0.5, 0)); fixItems.push(toaster);
+  const toaster = new THREE.Group(); toaster.add(box(1.2, 0.9, 0.8, M('#8d99ae', { metalness: 0.5, roughness: 0.4 }))); for (const sx of [-0.25, 0.25]) toaster.add(at(box(0.3, 0.1, 0.5, M('#333')), sx, 0.5, 0)); fixItems.push(toaster);
   const lamp = new THREE.Group(); lamp.add(at(mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.4, 8), M('#8d99ae')), 0, 0.7, 0), at(mesh(new THREE.ConeGeometry(0.6, 0.6, 14, 1, true), M('#ffd166', { side: THREE.DoubleSide })), 0, 1.5, 0), at(mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.1, 14), M('#8d99ae')), 0, 0.05, 0)); fixItems.push(lamp);
   const bike = new THREE.Group(); for (const bx of [-0.7, 0.7]) { const wh = mesh(new THREE.TorusGeometry(0.45, 0.07, 8, 20), M('#333')); bike.add(at(wh, bx, 0.45, 0)); } bike.add(at(box(1.2, 0.08, 0.08, M('#e63946')), 0, 0.7, 0), at(box(0.08, 0.6, 0.08, M('#e63946')), 0.3, 0.95, 0)); fixItems.push(bike);
   fixItems.forEach(it => { it.visible = false; scene.add(it); });
@@ -392,7 +392,7 @@ onUpdate(t => { const on = beatOf(t) === 13; endSet.visible = on; if (!on) retur
 
 // ---------- cameras ----------
 setShots([
-  { p0: V(-10, 40, 64), p1: V(-8, 34, 52), t0: V(-6, 6, -8), t1: V(-6, 6, -8) },                                // 1 wide push-in as the gloss sweeps
+  { p0: V(-10, 62, 98), p1: V(-8, 54, 82), t0: V(-6, 8, -10), t1: V(-6, 8, -10) },                                // 1 wide push-in as the gloss sweeps
   { p0: V(-70, 6, 14), p1: V(-20, 6, 14), t0: V(-50, 8, -12), t1: V(0, 9, -12) },                                // 2 dolly past the glass row
   { p0: V(-30, 4, 16), p1: V(-26, 26, 14), t0: V(-28, 6, -12), t1: V(-26, 21, -12) },                             // 3 crane up to the rooftops
   { p0: V(-18.5, 3.4, 10.5), p1: V(-19.5, 3.0, 9.5), t0: V(-23.5, 2.6, 3.9), t1: V(-23.5, 3.0, 3.9) },           // 4 porch meter and the bill
