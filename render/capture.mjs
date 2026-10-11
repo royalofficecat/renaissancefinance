@@ -15,6 +15,7 @@ const opt = (name, def) => { const i = args.indexOf('--' + name); return i >= 0 
 const FPS = 30, TOTAL = 64 * FPS;
 const PR = Number(opt('pr', 2));
 const SAFE = !!opt('safe', false);
+const RESUME = !!opt('resume', false);     // skip frames whose PNG already exists
 
 let frames = [], outDir = opt('out', null), mode = 'frames';
 if (opt('styleframes', false)) { mode = 'style'; frames = [1.5, 29.5, 46.4].map(s => Math.round(s * FPS)); outDir ??= 'out/styleframes'; }
@@ -41,9 +42,10 @@ if (err) { console.error('scene failed to load:\n' + err); process.exit(1); }
 const t0 = Date.now();
 for (let i = 0; i < frames.length; i++) {
   const n = frames[i];
+  const file = `${outDir}/${mode === 'frames' ? 'f' + String(n).padStart(5, '0') : 't' + (n / FPS).toFixed(2).replace('.', '_')}.png`;
+  if (RESUME && existsSync(file)) continue;
   try { await page.evaluate(n => window.__render(n), n); }
   catch (e) { console.error('render failed at frame', n, '-', e.message.split('\n')[0]); if (errors.length) console.error('console so far:\n  ' + [...new Set(errors)].join('\n  ').slice(0, 3000)); process.exit(1); }
-  const file = `${outDir}/${mode === 'frames' ? 'f' + String(n).padStart(5, '0') : 't' + (n / FPS).toFixed(2).replace('.', '_')}.png`;
   await page.screenshot({ path: file, type: 'png', animations: 'disabled', caret: 'hide' });
   if (i % 10 === 0 || i === frames.length - 1) {
     const el = (Date.now() - t0) / 1000, per = el / (i + 1);
