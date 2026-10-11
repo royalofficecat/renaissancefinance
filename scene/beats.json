@@ -69,9 +69,9 @@
         2,
         4
       ],
-      "visual": "Fly-to: the camera follows the plume down through the cloud deck and emerges over the California relief map.",
+      "visual": "Fly-to: the camera dives toward California and the relief map blooms in through soft cloud shapes.",
       "camera": {
-        "shot": "Fly-to: zoom in along the plume, cloud pass, settle over California",
+        "shot": "Fly-to: dive along the plume, dissolve, settle over California",
         "lens": "50 → 35 mm",
         "reason": "Carries the viewer from the Pacific source to the destination"
       },
@@ -585,7 +585,7 @@
       "end": 1920,
       "set": "endcard",
       "point": "End card",
-      "endCard": "California's next big\ninvestment: more water\nstorage—or more room\nfor rivers?",
+      "endCard": "California's next big\ninvestment: more water\nstorage or more room\nfor rivers?",
       "visual": "The scene dims behind a large neutral question.",
       "camera": {
         "shot": "Hold, slow drift",

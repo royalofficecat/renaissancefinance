@@ -49,7 +49,7 @@ ACES filmic tone mapping · bloom only on the brightest highlights (threshold 1.
 
 - Every move eases in and out (cubic or sine). Nothing moves linearly.
 - Objects arrive on a damped spring with about 6% overshoot (reservoir rises, pins, panels).
-- The camera travels on smooth curved paths and **never cuts mid-move**. Scene changes happen either as a map fly-to (zoom out, pan, zoom in) or as a pass through a cloud bank that fills the frame, accompanied by a whoosh.
+- The camera travels on smooth curved paths and **never cuts mid-move**. Scene changes are either a map fly-to (zoom out, pan, zoom in) or a 0.8 s dissolve: the outgoing shot, already at rest, pushes in about 8% while the next shot blooms in from the centre through soft cloud-shaped openings. Nothing opaque covers the frame, and a soft whoosh plays.
 - The camera holds still for at least 0.5 s whenever a new caption lands.
 - Text: words rise 24 px and fade in with a 40 ms stagger (in 450 ms, out 250 ms). No spins, bounces or letter-by-letter reveals.
 

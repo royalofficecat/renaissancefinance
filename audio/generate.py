@@ -364,10 +364,10 @@ def sfx():
             elif cue == "reveal-boom":
                 place(buf, s, boom(2.6, 55), 0.5)
                 place(buf, s + int(0.05 * SR), bell(81, 2.5), 0.2)
-    # Whoosh on every cloud-bank transition (peaks on the cut frame)
+    # Soft whoosh on every scene dissolve, peaking at the dissolve's midpoint (4 frames before the cut)
     for cut in (228, 300, 420, 660, 1320, 1440, 1620):
-        d = 1.0
-        place(buf, fr(cut) - int(d * 0.6 * SR), whoosh(d, 350, 2800), 0.45, pan=0.2)
+        d = 1.1
+        place(buf, fr(cut - 4) - int(d * 0.6 * SR), whoosh(d, 300, 2200), 0.34, pan=0.2)
     # Pops when objects arrive on screen (springs in the scene)
     for f, p in [(1100, 660), (1108, 740), (1135, 520), (1262, 880)] + [(1640 + 4 * i, 990 + 60 * i) for i in range(5)]:
         place(buf, fr(f), pop(p), 0.22, pan=0.25)

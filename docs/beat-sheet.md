@@ -9,7 +9,7 @@ The day counter (“Day 12 / 30 · illustrative scenario”) is an imagined time
 | # | Time | On-screen text (caption, key number in bold) | Stat panel (counts up) | Camera | Sound | Source |
 |---|---|---|---|---|---|---|
 | 1 | 0:00.0–0:06.0 | **Title:** What if California got 30 days of extreme rain?<br>At first, everyone celebrates. Then the water keeps rising | **30 days** a storm sequence scientists simulated in a 2022 study | Establishing wide, slow orbit east (35 mm). _Why:_ Shows where in the world the water comes from | rain-bed-in @0:00.0, whoosh-soft @0:02.0, ticks @0:00.3 | F1 |
-| 2 | 0:06.0–0:10.0 | Atmospheric rivers bring about **30–50%** of West Coast precipitation | **30–50%** of yearly West Coast precipitation · NOAA | Fly-to: zoom in along the plume, cloud pass, settle over California (50 → 35 mm). _Why:_ Carries the viewer from the Pacific source to the destination | whoosh-map @0:06.5, ticks @0:06.3 | F2 |
+| 2 | 0:06.0–0:10.0 | Atmospheric rivers bring about **30–50%** of West Coast precipitation | **30–50%** of yearly West Coast precipitation · NOAA | Fly-to: dive along the plume, dissolve, settle over California (50 → 35 mm). _Why:_ Carries the viewer from the Pacific source to the destination | whoosh-map @0:06.5, ticks @0:06.3 | F2 |
 | 3 | 0:10.0–0:14.0 | Reservoirs rise fast. Shasta Lake can hold **4.55 million** acre-feet | **4.55 million** acre-feet: Shasta Lake's capacity 1 acre-foot ≈ 326,000 gallons · USBR | Slow push-in toward Shasta Dam and the rising shoreline (50 mm). _Why:_ Lets the viewer watch the waterline creep up | water-swell @0:10.0, ticks @0:10.3 | F3, F4 |
 | 4 | 0:14.0–0:18.0 | Winter 2022–23 brought **9** atmospheric rivers in just 3 weeks | **9** atmospheric rivers, Dec 26 2022 – Jan 17 2023 · NOAA | Slow push-in on the soil cross-section (50 mm). _Why:_ Builds tension as the soil runs out of room | rain-heavy @0:14.0, soil-gulp @0:16.3 | F5 |
 | 5 | 0:18.0–0:22.0 | Soaked slopes can slide. That winter, **700+** landslides were reported | **700+** landslides reported, winter 2022–23 · NOAA, USGS | Orbit around the hillside block (35 mm). _Why:_ Shows the slope in 3d and where the water goes | rush-rise @0:18.0, warning-tone @0:19.3 | F6 |
@@ -21,12 +21,12 @@ The day counter (“Day 12 / 30 · illustrative scenario”) is an imagined time
 | 11 | 0:44.0–0:48.0 | In 2023, California recharged about **4.1 million** acre-feet underground | **4.1 million** acre-feet of managed recharge, water year 2023 · DWR | Crane down from the basin into the cross-section (35 → 50 mm). _Why:_ Follows the water underground, where it becomes useful | clear-shimmer @0:44.0, piano-in @0:44.0, ticks @0:44.3 | F13 |
 | 12 | 0:48.0–0:54.0 | **Title:** California has seen something like this before<br>In 1861–62, about **45 days** of storms flooded the Sacramento Valley | **45 days** of storms. The state capital moved to San Francisco, Jan–May 1862 | Low hero angle, slow rise (24 mm). _Why:_ Gives the history its weight: the big reveal | reveal-boom @0:48.0, ticks @0:48.9 | F14 |
 | 13 | 0:54.0–1:00.0 | **Title:** Thirty days of rain could change California<br>How we make room for water changes what happens next | **1,000+ acres** of basins soak Santa Ana River water into the ground · OCWD | Crane up from the Santa Ana basins to the whole state (35 → 24 mm). _Why:_ Ends wide and open: the choice is statewide | whoosh-soft @0:54.0, ticks @0:54.9 | F15 |
-| end | 1:00.0–1:04.0 | **End card:** California's next big investment: more water storage—or more room for rivers? |  | Hold, slow drift (24 mm). _Why:_ Gives the question room to land | button-note @1:00.0 |  |
+| end | 1:00.0–1:04.0 | **End card:** California's next big investment: more water storage or more room for rivers? |  | Hold, slow drift (24 mm). _Why:_ Gives the question room to land | button-note @1:00.0 |  |
 
 ## What each beat shows
 
 - **1 · Hook:** Night-blue globe. A glowing moisture plume streams from near Hawaii to California within 2 s.
-- **2 · 1 · The rain feels like a gift:** Fly-to: the camera follows the plume down through the cloud deck and emerges over the California relief map.
+- **2 · 1 · The rain feels like a gift:** Fly-to: the camera dives toward California and the relief map blooms in through soft cloud shapes.
 - **3 · 1 · The rain feels like a gift:** Real-terrain diorama of Shasta Lake. The shoreline climbs the canyons while dry grey hills turn green.
 - **4 · 2 · The ground can't keep up:** Cut-away block of hillside. Rain falls in pulses and the soil cross-section fills with water from the top down.
 - **5 · 2 · The ground can't keep up:** Runoff sheets downhill into the creek and street. Slide-prone slope outlined in amber; a small empty-hillside slump.

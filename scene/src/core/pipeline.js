@@ -1,5 +1,5 @@
 // Rendering pipeline: scene -> bloom -> filmic tone mapping -> vignette + grain,
-// then crisp map labels (no tone mapping, exact neutral colours), then the cloud-bank wipe.
+// then crisp map labels (no tone mapping, exact neutral colours). Scene changes dissolve between two such frames.
 // The canvas is rendered at 2x pixel density; the browser scales it down 2:1 (a 2x2 box filter).
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -36,26 +36,24 @@ const FinishShader = {
     }`,
 };
 
-const WipeShader = {
-  uniforms: { uCover: { value: 0 }, uTime: { value: 0 }, uAspect: { value: 1080 / 1920 }, uDir: { value: new THREE.Vector2(0, 1) } },
+// Scene-to-scene dissolve: the outgoing frame pushes in gently while the incoming frame blooms in
+// from the centre through soft, cloud-shaped openings. Nothing opaque covers the frame.
+const DissolveShader = {
+  uniforms: { tA: { value: null }, tB: { value: null }, uP: { value: 0 }, uZoomA: { value: 1 }, uAspect: { value: 1080 / 1920 }, uTime: { value: 0 } },
   vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
   fragmentShader: /* glsl */ `
-    uniform float uCover, uTime, uAspect; uniform vec2 uDir; varying vec2 vUv;
+    uniform sampler2D tA, tB; uniform float uP, uZoomA, uAspect, uTime; varying vec2 vUv;
     ${NOISE_GLSL}
     void main() {
-      if (uCover <= 0.0) discard;
-      vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
-      // Two cloud layers rushing past at different speeds give the feeling of flying through.
-      float a = fbm(p * 2.4 + uDir * uTime * 1.6 + 3.0);
-      float b = fbm(p * 4.3 + uDir * uTime * 2.7 + 11.0);
-      float dens = 0.62 * a + 0.38 * b;
-      float th = mix(1.05, -0.25, uCover);
-      float alpha = smoothstep(th - 0.10, th + 0.10, dens);
-      // Soft top-left light on the cloud bank (storm grey family, sRGB)
-      float lit = clamp(0.5 + (fbm(p * 2.4 + uDir * uTime * 1.6 + 3.0 + vec2(-0.04, 0.05)) - a) * 9.0, 0.0, 1.0);
-      vec3 dark = vec3(0.30, 0.34, 0.39), light = vec3(0.70, 0.74, 0.78);
-      vec3 col = mix(dark, light, 0.35 + 0.65 * lit * smoothstep(0.2, 0.9, dens));
-      gl_FragColor = vec4(col, alpha);
+      vec3 a = texture2D(tA, (vUv - 0.5) / uZoomA + 0.5).rgb;
+      vec3 b = texture2D(tB, vUv).rgb;
+      vec2 q = (vUv - 0.5) * vec2(uAspect, 1.0);
+      float n = fbm(q * 2.3 + vec2(0.0, uTime * 0.25) + 5.0);
+      float radial = length(q * vec2(1.0, 0.75)) * 1.4;
+      float v = 0.55 * radial + 0.45 * n;
+      // v spans ~0.1-0.7: the reveal travels across that whole range at an even pace, each pixel fading softly
+      float m = smoothstep(v - 0.2, v + 0.2, mix(-0.1, 0.92, uP));
+      gl_FragColor = vec4(mix(a, b, m), 1.0);
     }`,
 };
 
@@ -86,11 +84,17 @@ export class Pipeline {
     // Bloom only needs a blurry glow: run it at quarter resolution (same look, ~4x cheaper).
     this.bloom.setSize(width / 2, height / 2);
 
-    this.wipeScene = new THREE.Scene();
-    this.wipeMat = new THREE.ShaderMaterial({ ...WipeShader, uniforms: THREE.UniformsUtils.clone(WipeShader.uniforms), transparent: true, depthTest: false, depthWrite: false });
-    const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.wipeMat);
+    // Two full-resolution snapshots of the canvas for scene-to-scene dissolves
+    this.texA = new THREE.FramebufferTexture(width * dpr, height * dpr);
+    this.texB = new THREE.FramebufferTexture(width * dpr, height * dpr);
+    for (const t of [this.texA, this.texB]) { t.minFilter = t.magFilter = THREE.LinearFilter; t.colorSpace = THREE.NoColorSpace; }
+    this.blendScene = new THREE.Scene();
+    this.blendMat = new THREE.ShaderMaterial({ ...DissolveShader, uniforms: THREE.UniformsUtils.clone(DissolveShader.uniforms), depthTest: false, depthWrite: false });
+    this.blendMat.uniforms.tA.value = this.texA;
+    this.blendMat.uniforms.tB.value = this.texB;
+    const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.blendMat);
     quad.frustumCulled = false;
-    this.wipeScene.add(quad);
+    this.blendScene.add(quad);
     this.orthoCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   }
 
@@ -99,9 +103,8 @@ export class Pipeline {
    * @param {THREE.Scene} o.scene, o.labels
    * @param {THREE.Camera} o.camera
    * @param {number} o.frame
-   * @param {number} o.cover  cloud wipe coverage 0..1
    */
-  render({ scene, camera, labels, frame, cover = 0, wipeTime = 0, bloom = 0.25, exposure = 1.0, vignette = 0.25 }) {
+  render({ scene, camera, labels, frame, bloom = 0.25, exposure = 1.0, vignette = 0.25 }) {
     const r = this.renderer;
     this.renderPass.scene = scene;
     this.renderPass.camera = camera;
@@ -115,12 +118,23 @@ export class Pipeline {
     r.autoClear = false;
     r.toneMapping = THREE.NoToneMapping;
     if (labels) r.render(labels, camera);
-    if (cover > 0) {
-      this.wipeMat.uniforms.uCover.value = cover;
-      this.wipeMat.uniforms.uTime.value = wipeTime;
-      r.render(this.wipeScene, this.orthoCam);
-    }
     r.autoClear = true;
+    r.toneMapping = THREE.ACESFilmicToneMapping;
+  }
+
+  /** Dissolve from frame A to frame B (p = 0..1); A keeps pushing in by `zoomA`. */
+  blend(outA, outB, { frame, p, zoomA = 1 }) {
+    const r = this.renderer;
+    this.render({ ...outA, frame });
+    r.copyFramebufferToTexture(this.texA);
+    this.render({ ...outB, frame });
+    r.copyFramebufferToTexture(this.texB);
+    const u = this.blendMat.uniforms;
+    u.uP.value = p;
+    u.uZoomA.value = zoomA;
+    u.uTime.value = frame / 30;
+    r.toneMapping = THREE.NoToneMapping;
+    r.render(this.blendScene, this.orthoCam);
     r.toneMapping = THREE.ACESFilmicToneMapping;
   }
 }

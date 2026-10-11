@@ -38441,9 +38441,9 @@ var beats_default = {
         2,
         4
       ],
-      visual: "Fly-to: the camera follows the plume down through the cloud deck and emerges over the California relief map.",
+      visual: "Fly-to: the camera dives toward California and the relief map blooms in through soft cloud shapes.",
       camera: {
-        shot: "Fly-to: zoom in along the plume, cloud pass, settle over California",
+        shot: "Fly-to: dive along the plume, dissolve, settle over California",
         lens: "50 \u2192 35 mm",
         reason: "Carries the viewer from the Pacific source to the destination"
       },
@@ -38957,7 +38957,7 @@ var beats_default = {
       end: 1920,
       set: "endcard",
       point: "End card",
-      endCard: "California's next big\ninvestment: more water\nstorage\u2014or more room\nfor rivers?",
+      endCard: "California's next big\ninvestment: more water\nstorage or more room\nfor rivers?",
       visual: "The scene dims behind a large neutral question.",
       camera: {
         shot: "Hold, slow drift",
@@ -39820,28 +39820,24 @@ var FinishShader = {
     }`
   )
 };
-var WipeShader = {
-  uniforms: { uCover: { value: 0 }, uTime: { value: 0 }, uAspect: { value: 1080 / 1920 }, uDir: { value: new Vector2(0, 1) } },
+var DissolveShader = {
+  uniforms: { tA: { value: null }, tB: { value: null }, uP: { value: 0 }, uZoomA: { value: 1 }, uAspect: { value: 1080 / 1920 }, uTime: { value: 0 } },
   vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
   fragmentShader: (
     /* glsl */
     `
-    uniform float uCover, uTime, uAspect; uniform vec2 uDir; varying vec2 vUv;
+    uniform sampler2D tA, tB; uniform float uP, uZoomA, uAspect, uTime; varying vec2 vUv;
     ${NOISE_GLSL}
     void main() {
-      if (uCover <= 0.0) discard;
-      vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0);
-      // Two cloud layers rushing past at different speeds give the feeling of flying through.
-      float a = fbm(p * 2.4 + uDir * uTime * 1.6 + 3.0);
-      float b = fbm(p * 4.3 + uDir * uTime * 2.7 + 11.0);
-      float dens = 0.62 * a + 0.38 * b;
-      float th = mix(1.05, -0.25, uCover);
-      float alpha = smoothstep(th - 0.10, th + 0.10, dens);
-      // Soft top-left light on the cloud bank (storm grey family, sRGB)
-      float lit = clamp(0.5 + (fbm(p * 2.4 + uDir * uTime * 1.6 + 3.0 + vec2(-0.04, 0.05)) - a) * 9.0, 0.0, 1.0);
-      vec3 dark = vec3(0.30, 0.34, 0.39), light = vec3(0.70, 0.74, 0.78);
-      vec3 col = mix(dark, light, 0.35 + 0.65 * lit * smoothstep(0.2, 0.9, dens));
-      gl_FragColor = vec4(col, alpha);
+      vec3 a = texture2D(tA, (vUv - 0.5) / uZoomA + 0.5).rgb;
+      vec3 b = texture2D(tB, vUv).rgb;
+      vec2 q = (vUv - 0.5) * vec2(uAspect, 1.0);
+      float n = fbm(q * 2.3 + vec2(0.0, uTime * 0.25) + 5.0);
+      float radial = length(q * vec2(1.0, 0.75)) * 1.4;
+      float v = 0.55 * radial + 0.45 * n;
+      // v spans ~0.1-0.7: the reveal travels across that whole range at an even pace, each pixel fading softly
+      float m = smoothstep(v - 0.2, v + 0.2, mix(-0.1, 0.92, uP));
+      gl_FragColor = vec4(mix(a, b, m), 1.0);
     }`
   )
 };
@@ -39871,11 +39867,19 @@ var Pipeline = class {
     this.composer.addPass(new OutputPass());
     this.composer.addPass(this.finish);
     this.bloom.setSize(width / 2, height / 2);
-    this.wipeScene = new Scene();
-    this.wipeMat = new ShaderMaterial({ ...WipeShader, uniforms: UniformsUtils.clone(WipeShader.uniforms), transparent: true, depthTest: false, depthWrite: false });
-    const quad = new Mesh(new PlaneGeometry(2, 2), this.wipeMat);
+    this.texA = new FramebufferTexture(width * dpr, height * dpr);
+    this.texB = new FramebufferTexture(width * dpr, height * dpr);
+    for (const t of [this.texA, this.texB]) {
+      t.minFilter = t.magFilter = LinearFilter;
+      t.colorSpace = NoColorSpace;
+    }
+    this.blendScene = new Scene();
+    this.blendMat = new ShaderMaterial({ ...DissolveShader, uniforms: UniformsUtils.clone(DissolveShader.uniforms), depthTest: false, depthWrite: false });
+    this.blendMat.uniforms.tA.value = this.texA;
+    this.blendMat.uniforms.tB.value = this.texB;
+    const quad = new Mesh(new PlaneGeometry(2, 2), this.blendMat);
     quad.frustumCulled = false;
-    this.wipeScene.add(quad);
+    this.blendScene.add(quad);
     this.orthoCam = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
   }
   /**
@@ -39883,9 +39887,8 @@ var Pipeline = class {
    * @param {THREE.Scene} o.scene, o.labels
    * @param {THREE.Camera} o.camera
    * @param {number} o.frame
-   * @param {number} o.cover  cloud wipe coverage 0..1
    */
-  render({ scene, camera, labels, frame, cover: cover2 = 0, wipeTime = 0, bloom = 0.25, exposure = 1, vignette = 0.25 }) {
+  render({ scene, camera, labels, frame, bloom = 0.25, exposure = 1, vignette = 0.25 }) {
     const r = this.renderer;
     this.renderPass.scene = scene;
     this.renderPass.camera = camera;
@@ -39899,12 +39902,22 @@ var Pipeline = class {
     r.autoClear = false;
     r.toneMapping = NoToneMapping;
     if (labels) r.render(labels, camera);
-    if (cover2 > 0) {
-      this.wipeMat.uniforms.uCover.value = cover2;
-      this.wipeMat.uniforms.uTime.value = wipeTime;
-      r.render(this.wipeScene, this.orthoCam);
-    }
     r.autoClear = true;
+    r.toneMapping = ACESFilmicToneMapping;
+  }
+  /** Dissolve from frame A to frame B (p = 0..1); A keeps pushing in by `zoomA`. */
+  blend(outA, outB, { frame, p, zoomA = 1 }) {
+    const r = this.renderer;
+    this.render({ ...outA, frame });
+    r.copyFramebufferToTexture(this.texA);
+    this.render({ ...outB, frame });
+    r.copyFramebufferToTexture(this.texB);
+    const u = this.blendMat.uniforms;
+    u.uP.value = p;
+    u.uZoomA.value = zoomA;
+    u.uTime.value = frame / 30;
+    r.toneMapping = NoToneMapping;
+    r.render(this.blendScene, this.orthoCam);
     r.toneMapping = ACESFilmicToneMapping;
   }
 };
@@ -40913,17 +40926,12 @@ var SCHEDULE = [
   [1620, 1920, "map"]
 ];
 var CUTS = SCHEDULE.slice(1).map((s) => s[0]);
-function wipe(f2) {
-  let cover2 = 0, t = 0;
-  for (const c of CUTS) {
-    const d = Math.abs(f2 - (c - 0.5));
-    const k = 1 - smoothstep2(3.5, 15, d);
-    if (k > cover2) {
-      cover2 = k;
-      t = (f2 - c) / 30;
-    }
-  }
-  return { cover: cover2, t };
+var T_BEFORE = 16;
+var T_AFTER = 8;
+var setNameAt = (f2) => (SCHEDULE.find(([a2, b]) => f2 >= a2 && f2 < b) || SCHEDULE[SCHEDULE.length - 1])[2];
+function transitionAt(f2) {
+  for (const c of CUTS) if (f2 >= c - T_BEFORE && f2 < c + T_AFTER) return { c, p: prog(f2, c - T_BEFORE - 1, c + T_AFTER) };
+  return null;
 }
 async function fontsReady() {
   const faces = ["400 52px VideoSerif", "700 52px VideoSerif", "italic 400 30px VideoSerif", "italic 700 30px VideoSerif"];
@@ -40955,14 +40963,28 @@ async function boot() {
   let last = null;
   function renderFrame(f2) {
     overlay.update(f2);
-    const name = (SCHEDULE.find(([a2, b]) => f2 >= a2 && f2 < b) || SCHEDULE[SCHEDULE.length - 1])[2];
-    const set = sets[name] || sets.map;
     const avoid = overlay.rects();
-    const out = set.frame(f2, { avoid });
-    const w = wipe(f2);
-    pipe.render({ ...out, frame: f2, cover: w.cover, wipeTime: w.t });
+    const tr = transitionAt(f2);
+    let name, labels;
+    if (!tr) {
+      name = setNameAt(f2);
+      const set = sets[name] || sets.map;
+      const out = set.frame(f2, { avoid });
+      pipe.render({ ...out, frame: f2 });
+      labels = set.labels && set.labels.visible ? set.labels.visible() : [];
+    } else {
+      const nA = setNameAt(tr.c - 1), nB = setNameAt(tr.c);
+      const A = sets[nA] || sets.map, B = sets[nB] || sets.map;
+      const outA = A.frame(Math.min(f2, tr.c - 1), { avoid });
+      const labA = A.labels && A.labels.visible ? A.labels.visible().map((l) => ({ ...l, opacity: l.opacity * (1 - tr.p) })) : [];
+      const outB = B.frame(Math.max(f2, tr.c), { avoid });
+      const labB = B.labels && B.labels.visible ? B.labels.visible().map((l) => ({ ...l, opacity: l.opacity * tr.p })) : [];
+      pipe.blend(outA, outB, { frame: f2, p: tr.p, zoomA: 1 + 0.08 * ease.inOutSine(tr.p) });
+      name = `${nA}>${nB}`;
+      labels = [...labA, ...labB];
+    }
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px2);
-    last = { frame: f2, set: name, cover: +w.cover.toFixed(3), labels: set.labels && set.labels.visible ? set.labels.visible() : [], panels: avoid };
+    last = { frame: f2, set: name, transition: tr ? +tr.p.toFixed(3) : 0, labels, panels: avoid };
     return last;
   }
   window.__video = {
