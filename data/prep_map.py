@@ -7,7 +7,7 @@ Inputs (downloaded into data/raw/, not in git):
 
 Outputs (data/build/):
   - ca_height.i16 + ca_meta.json  heights in metres on a California Albers (EPSG:3310) grid
-  - ca_masks.png                  R = land, G = California, B = illustrative flood arrival, A = reservoirs
+  - ca_masks.png                  R = land, G = California (soft edge), B = illustrative flood arrival; ca_lakes.png = reservoirs
   - ca_vectors.json               rivers, reservoirs, cities, watersheds, Santa Ana River, all in Albers metres
   - globe_land.png                equirectangular land mask for the globe
 
@@ -338,7 +338,27 @@ def main():
     print(f"illustrative flood: valley floor {valley.sum() * RES * RES / 1e6:.0f} km2, final cover {cover_km2:.0f} km2")
 
     lake_mask = rasterize([Polygon(l["pts"]) for l in lakes])
-    masks = np.dstack([land, ca, flood_u8, lake_mask])
+    # Extra layers: R = Delta levees (edge of the below-sea-level islands), G = ocean distance from shore,
+    # B = valley floor (soft)
+    delta_box = (lon_g > -121.95) & (lon_g < -121.2) & (lat_g > 37.75) & (lat_g < 38.45)
+    below = (height < 0.5) & (land > 128) & delta_box
+    # Smooth the island outlines and drop specks so the levee rings read as clean shapes
+    below = ndimage.gaussian_filter(below.astype(np.float32), 1.6) > 0.5
+    lab_b, nb = ndimage.label(below)
+    sizes = ndimage.sum(below, lab_b, range(1, nb + 1))
+    below = np.isin(lab_b, [i + 1 for i, sz in enumerate(sizes) if sz >= 40])
+    edge = below & ~ndimage.binary_erosion(below, iterations=1)
+    levee = np.clip(1 - ndimage.distance_transform_edt(~edge) / 1.6, 0, 1)
+    ocean_dist = ndimage.distance_transform_edt(land < 128) * RES / 1000
+    shore = np.clip(ocean_dist / 80, 0, 1)
+    valley_soft = ndimage.gaussian_filter(valley.astype(np.float32), 2.0)
+    ca_soft = ndimage.gaussian_filter((ca > 128).astype(np.float32), 1.2)
+    extra = np.dstack([(levee * 255), (shore * 255), (valley_soft * 255)]).astype(np.uint8)
+    Image.fromarray(extra).save(BUILD / "ca_extra.png")
+    print("delta levee cells", int(edge.sum()))
+    # Note: no data in alpha channels; browsers may zero colour where alpha is 0.
+    masks = np.dstack([land, (ca_soft * 255).astype(np.uint8), flood_u8])
+    Image.fromarray(lake_mask).save(BUILD / "ca_lakes.png")
     Image.fromarray(masks).save(BUILD / "ca_masks.png")
     np.clip(np.round(height), -32000, 32000).astype("<i2").tofile(BUILD / "ca_height.i16")
     meta = {"crs": "EPSG:3310 (NAD83 / California Albers)", "x0": X0, "x1": X1, "y0": Y0, "y1": Y1, "res": RES, "nx": NX, "ny": NY,
@@ -366,7 +386,12 @@ def main():
             g = shape(f["geometry"])
             for p in g.geoms if isinstance(g, MultiPolygon) else [g]:
                 d.polygon([((x + 180) / 360 * W, (90 - y) / 180 * H) for x, y in p.exterior.coords], fill=0)
-    img.save(BUILD / "globe_land.png")
+    ca_img = Image.new("L", (W, H), 0)
+    dc = ImageDraw.Draw(ca_img)
+    ca_ll = shape([f for f in states if f["properties"]["name"] == "California"][0]["geometry"])
+    for p in ca_ll.geoms if isinstance(ca_ll, MultiPolygon) else [ca_ll]:
+        dc.polygon([((x + 180) / 360 * W, (90 - y) / 180 * H) for x, y in p.exterior.coords], fill=255)
+    Image.merge("RGB", (img, ca_img, Image.new("L", (W, H), 0))).save(BUILD / "globe_land.png")
 
 
 if __name__ == "__main__":

@@ -143,11 +143,11 @@
       "camera": { "shot": "Crane up from the Santa Ana basins to the whole state", "lens": "35 → 24 mm", "reason": "Ends wide and open: the choice is statewide" },
       "sound": [{ "at": 0, "cue": "whoosh-soft" }, { "at": 30, "cue": "ticks" }],
       "sources": ["F15"],
-      "legend": [{ "swatch": "highlight", "text": "Recharge basins" }, { "swatch": "outline", "text": "Santa Ana River watershed" }]
+      "legend": [{ "swatch": "highlight", "text": "Recharge basins" }, { "swatch": "outline-highlight", "text": "Santa Ana River watershed" }]
     },
     {
       "id": "end", "start": 1800, "end": 1920, "set": "endcard", "point": "End card",
-      "endCard": "California's next big investment:\nmore water storage—or more room\nfor rivers?",
+      "endCard": "California's next big\ninvestment: more water\nstorage—or more room\nfor rivers?",
       "visual": "The scene dims behind a large neutral question.",
       "camera": { "shot": "Hold, slow drift", "lens": "24 mm", "reason": "Gives the question room to land" },
       "sound": [{ "at": 0, "cue": "button-note" }],

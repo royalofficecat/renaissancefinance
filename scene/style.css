@@ -1,0 +1,66 @@
+/* One font family for everything. Liberation Serif is the metric-matched stand-in for
+   Times New Roman (see docs/style-bible.md). Loaded from local files only. */
+@font-face { font-family: 'VideoSerif'; src: url('fonts/LiberationSerif-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'VideoSerif'; src: url('fonts/LiberationSerif-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'VideoSerif'; src: url('fonts/LiberationSerif-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'VideoSerif'; src: url('fonts/LiberationSerif-BoldItalic.ttf') format('truetype'); font-weight: 700; font-style: italic; }
+
+:root {
+  --text: #F4F1EA;
+  --text-2: #BFB8AC;
+  --panel: rgba(26, 24, 22, 0.82);
+  --edge: #4A4540;
+  --endcard-bg: #12110F;
+  --deep-blue: #0B1E33;
+}
+
+html, body { margin: 0; padding: 0; background: var(--deep-blue); overflow: hidden; }
+* { box-sizing: border-box; }
+
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--deep-blue);
+  font-family: 'VideoSerif'; color: var(--text); font-kerning: normal; text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased; }
+#gl { position: absolute; inset: 0; width: 1080px; height: 1920px; display: block; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+
+.panel { position: absolute; background: var(--panel); border: 1.5px solid var(--edge); border-radius: 26px;
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25); opacity: 0; will-change: opacity, transform; }
+
+.w { display: inline-block; white-space: pre; will-change: opacity, transform; }
+.line { display: block; white-space: nowrap; }
+
+/* Title: bold 80, line height 1.1 */
+#title { left: 48px; top: 154px; width: 900px; padding: 24px 34px 28px; font-weight: 700; font-size: 80px; line-height: 1.1; letter-spacing: -0.005em; }
+
+/* Caption: regular 52, line height 1.25, key number bold */
+#caption { left: 48px; bottom: 384px; width: 900px; padding: 26px 34px 30px; font-size: 52px; line-height: 1.25; }
+#caption b, #title b { font-weight: 700; }
+
+/* Stats panel: number regular 72 (tabular figures), label italic 30 */
+#stat { left: 48px; top: 154px; padding: 18px 30px 22px; max-width: 610px; }
+#stat .num { font-size: 72px; line-height: 1.05; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+#stat .lab { margin-top: 6px; font-size: 30px; line-height: 1.25; font-style: italic; color: var(--text-2); white-space: pre; }
+
+/* Scenario day chip */
+#day { top: 154px; right: 132px; padding: 16px 26px 18px; text-align: right; }
+#day .d { font-size: 34px; line-height: 1.15; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+#day .s { font-size: 28px; line-height: 1.2; font-style: italic; color: var(--text-2); white-space: nowrap; }
+
+/* Legend: swatches carry colour, text stays neutral */
+#legend { left: 48px; padding: 16px 26px 18px; font-size: 28px; line-height: 1.25; color: var(--text-2); }
+#legend .row { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+#legend .row + .row { margin-top: 8px; }
+#legend .sw { width: 30px; height: 22px; border-radius: 6px; flex: none; }
+#legend .sw.outline { background: transparent !important; border: 3px dashed; }
+#legend .tag { margin-top: 10px; font-style: italic; font-size: 28px; }
+
+/* End card: large bold neutral type */
+#endcard { left: 48px; width: 900px; top: 0; padding: 46px 44px 54px; font-weight: 700; font-size: 78px; line-height: 1.1; text-align: left; }
+
+/* Debug overlay for the app-safe zones (?safe=1) */
+#safe .zone { position: absolute; background: rgba(255, 40, 80, 0.28); outline: 2px dashed rgba(255, 60, 90, 0.9); outline-offset: -2px; }
+#safe .top { left: 0; top: 0; width: 1080px; height: 154px; }
+#safe .bottom { left: 0; bottom: 0; width: 1080px; height: 384px; }
+#safe .right { right: 0; top: 0; width: 130px; height: 1920px; }
+#safe .zlabel { position: absolute; font: italic 24px 'VideoSerif'; color: #fff; background: rgba(0,0,0,.5); padding: 2px 8px; }

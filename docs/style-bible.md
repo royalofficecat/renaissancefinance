@@ -56,7 +56,7 @@ ACES filmic tone mapping · bloom only on the brightest highlights (threshold 0.
 ## 6. Type and layout
 
 - **Font:** Times New Roman isn't installed and can't legally be bundled, so we use **Liberation Serif**, its metric-matched open-licence twin (identical letter widths). It is loaded from `scene/fonts/` for both the web text and the 3d labels. Drop a licensed `TimesNewRoman*.ttf` into that folder and the pipeline will use it instead.
-- **Scale:** title Bold 80 / line height 1.1 · caption Regular 52 / 1.25 with the key number Bold · stat number Regular 72 (tabular figures) · stat label Italic 30 · map labels Regular 30 (water names Italic 30) · end card Bold 84.
+- **Scale:** title Bold 80 / line height 1.1 · caption Regular 52 / 1.25 with the key number Bold · stat number Regular 72 (tabular figures) · stat label Italic 30 · map labels Regular 30 (water names Italic 30) · end card Bold 78.
 - **Captions:** one idea, at most 2 lines of about 36 characters (hard limit 38), sentence case, no full stop at the end, and on screen for at least (words ÷ 3) seconds.
 - **Safe zones (1080 × 1920):** all text sits between y = 154 and y = 1536 and left of x = 950. Panels run from x = 48 to x = 948. A debug overlay (`?safe=1`) draws these zones.
 - **Fixed slots:** title or stats panel at the top left, scenario day-chip at the top right, legend under the stats panel, caption panel bottom-anchored at y = 1536. The middle of the frame is kept clear for the 3d scene.
