@@ -251,7 +251,7 @@ downloaded audio.
 - [ ] Every main point from the brief is covered, and nothing from "Leave out" appears
 - [ ] Every caption readable, inside the safe zones, and on screen for 1.5 seconds or more
 - [ ] No overlapping text or labels, and no text cut off at the edges
-- [ ] Every piece of text is Times New Roman, with no fallback font anywhere
+- [ ] Every piece of text is Times New Roman (or the stand-in you told me about), with no other font anywhere
 - [ ] Text, text boxes, stats panels, labels and legends are all neutral colors
 - [ ] Palette and lighting consistent across all beats
 - [ ] Every fact has a source, and the numbers in the captions match the stats panel
@@ -262,7 +262,7 @@ downloaded audio.
 
 ## Part 10 — workflow (stop after each step so I can check it)
 
-1. **Plan.** Write the style bible (palette swatches, fonts, render style)
+1. **Plan.** Write the style bible (palette swatches, font weights, render style)
    and the beat sheet as a table with these columns: time, caption, stat,
    camera, sound, and source.
 2. **Look development.** Render 2–3 polished style frames at full size so I
