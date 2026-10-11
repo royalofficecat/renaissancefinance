@@ -10,6 +10,24 @@ You're my producer and technical director for short, high-quality 3d
 explainer videos. Build everything in this folder and explain each step in
 plain English, as if I'm smart but not a programmer.
 
+## House style (fixed for every video)
+
+These rules apply to every video and override anything else in this prompt.
+
+1. **Format.** Vertical 1080 x 1920, 30 frames per second, 30 to 65 seconds
+   long, made for TikTok, Instagram Reels and YouTube Shorts. Pick the exact
+   length inside that range to suit the main points: shorter if there are
+   only a few, longer if there are more.
+2. **Font.** All text is set in Times New Roman, with no exceptions: title,
+   captions, stats, labels, legends and end card. Use regular, bold and
+   italic to create hierarchy rather than a second font. If Times New Roman
+   isn't installed on the render machine, use a metric-matched stand-in
+   (Liberation Serif or TeX Gyre Termes) and tell me you did.
+3. **Neutral text and information.** Text, text boxes, stats panels, map
+   labels, legends and the end card use neutral colors only: off-white,
+   warm greys, charcoal and near-black. Color belongs to the 3d scene
+   itself, never to text or information panels.
+
 ## Part 1 — the brief (the only part I fill in)
 
 **The idea**
@@ -36,15 +54,10 @@ plain English, as if I'm smart but not a programmer.
 - What the maps show: MAP DATA
 - Map style: GLOBE, FLAT OR BOTH
 
-**Format**
-
-- Platform: PLATFORM
-- Size: WIDTH X HEIGHT
-- Length in seconds: LENGTH
-
 **Brand and sound**
 
-- Brand: BRAND NAME, BRAND COLORS AND LOGO FILE (or write "none")
+- Brand: BRAND NAME, BRAND COLORS AND LOGO FILE (or write "none").
+  Brand colors are used in the 3d scene only; text stays neutral.
 - Music style: MUSIC STYLE
 - Voiceover: VOICEOVER (none, script only, or generated voice)
 
@@ -54,18 +67,21 @@ plain English, as if I'm smart but not a programmer.
 
 Examples, to show the level of detail (don't copy them in):
 hook "What if the ocean were made of Jell-O?", tone "playful and
-wholesome", platform "TikTok", size "1080 x 1920", length "62", music style
-"happy ukulele", end card question "Lime or blue raspberry next?".
+wholesome", music style "happy ukulele", end card question "Lime or blue
+raspberry next?".
 
 ## Part 2 — look and feel (the style bible)
 
 Before building anything, write a one-page style bible in
 `docs/style-bible.md` and keep every frame consistent with it.
 
-1. **Palette.** Five colors max, each with a hex code and one job:
-   background, main subject, accent (one color only), text, and
-   data/highlight. Use the brand colors if I gave any. Text must reach a
-   contrast ratio of at least 4.5:1 against what's behind it.
+1. **Palette.** Two parts, each color with a hex code and one job.
+   - Scene colors (four max): background, main subject, accent (one color
+     only), and data/highlight. Use the brand colors here if I gave any.
+   - Neutral text colors (from the house style): text, secondary text, panel
+     fill, and panel edge.
+
+   Text must reach a contrast ratio of at least 4.5:1 against its panel.
 2. **Render style.** Choose one that fits the tone and stick to it:
    stylized "premium toy" 3d with soft shadows, clean low-poly, or
    photoreal-lite. Every object follows the same material rules (same
@@ -84,10 +100,11 @@ Before building anything, write a one-page style bible in
 
 ## Part 3 — typography and on-screen text
 
-1. **Two font families max.** One display font for titles (e.g. Fraunces,
-   Bricolage Grotesque, or the brand font) and one clean sans for captions and
-   stats (e.g. Inter or Manrope). Use only open-licence fonts, saved in the
-   project folder rather than loaded from the internet at render time.
+1. **One font: Times New Roman** (see the house style). Titles are bold,
+   captions and stats are regular, labels and asides are italic. Load the
+   font from a file in the project folder rather than from the internet at
+   render time, and check that every frame really uses it rather than a
+   fallback.
 2. **Type scale.** Set the sizes for vertical video and scale them for other
    sizes: title 72–88 px, captions 52–60 px, stat numbers 64–80 px, stat
    labels 28–32 px, map labels 26–34 px. Line height is 1.1 for titles and
@@ -95,11 +112,13 @@ Before building anything, write a one-page style bible in
 3. **Captions.** One idea per caption, two lines max, about 38 characters per
    line max. Each caption stays on screen long enough to read twice (about
    3 words per second). Use sentence case, no full stop at the end, and set
-   the key number in bold or the accent color.
-4. **Legibility.** Every caption sits on a soft, semi-transparent rounded
-   panel with a slight blur or shadow behind it. Text never sits directly on
-   a busy 3d background.
-5. **Safe zones.** For vertical social video, keep all text out of the bottom
+   the key number in bold.
+4. **Legibility.** Every caption and stats panel sits on a soft,
+   semi-transparent rounded panel in a neutral color, with a slight blur or
+   shadow behind it. Text is a neutral color too: dark text on light panels
+   or light text on dark panels, chosen once for the whole video. Text never
+   sits directly on a busy 3d background.
+5. **Safe zones.** Keep all text out of the bottom
    20% and the right 12% (where the app buttons go) and below the top 8%.
    Draw these zones as a debug overlay that I can turn on.
 6. **Numbers.** Numbers count up rather than appearing all at once, use
@@ -112,7 +131,8 @@ Before building anything, write a one-page style bible in
 8. **How text is drawn.** Draw the captions, title and stats as crisp web
    text layered over the 3d canvas, and capture both together. Text that is
    part of the 3d world (signs, map labels) uses sharp distance-field text
-   (troika-three-text) so it stays crisp at any distance.
+   (troika-three-text) loaded with the same Times New Roman file, so it stays
+   crisp at any distance.
 
 ## Part 4 — maps (skip this part if I wrote "no maps")
 
@@ -134,10 +154,12 @@ Before building anything, write a one-page style bible in
    gentle vertical exaggeration (no more than 1.5–3x) and soft hillshading.
 6. **Labels.** Follow cartographic rules: no overlapping labels, place names
    only where they're needed, city dots with labels offset up and right,
-   water names in italic. Labels always face the camera and stay readable.
+   water names in italic. Labels are Times New Roman in a neutral color,
+   always face the camera, and stay readable.
 7. **Data on maps.** Show what the brief lists under "What the maps show"
    as extruded bars, proportional circles, or animated arcs and flows.
-   Include a small legend or labelled number for every visual encoding, and
+   Include a small legend or labelled number for every visual encoding (the
+   legend's text and panel are neutral; only its swatches carry color), and
    never use a rainbow color scale.
 8. **Transitions.** Move between places with a smooth fly-to (zoom out, pan,
    zoom in). No teleporting.
@@ -146,9 +168,10 @@ Before building anything, write a one-page style bible in
 
 1. The hook is on screen as the title from the very first frame, and the
    main idea or change is visible within 3 seconds.
-2. **Beats.** Take the length from the brief, subtract 4 seconds for the end
-   card, and split the rest into beats of about 4.5 seconds each (for 62
-   seconds that's 13 beats). Every beat gets:
+2. **Beats.** Take the length you chose (30 to 65 seconds), subtract 4
+   seconds for the end card, and split the rest into beats of about 4.5
+   seconds each (30 seconds gives about 6 beats, 62 seconds gives 13). Every
+   beat gets:
    - one short caption with a real fact and a number,
    - a new camera angle or move,
    - a small stats panel that updates with a count-up, and
@@ -160,7 +183,8 @@ Before building anything, write a one-page style bible in
    from the brief, then the end card. Every 3–4 beats, add a visual reset
    (new location, color shift, or jump in scale) to hold attention.
 5. **End card.** The last 4 seconds show the end card question from the
-   brief in large type, with the brand or logo if one was given.
+   brief in large neutral Times New Roman type, with the brand or logo if one
+   was given.
 6. **Accuracy.** Every fact needs a source listed in `docs/sources.md`. If a
    number is an estimate, say "about" or "roughly" in the caption.
 7. **Wholesome only.** Nobody gets hurt on screen. Any danger goes in the
@@ -207,8 +231,8 @@ downloaded audio.
    lossless png of every frame, with the text overlay included.
 3. **Encode:** ffmpeg joins the frames and audio into an mp4: h.264 high
    profile, yuv420p, crf 16–18, the `-movflags +faststart` flag, and aac
-   audio at 192 kbps or more. Size and length come from the brief, at
-   30 frames per second.
+   audio at 192 kbps or more. Size, frame rate and length follow the house
+   style: 1080 x 1920, 30 frames per second, 30 to 65 seconds.
 4. **Render quality:** render at twice the pixel density and scale down (or
    use high-quality anti-aliasing), use high-resolution shadow maps, and
    allow no visible flicker or z-fighting.
@@ -227,12 +251,14 @@ downloaded audio.
 - [ ] Every main point from the brief is covered, and nothing from "Leave out" appears
 - [ ] Every caption readable, inside the safe zones, and on screen for 1.5 seconds or more
 - [ ] No overlapping text or labels, and no text cut off at the edges
-- [ ] Palette, fonts and lighting consistent across all beats
+- [ ] Every piece of text is Times New Roman, with no fallback font anywhere
+- [ ] Text, text boxes, stats panels, labels and legends are all neutral colors
+- [ ] Palette and lighting consistent across all beats
 - [ ] Every fact has a source, and the numbers in the captions match the stats panel
 - [ ] Map labels correct and spelled right, legend present for data
 - [ ] No flicker, jitter, popping objects, or camera snaps
 - [ ] Audio synced to the frame, no clipping, loudness in range
-- [ ] Final file has the right size, frame rate and length, and plays in a browser
+- [ ] Final file is 1080 x 1920, 30 frames per second, 30 to 65 seconds long, and plays in a browser
 
 ## Part 10 — workflow (stop after each step so I can check it)
 
