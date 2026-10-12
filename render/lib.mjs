@@ -50,7 +50,7 @@ export function chromePath() {
   return path.join(base, dir, 'chrome-linux/chrome');
 }
 
-export async function openPage(port, { dpr = 2, safe = false, video = '' } = {}) {
+export async function openPage(port, { dpr = 2, safe = false, video = '', query = '' } = {}) {
   const browser = await chromium.launch({
     executablePath: chromePath(),
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--force-color-profile=srgb',
@@ -60,7 +60,7 @@ export async function openPage(port, { dpr = 2, safe = false, video = '' } = {})
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
-  await page.goto(`http://127.0.0.1:${port}${videoPaths(video).page}?dpr=${dpr}${safe ? '&safe=1' : ''}`);
+  await page.goto(`http://127.0.0.1:${port}${videoPaths(video).page}?dpr=${dpr}${safe ? '&safe=1' : ''}${query ? '&' + query : ''}`);
   await page.waitForFunction(() => window.__videoReady || window.__videoError, null, { timeout: 600000 });
   const err = await page.evaluate(() => window.__videoError);
   if (err) throw new Error('scene failed to load:\n' + err);

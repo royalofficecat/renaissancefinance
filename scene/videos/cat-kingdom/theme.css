@@ -1,0 +1,12 @@
+/* Cat video theme: dark text on light, see-through panels (docs/cat-kingdom/style-bible.md).
+   Same font files, sizes and layout as the shared stylesheet; only the neutral colours change. */
+:root {
+  --text: #1D1A17;
+  --text-2: #5B544C;
+  --panel: rgba(248, 244, 236, 0.88);
+  --edge: #D6CCBD;
+  --endcard-bg: #E9E3D8;
+  --deep-blue: #3F86AE;
+}
+.panel { box-shadow: 0 10px 30px rgba(40, 30, 20, 0.16), 0 2px 6px rgba(40, 30, 20, 0.12); }
+#safe .zlabel { color: #fff; }

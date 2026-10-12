@@ -84,24 +84,25 @@ export function environment(renderer) {
  * @param {THREE.Scene} scene
  * @param {object} o  { size: shadow half-extent, dist: light distance, target: Vector3 }
  */
-export function rig(scene, renderer, { size = 10, dist = 30, target = new THREE.Vector3(), intensity = 2.6, env = false, envIntensity = 0.45, keyDir = [-0.55, 0.64, 0.54], rimDir = [0.35, 0.45, -1] } = {}) {
-  const key = new THREE.DirectionalLight(KEY_COOL, intensity);
+export function rig(scene, renderer, { size = 10, dist = 30, target = new THREE.Vector3(), intensity = 2.6, env = false, envIntensity = 0.45, keyDir = [-0.55, 0.64, 0.54], rimDir = [0.35, 0.45, -1],
+  keyColor = KEY_COOL, fillSky = '#A9BCD3', fillGround = '#5C5650', fillK = 0.35, rimColor = '#DDE6F0', rimK = 0.6, mapSize = 4096 } = {}) {
+  const key = new THREE.DirectionalLight(keyColor, intensity);
   keyDir = new THREE.Vector3(...keyDir).normalize(); // default: upper left, about 40 degrees high
   rimDir = new THREE.Vector3(...rimDir).normalize();
   key.position.copy(target).addScaledVector(keyDir, dist);
   key.target.position.copy(target);
   key.castShadow = true;
-  key.shadow.mapSize.set(4096, 4096);
+  key.shadow.mapSize.set(mapSize, mapSize);
   Object.assign(key.shadow.camera, { left: -size, right: size, top: size, bottom: -size, near: 0.1, far: dist * 2.5 });
   key.shadow.bias = -0.0004;
   key.shadow.normalBias = 0.02 * size / 10;
   key.shadow.radius = 4;
   scene.add(key, key.target);
 
-  const fill = new THREE.HemisphereLight('#A9BCD3', '#5C5650', intensity * 0.35);
+  const fill = new THREE.HemisphereLight(fillSky, fillGround, intensity * fillK);
   scene.add(fill);
 
-  const rim = new THREE.DirectionalLight('#DDE6F0', intensity * 0.6);
+  const rim = new THREE.DirectionalLight(rimColor, intensity * rimK);
   rim.position.copy(target).addScaledVector(rimDir, dist);
   rim.target.position.copy(target);
   scene.add(rim, rim.target);
@@ -121,7 +122,7 @@ export function rig(scene, renderer, { size = 10, dist = 30, target = new THREE.
       rim.position.copy(t).addScaledVector(rimDir, dist);
       rim.target.position.copy(t);
       Object.assign(key.shadow.camera, { left: -sz, right: sz, top: sz, bottom: -sz });
-      key.shadow.normalBias = (sz * 2 / 4096) * 1.5;
+      key.shadow.normalBias = (sz * 2 / mapSize) * 1.5;
       key.shadow.bias = -0.0006;
       key.shadow.camera.updateProjectionMatrix();
     },

@@ -34,9 +34,10 @@ function fmtNumber(v, decimals, grouping = true) {
 }
 
 export class Overlay {
-  /** @param {object} opts  { swatches: {name: css colour} } — legend swatch colours for this video */
+  /** @param {object} opts  { swatches: {name: css colour}, lateCount: [beat ids] } — per-video legend colours and timing */
   constructor(beatsDoc, opts = {}) {
     this.swatches = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: '#C9D0D6', 'outline-highlight': HEX.green, ...(opts.swatches || {}) };
+    this.lateCount = opts.lateCount || [12, 13]; // beats whose count-up waits for the camera to settle
     this.beats = beatsDoc.beats;
     this.total = beatsDoc.totalFrames;
     this.el = Object.fromEntries(['title', 'stat', 'day', 'legend', 'caption', 'endcard'].map((k) => [k, document.getElementById(k)]));
@@ -141,7 +142,7 @@ export class Overlay {
       const pin = ease.outCubic(prog(t, 0.2, 0.55));
       const pout = ease.inCubic(prog(t, tOut, tOut + OUT));
       this.setPanel(stat, pin * (1 - pout), (1 - pin) * 14);
-      const tc = b.id === 12 || b.id === 13 ? 0.95 : 0.35; // count starts as the panel lands
+      const tc = b.stat.countAt ?? (this.lateCount.includes(b.id) ? 0.95 : 0.35); // count starts as the panel lands
       this.setStatText(b, ease.outCubic(prog(t, tc, tc + 0.9)));
     } else this.setPanel(stat, 0);
 
