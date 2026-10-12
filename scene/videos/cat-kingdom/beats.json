@@ -3,7 +3,7 @@
   "bpm": 120,
   "framesPerBar": 60,
   "totalFrames": 1920,
-  "note": "Single source of truth for timing, text, stats, camera and sound. docs/cat-kingdom/beat-sheet.md is generated from this file. Captions use **bold** for the key number and \\n for the line break. FACT placeholders are filled after the fact-check.",
+  "note": "Single source of truth for timing, text, stats, camera and sound. docs/cat-kingdom/beat-sheet.md is generated from this file. Captions use **bold** for the key number and \\n for the line break. Every real-world number is sourced in docs/cat-kingdom/sources.md.",
   "intro": "The story is fictional; every real-world number is sourced (codes point to `docs/cat-kingdom/sources.md`). The “Day 1 · fictional … Year 5” chip is the invented timeline of the reign. The whole video happens on one tabletop California: miniature cities and cut-away buildings stand at their real locations, and the camera flies between them over the map (no teleporting). Only the final kitchen is a cut.",
   "resets": "Office interior (1–2) · flat statewide map (3) · close-up door (4) · fly to San Francisco (5) · Los Angeles (6) · a lab interior (7) · the Central Valley (8) · back to Sacramento (9) · Orange County from above (10) · colour shift to green sanctuaries (11) · Palm Springs (12) · jump in scale to the whole state (13) · cut to one kitchen at evening (14).",
   "beats": [
@@ -17,11 +17,11 @@
       "caption": "They didn't conquer us.\nWe kept opening the door",
       "stat": {
         "parts": [
-          39
+          39.6
         ],
-        "decimals": 0,
+        "decimals": 1,
         "template": "{0} million",
-        "label": "Californians, about\nCA Dept. of Finance"
+        "label": "Californians, about\nCA Dept. of Finance, 2026"
       },
       "dayText": "Day 1 · fictional",
       "visual": "Governor's office in a cut-away Capitol on the tabletop map. A ginger cat sits in the governor's chair, in a patch of sun; a human waits patiently with a folder. The paw seal hangs on the wall.",
@@ -45,7 +45,7 @@
         }
       ],
       "sources": [
-        "FACT-population"
+        "C1"
       ]
     },
     {
@@ -54,7 +54,7 @@
       "end": 300,
       "place": "Sacramento",
       "point": "1 · The takeover begins with attention",
-      "caption": "FACT-sleep",
+      "caption": "Cats sleep **12–16 hours** a day,\noften on our keyboards",
       "stat": {
         "parts": [
           12,
@@ -62,7 +62,7 @@
         ],
         "decimals": 0,
         "template": "{0}–{1} hours",
-        "label": "of sleep a day,\ntypical adult cat"
+        "label": "of sleep a day, typical\nadult cat · VCA Hospitals"
       },
       "dayText": "Day 3 · fictional",
       "visual": "Open-plan state office: cats asleep on keyboards and in desk chairs; people work around them, one happily typing on a sliver of keyboard.",
@@ -82,7 +82,7 @@
         }
       ],
       "sources": [
-        "FACT-sleep"
+        "C2"
       ]
     },
     {
@@ -91,14 +91,14 @@
       "end": 420,
       "place": "Statewide",
       "point": "1 · The takeover begins with attention",
-      "caption": "FACT-cats",
+      "caption": "Roughly **8 million** cats sat by doors,\nall at once",
       "stat": {
         "parts": [
-          0
+          8
         ],
-        "decimals": 1,
+        "decimals": 0,
         "template": "{0} million",
-        "label": "pet cats in California\n(estimate)"
+        "label": "pet cats in California\n(rough estimate · AVMA data)"
       },
       "dayText": "Day 12 · fictional",
       "visual": "Visual reset: flat top-down map of California. In one frame, tiny terracotta cats appear at doors across every city, all turning their heads at once (the one deliberate snap).",
@@ -118,7 +118,7 @@
         }
       ],
       "sources": [
-        "FACT-cats"
+        "C3"
       ]
     },
     {
@@ -127,14 +127,14 @@
       "end": 540,
       "place": "Sacramento",
       "point": "1 · The takeover begins with attention",
-      "caption": "FACT-spending",
+      "caption": "We comply: US pet spending hit\n**$158 billion** last year",
       "stat": {
         "parts": [
-          152
+          158
         ],
         "decimals": 0,
         "template": "${0} billion",
-        "label": "spent on US pets\nin a year · APPA"
+        "label": "spent on US pets\nin 2025 · APPA"
       },
       "dayText": "Day 13 · fictional",
       "visual": "A front door: a person opens it, the cat looks out and does not move; the paw seal stamps 'OPEN', then 'CLOSE'. The person closes it, smiling.",
@@ -158,7 +158,7 @@
         }
       ],
       "sources": [
-        "FACT-spending"
+        "C4"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "end": 660,
       "place": "San Francisco",
       "point": "2 · California becomes a giant cat house",
-      "caption": "FACT-warmth",
+      "caption": "Cats are comfiest at **30–38 °C**, so\nsunny windows rule",
       "stat": {
         "parts": [
           30,
@@ -175,7 +175,7 @@
         ],
         "decimals": 0,
         "template": "{0}–{1} °C",
-        "label": "a cat's comfort zone\n(about 86–100 °F)"
+        "label": "a cat's comfort zone\n(86–100 °F) · Stella & Croney"
       },
       "dayText": "Month 3 · fictional",
       "visual": "Fly-to San Francisco: hillside streets rebuilt with shaded climbing routes, rooftop walkways and glowing sunny windows; cats in every sun patch.",
@@ -199,7 +199,7 @@
         }
       ],
       "sources": [
-        "FACT-warmth"
+        "C5"
       ],
       "legend": [
         {
@@ -219,14 +219,14 @@
       "end": 780,
       "place": "Los Angeles",
       "point": "2 · California becomes a giant cat house",
-      "caption": "FACT-freeway",
+      "caption": "Gardens on top; about **290,000**\ndaily cars run below",
       "stat": {
         "parts": [
-          0
+          290000
         ],
         "decimals": 0,
         "template": "{0}",
-        "label": "vehicles a day on the 405\n(now underneath) · Caltrans"
+        "label": "vehicles a day, I-405 Sepulveda\nPass (pre-pandemic) · LA Metro"
       },
       "dayText": "Month 5 · fictional",
       "visual": "Fly-to Los Angeles: a freeway interchange whose decks are ribbons of gardens, scratching columns and warm resting platforms; small blue human trains run underneath.",
@@ -250,7 +250,7 @@
         }
       ],
       "sources": [
-        "FACT-freeway"
+        "C6"
       ],
       "legend": [
         {
@@ -270,14 +270,14 @@
       "end": 900,
       "place": "Silicon Valley + Hollywood",
       "point": "3 · A new economy emerges",
-      "caption": "FACT-hearing",
+      "caption": "Hollywood makes bird videos.\nCats hear up to **79 kHz**",
       "stat": {
         "parts": [
-          64
+          79
         ],
         "decimals": 0,
         "template": "{0} kHz",
-        "label": "top of a cat's hearing\n(people: about 20 kHz)"
+        "label": "top of a cat's hearing\n(people: about 18 kHz)"
       },
       "dayText": "Month 8 · fictional",
       "visual": "Silicon Valley lab: door-opening machines, perfect-temperature beds, a gentle robot arm nudging a glass off a table into a soft net. Behind it, a Hollywood screen plays bird videos and a red dot.",
@@ -301,7 +301,7 @@
         }
       ],
       "sources": [
-        "FACT-hearing"
+        "C7"
       ]
     },
     {
@@ -310,14 +310,14 @@
       "end": 1020,
       "place": "Central Valley",
       "point": "3 · A new economy emerges",
-      "caption": "FACT-boxes",
+      "caption": "Packaging beats product: boxes calm\nshelter cats by **day 3**",
       "stat": {
         "parts": [
           3
         ],
         "decimals": 0,
-        "template": "{0} days",
-        "label": "shelter cats with a box\ncalmed sooner · 2014 study"
+        "template": "Day {0}",
+        "label": "shelter cats with a hiding box\ncalmed sooner · 2014 study"
       },
       "dayText": "Year 1 · fictional",
       "visual": "Fly-to the Central Valley: catnip rows beside food crops; a cardboard plant where a press puts one perfect dent in every box; cats sit in the boxes, the products lie ignored.",
@@ -341,7 +341,7 @@
         }
       ],
       "sources": [
-        "FACT-boxes"
+        "C8"
       ],
       "legend": [
         {
@@ -357,14 +357,18 @@
       "end": 1140,
       "place": "Sacramento",
       "point": "4 · Feline politics are personal",
-      "caption": "FACT-capital",
+      "caption": "Capital since **1854**. Cats approve\nbills by sitting on them",
       "stat": {
         "parts": [
           1854
         ],
+        "from": [
+          1800
+        ],
         "decimals": 0,
         "template": "{0}",
-        "label": "Sacramento became the\npermanent capital"
+        "label": "Sacramento became the\npermanent capital · CA State Library",
+        "grouping": false
       },
       "dayText": "Year 2 · fictional",
       "visual": "Fly back to Sacramento: the Capitol chamber, a council of cats on ever-taller furniture. A person presents a bill; a cat sits on it (approved, the seal stamps). A petition for shorter hours: the council falls asleep one by one.",
@@ -388,7 +392,7 @@
         }
       ],
       "sources": [
-        "FACT-capital"
+        "C9"
       ]
     },
     {
@@ -397,14 +401,15 @@
       "end": 1260,
       "place": "Orange County",
       "point": "4 · Feline politics are personal",
-      "caption": "FACT-grooming",
+      "caption": "Grooming districts, since cats groom\n**30–50%** of their day",
       "stat": {
         "parts": [
-          0
+          30,
+          50
         ],
         "decimals": 0,
-        "template": "{0}%",
-        "label": "of a cat's waking time\nspent grooming"
+        "template": "{0}–{1}%",
+        "label": "of a cat's day spent grooming\nCornell Feline Health Center"
       },
       "dayText": "Year 2 · fictional",
       "visual": "Fly-to Orange County: immaculate lounging suburbs and grooming districts; territory borders spread as paw-print trails; two cats hold a staring contest across a fence; quiet, shady streets; a person happily carries a food bowl.",
@@ -428,7 +433,7 @@
         }
       ],
       "sources": [
-        "FACT-grooming"
+        "C10"
       ],
       "legend": [
         {
@@ -444,14 +449,14 @@
       "end": 1380,
       "place": "Sierra foothills",
       "point": "5 · Their perfect world has a problem",
-      "caption": "FACT-birds",
+      "caption": "Domes for birds: US cats kill about\n**2.4 billion** yearly",
       "stat": {
         "parts": [
           2.4
         ],
         "decimals": 1,
         "template": "{0} billion",
-        "label": "birds killed a year by US\noutdoor cats (est.) · 2013 study"
+        "label": "birds a year, US outdoor cats\n(est. 1.3–4.0 billion) · 2013 study"
       },
       "dayText": "Year 3 · fictional",
       "visual": "Visual reset to green: wildlife sanctuaries as huge glass domes over hills full of birds (all safe); next door, a supervised hunting simulation with feather wands and a red dot.",
@@ -471,7 +476,7 @@
         }
       ],
       "sources": [
-        "FACT-birds"
+        "C11"
       ],
       "legend": [
         {
@@ -487,14 +492,14 @@
       "end": 1500,
       "place": "Palm Springs",
       "point": "5 · Their perfect world has a problem",
-      "caption": "FACT-range",
+      "caption": "A pet cat roams about **3.6 hectares**.\nSome hoard estates",
       "stat": {
         "parts": [
           3.6
         ],
         "decimals": 1,
         "template": "{0} hectares",
-        "label": "median home range of a pet\ncat (about 9 acres) · 2020 study"
+        "label": "average home range of a pet\ncat (about 9 acres) · 2020 study"
       },
       "dayText": "Year 4 · fictional",
       "visual": "Fly-to Palm Springs: shaded courtyards and cooling towers; a crowded sunny wall with dozens of cats refusing to share, beside a vast empty estate where a single cat sleeps.",
@@ -518,7 +523,7 @@
         }
       ],
       "sources": [
-        "FACT-range"
+        "C12"
       ],
       "legend": [
         {
@@ -534,14 +539,14 @@
       "end": 1620,
       "place": "Statewide",
       "point": "Payoff",
-      "caption": "FACT-area",
+      "caption": "About **156,000** square miles,\nfurnished as one living room",
       "stat": {
         "parts": [
-          155800
+          156000
         ],
         "decimals": 0,
         "template": "{0} sq mi",
-        "label": "of California land,\nabout · US Census Bureau"
+        "label": "of California land, about\nUS Census Bureau, 2020"
       },
       "dayText": "Year 5 · fictional",
       "visual": "Pull back to the whole state, tilted: the Sierra Nevada is a run of climbing shelves, the coast a row of lounging cushions, cities ring giant food and water bowls, all criss-crossed by territories and routes.",
@@ -561,7 +566,7 @@
         }
       ],
       "sources": [
-        "FACT-area"
+        "C13"
       ],
       "legend": [
         {
@@ -596,7 +601,7 @@
         ],
         "decimals": 0,
         "template": "{0} years",
-        "label": "cats and people have\nshared homes, about"
+        "label": "since a cat was buried beside\na person on Cyprus · 2004 study"
       },
       "visual": "Cut to one ordinary kitchen in warm evening light. The feline governor paws at a can it cannot open. A person opens it (absurdly ceremonial). The cat rubs against their leg.",
       "camera": {
@@ -619,7 +624,7 @@
         }
       ],
       "sources": [
-        "FACT-together"
+        "C14"
       ]
     },
     {

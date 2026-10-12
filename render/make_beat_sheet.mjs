@@ -21,7 +21,7 @@ const fmtStat = (st) => {
   if (!st) return '';
   let out = st.template;
   st.parts.forEach((p, i) => {
-    out = out.replace(`{${i}}`, p.toLocaleString('en-US', { minimumFractionDigits: st.decimals, maximumFractionDigits: st.decimals }));
+    out = out.replace(`{${i}}`, p.toLocaleString('en-US', { minimumFractionDigits: st.decimals, maximumFractionDigits: st.decimals, useGrouping: st.grouping !== false }));
   });
   return `**${out}** ${flat(st.label)}`;
 };
