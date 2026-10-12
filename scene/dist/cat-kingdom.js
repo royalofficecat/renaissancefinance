@@ -42063,8 +42063,8 @@ var beats_default = {
   framesPerBar: 60,
   totalFrames: 1920,
   note: "Single source of truth for timing, text, stats, camera and sound. docs/cat-kingdom/beat-sheet.md is generated from this file. Captions use **bold** for the key number and \\n for the line break. Every real-world number is sourced in docs/cat-kingdom/sources.md.",
-  intro: "The story is fictional; every real-world number is sourced (codes point to `docs/cat-kingdom/sources.md`). The \u201CDay 1 \xB7 fictional \u2026 Year 5\u201D chip is the invented timeline of the reign. The whole video happens on one tabletop California: miniature cities and cut-away buildings stand at their real locations, and the camera flies between them over the map (no teleporting). Only the final kitchen is a cut.",
-  resets: "Office interior (1\u20132) \xB7 flat statewide map (3) \xB7 close-up door (4) \xB7 fly to San Francisco (5) \xB7 Los Angeles (6) \xB7 a lab interior (7) \xB7 the Central Valley (8) \xB7 back to Sacramento (9) \xB7 Orange County from above (10) \xB7 colour shift to green sanctuaries (11) \xB7 Palm Springs (12) \xB7 jump in scale to the whole state (13) \xB7 cut to one kitchen at evening (14).",
+  intro: "The story is fictional; every real-world number is sourced (codes point to `docs/cat-kingdom/sources.md`). The \u201CDay 1 \xB7 fictional \u2026 Year 5\u201D chip is the invented timeline of the reign. Each beat is its own miniature diorama at a real place, named by a map-style label as the camera arrives; beats join with the soft 0.8 s dissolve approved on the rain video, and the statewide map opens (beat 3) and closes (beat 13) the reign.",
+  resets: "Office interior (1) \xB7 open-plan office (2) \xB7 flat statewide map (3) \xB7 a front porch (4) \xB7 San Francisco (5) \xB7 Los Angeles (6) \xB7 a lab interior (7) \xB7 the Central Valley (8) \xB7 the Capitol chamber (9) \xB7 Orange County from above (10) \xB7 colour shift to green: the sanctuary (11) \xB7 Palm Springs (12) \xB7 jump in scale to the whole state (13) \xB7 one kitchen at evening (14).",
   beats: [
     {
       id: 1,
@@ -42160,7 +42160,7 @@ var beats_default = {
         label: "pet cats in California\n(rough estimate \xB7 AVMA data)"
       },
       dayText: "Day 12 \xB7 fictional",
-      visual: "Visual reset: flat top-down map of California. In one frame, tiny terracotta cats appear at doors across every city, all turning their heads at once (the one deliberate snap).",
+      visual: "Visual reset: the statewide map from almost straight above. Little terracotta cats pop up in every city, then all turn their heads and look up at once (the one deliberate snap).",
       camera: {
         shot: "Top-down, slow push-in",
         lens: "35 mm",
@@ -42196,7 +42196,7 @@ var beats_default = {
         label: "spent on US pets\nin 2025 \xB7 APPA"
       },
       dayText: "Day 13 \xB7 fictional",
-      visual: "A front door: a person opens it, the cat looks out and does not move; the paw seal stamps 'OPEN', then 'CLOSE'. The person closes it, smiling.",
+      visual: "A front porch: a person opens the door; the cat sits on the threshold looking out and does not move, glancing back up at the person. A tower of pet-supply deliveries stands by the door.",
       camera: {
         shot: "Slow push-in on the door",
         lens: "50 mm",
@@ -42237,9 +42237,9 @@ var beats_default = {
         label: "a cat's comfort zone\n(86\u2013100 \xB0F) \xB7 Stella & Croney"
       },
       dayText: "Month 3 \xB7 fictional",
-      visual: "Fly-to San Francisco: hillside streets rebuilt with shaded climbing routes, rooftop walkways and glowing sunny windows; cats in every sun patch.",
+      visual: "San Francisco: a steep street of pastel row houses rebuilt for cats: plank walkways bridge the rooftops, every sunny bay window has a cat in it, warm pools of sun on the roofs, the Golden Gate across the water.",
       camera: {
-        shot: "Fly-to, then crane up the hill",
+        shot: "Arrive, then crane up the hill",
         lens: "35 \u2192 28 mm",
         reason: "'It keeps going': the whole city has been rebuilt"
       },
@@ -42290,7 +42290,7 @@ var beats_default = {
       dayText: "Month 5 \xB7 fictional",
       visual: "Fly-to Los Angeles: a freeway interchange whose decks are ribbons of gardens, scratching columns and warm resting platforms; small blue toy cars (the people) still run on the freeway underneath, between two tunnel portals.",
       camera: {
-        shot: "Fly-to, then orbit the interchange",
+        shot: "Arrive, then orbit the interchange",
         lens: "35 mm",
         reason: "Shows both levels: cats on top, people below"
       },
@@ -42339,7 +42339,7 @@ var beats_default = {
         label: "top of a cat's hearing\n(people: about 18 kHz)"
       },
       dayText: "Month 8 \xB7 fictional",
-      visual: "Silicon Valley lab: door-opening machines, perfect-temperature beds, a gentle robot arm nudging a glass off a table into a soft net. Behind it, a Hollywood screen plays bird videos and a red dot.",
+      visual: "Silicon Valley lab: a door-opening machine, heated beds, a gentle robot arm nudging a glass off a table into a soft net. Behind it, a Hollywood screen plays bird videos and a red dot; ultrasonic rings pulse from the speakers.",
       camera: {
         shot: "Slow push-in past the machines to the screen",
         lens: "50 mm",
@@ -42381,7 +42381,7 @@ var beats_default = {
       dayText: "Year 1 \xB7 fictional",
       visual: "Fly-to the Central Valley: catnip rows beside food crops; a cardboard plant where a press puts one perfect dent in every box; cats sit in the boxes, the products lie ignored.",
       camera: {
-        shot: "Fly-to, then tracking dolly along the conveyor",
+        shot: "Arrive, then tracking dolly along the conveyor",
         lens: "35 mm",
         reason: "Follows the box from field to cat"
       },
@@ -42430,7 +42430,7 @@ var beats_default = {
         grouping: false
       },
       dayText: "Year 2 \xB7 fictional",
-      visual: "Fly back to Sacramento: the Capitol chamber, a council of cats on ever-taller furniture. A person presents a bill; a cat sits on it (approved, the seal stamps). A petition for shorter hours: the council falls asleep one by one.",
+      visual: "The Capitol chamber: a council of cats on ever-taller sisal pedestals. A person presents a bill; a cat sits on it and the paw stamp comes down (approved). During the petition for shorter hours the council falls asleep one by one.",
       camera: {
         shot: "Slow push-in down the chamber aisle",
         lens: "40 mm",
@@ -42473,7 +42473,7 @@ var beats_default = {
       dayText: "Year 2 \xB7 fictional",
       visual: "Fly-to Orange County: immaculate lounging suburbs and grooming districts; territory borders spread as paw-print trails; two cats hold a staring contest across a fence; quiet, shady streets; a person happily carries a food bowl.",
       camera: {
-        shot: "Fly-to, then top-down tilt over the neighbourhood",
+        shot: "Arrive, then top-down tilt over the neighbourhood",
         lens: "35 mm",
         reason: "Territories read best from above"
       },
@@ -42563,7 +42563,7 @@ var beats_default = {
       dayText: "Year 4 \xB7 fictional",
       visual: "Fly-to Palm Springs: shaded courtyards and cooling towers; a crowded sunny wall with dozens of cats refusing to share, beside a vast empty estate where a single cat sleeps.",
       camera: {
-        shot: "Fly-to, then slow pan from the crowd to the empty estate",
+        shot: "Arrive, then slow pan from the crowd to the empty estate",
         lens: "35 mm",
         reason: "The pan itself shows the inequality"
       },
@@ -42608,7 +42608,7 @@ var beats_default = {
         label: "of California land, about\nUS Census Bureau, 2020"
       },
       dayText: "Year 5 \xB7 fictional",
-      visual: "Pull back to the whole state, tilted: the Sierra Nevada is a run of climbing shelves, the coast a row of lounging cushions, cities ring giant food and water bowls, all criss-crossed by territories and routes.",
+      visual: "Pull back to the whole state, tilted: climbing shelves along the Sierra Nevada, cushions down the coast, giant food and water bowls in the cities, Mount Shasta as a cat tree, a ball of yarn in the Pacific, gold sun estates, all criss-crossed by territories and the human service network.",
       camera: {
         shot: "Crane up and pull back to a tilted statewide view",
         lens: "35 \u2192 24 mm",
@@ -42662,7 +42662,7 @@ var beats_default = {
         template: "{0} years",
         label: "since a cat was buried beside\na person on Cyprus \xB7 2004 study"
       },
-      visual: "Cut to one ordinary kitchen in warm evening light. The feline governor paws at a can it cannot open. A person opens it (absurdly ceremonial). The cat rubs against their leg.",
+      visual: "Cut to one ordinary kitchen in warm evening lamplight, dusk in the window. The feline governor nudges a can it cannot open. A person lifts it and opens it (absurdly ceremonial: a golden burst). The cat rubs against their leg with a slow blink.",
       camera: {
         shot: "Low hero angle at cat height, slow push-in",
         lens: "35 mm",
