@@ -1,12 +1,17 @@
-// Quality checklist (Part 9). Run after the final render: node render/qa.mjs
-// Writes out/qa-report.md and exits non-zero if a hard check fails.
+// Quality checklist (Part 9). Run after the final render: node render/qa.mjs [--video=cat-kingdom]
+// Writes <out>/qa-report.md and exits non-zero if a hard check fails.
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { OUT, ROOT, bundle, openPage, serve } from './lib.mjs';
+import { ROOT, bundle, openPage, serve, videoArg, videoPaths } from './lib.mjs';
 
-const beatsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scene/beats.json'), 'utf8'));
-const MP4 = path.join(OUT, 'california-30-days-of-rain.mp4');
+const video = videoArg();
+const vp = videoPaths(video);
+const OUT = vp.out;
+const beatsDoc = JSON.parse(fs.readFileSync(vp.beats, 'utf8'));
+const MP4 = path.join(OUT, { '': 'california-30-days-of-rain.mp4', 'cat-kingdom': 'what-if-cats-took-over-california.mp4' }[video]);
+const DOCS = path.join(ROOT, video ? `docs/${video}` : 'docs');
+const PALETTE = path.join(ROOT, video ? `scene/videos/${video}/palette.json` : 'scene/palette.json');
 const SAFE = { x0: 0, x1: 950, y0: 154, y1: 1536 };
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ' — ' + detail : ''}`); };
@@ -36,9 +41,9 @@ if (fs.existsSync(MP4)) {
 } else check('final video exists', false, 'run render/render_all.mjs first');
 
 // ---------- 3. Text layer, every frame (overlay only, no 3d needed)
-await bundle();
+await bundle(video);
 const { server, port } = await serve();
-const { browser, page } = await openPage(port, { dpr: 1 });
+const { browser, page } = await openPage(port, { dpr: 1, video });
 const textReport = await page.evaluate(() => {
   const o = window.__video.overlay;
   const out = { outside: [], overlapping: [], tooWide: [], longLines: [], visible: {} };
@@ -90,15 +95,15 @@ const mism = [];
 for (const b of beatsDoc.beats.filter((x) => x.stat && x.caption && x.caption.includes('**'))) {
   const bold = b.caption.match(/\*\*(.+?)\*\*/)[1];
   let stat = b.stat.template;
-  b.stat.parts.forEach((p, i) => (stat = stat.replace(`{${i}}`, p.toLocaleString('en-US', { minimumFractionDigits: b.stat.decimals, maximumFractionDigits: b.stat.decimals }))));
+  b.stat.parts.forEach((p, i) => (stat = stat.replace(`{${i}}`, p.toLocaleString('en-US', { minimumFractionDigits: b.stat.decimals, maximumFractionDigits: b.stat.decimals, useGrouping: b.stat.grouping !== false }))));
   const norm = (s) => s.replace(/[^\d.%–+,]/g, '');
   if (!norm(stat).startsWith(norm(bold).replace(/,$/, ''))) mism.push(`beat ${b.id}: caption "${bold}" vs stat "${stat}"`);
 }
 check('caption numbers match the stats panel', mism.length === 0, mism.join('; ') || 'all match');
-// Every fact has a source listed in docs/sources.md
-const sourcesMd = fs.readFileSync(path.join(ROOT, 'docs/sources.md'), 'utf8');
+// Every fact has a source listed in the video's sources.md
+const sourcesMd = fs.readFileSync(path.join(DOCS, 'sources.md'), 'utf8');
 const missing = beatsDoc.beats.flatMap((b) => b.sources).filter((id) => !sourcesMd.includes(`| ${id} |`));
-check('every fact has a source in docs/sources.md', missing.length === 0 && beatsDoc.beats.filter((b) => b.stat).every((b) => b.sources.length), missing.join(', '));
+check(`every fact has a source in ${path.relative(ROOT, path.join(DOCS, 'sources.md'))}`, missing.length === 0 && beatsDoc.beats.filter((b) => b.stat).every((b) => b.sources.length), missing.join(', '));
 
 // ---------- 4. Fonts actually used (Chrome DevTools: platform fonts per node), one frame per beat
 const cdp = await page.context().newCDPSession(page);
@@ -136,8 +141,31 @@ if (fs.existsSync(logFile)) {
   check('no overlapping labels (or labels over panels)', clash.length === 0, clash.length ? JSON.stringify(clash.slice(0, 5)) : '');
 }
 
+// ---------- 6. Contrast, motion and (cat video) the music / effects balance
+const py = fs.existsSync(path.join(ROOT, '.venv/bin/python')) ? path.join(ROOT, '.venv/bin/python') : 'python3';
+const runPy = (args) => { try { return { ok: true, out: execFileSync(py, args).toString() }; } catch (e) { return { ok: false, out: String(e.stdout || e.message) }; } };
+const con = runPy([path.join(ROOT, 'render/qa_contrast.py'), PALETTE]);
+const ratios = [...con.out.matchAll(/(\d+\.\d+):1/g)].map((m) => parseFloat(m[1]));
+check('text contrast >= 4.5:1 (worst case: see-through panel over black)', con.ok && ratios.length > 0 && Math.min(...ratios) >= 4.5, ratios.length ? `lowest ${Math.min(...ratios).toFixed(2)}:1` : con.out.slice(0, 120));
+const framesDir = path.join(OUT, 'frames');
+if (fs.existsSync(path.join(framesDir, 'f0000.png'))) {
+  const cuts = beatsDoc.beats.slice(1).filter((b) => b.id !== 'end').map((b) => b.start);
+  const mo = runPy([path.join(ROOT, 'render/qa_motion.py'), framesDir, ...(video ? [cuts.join(',')] : [])]);
+  let spikes = [];
+  try { spikes = JSON.parse(fs.readFileSync(path.join(framesDir, 'motion.json'), 'utf8')).spikes; } catch { /* no report */ }
+  // a spike where the end card appears is text, not 3d motion
+  const endStart = (beatsDoc.beats.find((b) => b.id === 'end') || {}).start ?? 1e9;
+  const real = spikes.filter((x) => Math.abs(x.frame - endStart) > 8);
+  check('no camera snaps, pops or flicker (frame-to-frame change)', real.length === 0, real.length ? JSON.stringify(real.slice(0, 4)) : `${spikes.length ? 'only the end card appearing; ' : ''}scene changes are dissolves`);
+}
+const statsFile = path.join(OUT, 'audio/stats.json');
+if (video && fs.existsSync(statsFile)) {
+  const st = JSON.parse(fs.readFileSync(statsFile, 'utf8'));
+  check('music sits 8-10 dB under the effects', st.effects_over_music_db_median >= 8 && st.effects_over_music_db_median <= 10, `effects ${st.effects_over_music_db_median} dB above the music (median of ${st.accents} effects; 10-90%: ${st.effects_over_music_db_10_90.join(' to ')} dB)`);
+}
+
 const md = ['# QA report', '', `Video: \`${path.relative(ROOT, MP4)}\``, '', '| Check | Result | Detail |', '|---|---|---|',
   ...results.map((r) => `| ${r.name} | ${r.ok ? 'PASS' : '**FAIL**'} | ${String(r.detail).replace(/\|/g, '/')} |`)].join('\n');
 fs.writeFileSync(path.join(OUT, 'qa-report.md'), md + '\n');
-console.log(`\n${results.filter((r) => r.ok).length}/${results.length} checks passed -> out/qa-report.md`);
+console.log(`\n${results.filter((r) => r.ok).length}/${results.length} checks passed -> ${path.relative(ROOT, path.join(OUT, 'qa-report.md'))}`);
 process.exit(results.every((r) => r.ok) ? 0 : 1);
