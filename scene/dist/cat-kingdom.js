@@ -42090,12 +42090,16 @@ var beats_default = {
           cue: "pizzicato-theme"
         },
         {
-          at: 40,
-          cue: "purr-short"
-        },
-        {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 36,
+          cue: "purr"
+        },
+        {
+          at: 66,
+          cue: "mrrp"
         }
       ],
       sources: [
@@ -42127,12 +42131,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 20,
-          cue: "keyboard-pop"
-        },
-        {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 16,
+          cue: "typing"
+        },
+        {
+          at: 70,
+          cue: "snore-soft"
         }
       ],
       sources: [
@@ -42163,12 +42171,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 30,
-          cue: "boing-snap"
+          at: 10,
+          cue: "ticks"
         },
         {
           at: 10,
-          cue: "ticks"
+          cue: "pops-rising"
+        },
+        {
+          at: 69,
+          cue: "heads-snap"
         }
       ],
       sources: [
@@ -42199,16 +42211,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 30,
+          at: 10,
+          cue: "ticks"
+        },
+        {
+          at: 14,
           cue: "door-creak"
         },
         {
-          at: 75,
-          cue: "paw-stamp"
-        },
-        {
-          at: 10,
-          cue: "ticks"
+          at: 68,
+          cue: "question-pluck"
         }
       ],
       sources: [
@@ -42240,16 +42252,12 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "whoosh-fly"
-        },
-        {
-          at: 50,
-          cue: "claws-stone"
-        },
-        {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 48,
+          cue: "claws-stone"
         }
       ],
       sources: [
@@ -42291,16 +42299,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "whoosh-fly"
-        },
-        {
-          at: 60,
-          cue: "purr-short"
-        },
-        {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 16,
+          cue: "cars-below"
+        },
+        {
+          at: 64,
+          cue: "purr"
         }
       ],
       sources: [
@@ -42342,16 +42350,24 @@ var beats_default = {
       },
       sound: [
         {
-          at: 45,
+          at: 10,
+          cue: "ticks"
+        },
+        {
+          at: 20,
+          cue: "ultrasonic-shimmer"
+        },
+        {
+          at: 48,
           cue: "glass-tink"
         },
         {
-          at: 80,
-          cue: "bird-chirps"
+          at: 59,
+          cue: "net-fwump"
         },
         {
-          at: 10,
-          cue: "ticks"
+          at: 75,
+          cue: "bird-chirps"
         }
       ],
       sources: [
@@ -42382,16 +42398,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "whoosh-fly"
-        },
-        {
-          at: 55,
-          cue: "cardboard-rustle"
+          at: 3,
+          cue: "press-thunks"
         },
         {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 55,
+          cue: "cardboard-rustle"
         }
       ],
       sources: [
@@ -42433,16 +42449,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 30,
+          at: 10,
+          cue: "ticks"
+        },
+        {
+          at: 34,
           cue: "paw-stamp"
         },
         {
-          at: 85,
+          at: 72,
           cue: "snore-soft"
-        },
-        {
-          at: 10,
-          cue: "ticks"
         }
       ],
       sources: [
@@ -42474,16 +42490,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "whoosh-fly"
+          at: 10,
+          cue: "ticks"
+        },
+        {
+          at: 18,
+          cue: "paw-patter"
         },
         {
           at: 60,
           cue: "stare-pluck"
-        },
-        {
-          at: 10,
-          cue: "ticks"
         }
       ],
       sources: [
@@ -42521,12 +42537,12 @@ var beats_default = {
       },
       sound: [
         {
-          at: 20,
-          cue: "bird-chirps"
+          at: 10,
+          cue: "ticks"
         },
         {
           at: 10,
-          cue: "ticks"
+          cue: "bird-chirps"
         }
       ],
       sources: [
@@ -42564,16 +42580,16 @@ var beats_default = {
       },
       sound: [
         {
-          at: 0,
-          cue: "whoosh-fly"
+          at: 10,
+          cue: "ticks"
         },
         {
           at: 70,
-          cue: "yawn-purr"
+          cue: "yawn"
         },
         {
-          at: 10,
-          cue: "ticks"
+          at: 98,
+          cue: "purr"
         }
       ],
       sources: [
@@ -42617,6 +42633,10 @@ var beats_default = {
         {
           at: 10,
           cue: "ticks"
+        },
+        {
+          at: 20,
+          cue: "crane-whoosh"
         }
       ],
       sources: [
@@ -42665,16 +42685,28 @@ var beats_default = {
       },
       sound: [
         {
-          at: 20,
+          at: 6,
+          cue: "can-tonks"
+        },
+        {
+          at: 10,
+          cue: "ticks"
+        },
+        {
+          at: 42,
+          cue: "harp-glide"
+        },
+        {
+          at: 71,
           cue: "can-ceremony"
         },
         {
-          at: 120,
-          cue: "purr-short"
+          at: 90,
+          cue: "claws-tile"
         },
         {
-          at: 30,
-          cue: "ticks"
+          at: 138,
+          cue: "purr"
         }
       ],
       sources: [
@@ -42697,12 +42729,13 @@ var beats_default = {
       sound: [
         {
           at: 0,
-          cue: "button-note"
+          cue: "button-chord"
         }
       ],
       sources: []
     }
-  ]
+  ],
+  soundNote: "Cue names match audio/cat_kingdom.py. A soft whoosh also crosses every scene dissolve; the music (pizzicato, then strings, horns and timpani, then celesta) follows the bars in that script."
 };
 
 // scene/src/core/pipeline.js

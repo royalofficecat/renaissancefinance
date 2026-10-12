@@ -9,7 +9,7 @@
   quiet ticks on every count-up. Every cue sits on an exact video frame.
 - Mix: each effect is measured (BS.1770 momentary loudness) and set ~9 dB above the music under it, and the
   music dips 5 dB while it plays (so the music sits 8-10 dB under the effects).
-  Master to -14 LUFS integrated, true peak below -1 dBTP.
+  Master to -14 LUFS integrated, true peak below -1 dBTP in the encoded file (-2.5 dBTP in the WAV).
 
 Shared synthesis and loudness tools come from audio/generate.py (the first video).
 Run:  .venv/bin/python audio/cat_kingdom.py   -> out/cat-kingdom/audio/soundtrack.wav (48 kHz stereo float)
@@ -630,10 +630,10 @@ def main():
     duck = duck_envelope(accents, depths)
     m, fx, gaps = build(m_target, music_raw, accents, textures, duck)
     mix = m + fx
-    mix *= 10 ** ((-14.0 - g.lufs(mix)) / 20)
-    mix = g.peak_limit(mix, -1.5)
-    mix *= 10 ** ((-14.0 - g.lufs(mix)) / 20)
-    mix = g.peak_limit(mix, -1.5)
+    # ceiling -2.5 dBTP: AAC encoding adds up to ~1 dB of overshoot, and the finished MP4 must stay under -1 dBTP
+    for _ in range(3):
+        mix *= 10 ** ((-14.0 - g.lufs(mix)) / 20)
+        mix = g.peak_limit(mix, -2.5)
     stats = {
         "integrated_lufs": round(float(g.lufs(mix)), 2), "true_peak_dbtp": round(float(g.true_peak_db(mix)), 2), "seconds": round(len(mix) / SR, 3),
         "music_lufs": round(float(m_target), 1), "music_ducks_db": [round(min(depths), 1), round(max(depths), 1)],
