@@ -4,7 +4,7 @@ For each frame we measure how much the 3d image changes from the previous frame 
 difference on a small greyscale copy). Smooth motion changes gradually; a snap or pop shows up as a
 spike far above its neighbours. Spikes during a cloud-bank wipe (where the cut is hidden) are expected.
 
-Usage: python3 render/qa_motion.py out/frames
+Usage: python3 render/qa_motion.py out/frames [cut,cut,...]   (scene-change frames; default: the rain video's)
 """
 
 import json
@@ -15,7 +15,7 @@ import numpy as np
 from PIL import Image
 
 frames = sorted(pathlib.Path(sys.argv[1]).glob("f[0-9][0-9][0-9][0-9].png"))
-CUTS = [228, 300, 420, 660, 1320, 1440, 1620]
+CUTS = [int(c) for c in sys.argv[2].split(',')] if len(sys.argv) > 2 else [228, 300, 420, 660, 1320, 1440, 1620]
 prev, diffs = None, []
 for f in frames:
     # Look only at the middle band (the 3d scene), not at the text panels

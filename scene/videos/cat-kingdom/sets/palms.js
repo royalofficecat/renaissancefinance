@@ -113,8 +113,8 @@ export async function createPalms(pipe) {
   const lights = rig(scene, pipe.renderer, { size: 12, dist: 50, intensity: 6.0, fillK: 0.22, rimK: 0.3 });
   lights.follow(new THREE.Vector3(0, 0, 0), 12);
   const cam = new THREE.PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
-  const A = { pos: [-4.6, 4.6, 9.2], target: [-4.6, 0.7, -0.4], lens: 35 };
-  const B = { pos: [4.8, 5.4, 9.4], target: [4.6, 0.3, -0.4], lens: 35 };
+  const A = { pos: [-3.7, 4.8, 9.6], target: [-4.0, 0.7, -0.4], lens: 35 };
+  const B = { pos: [3.9, 5.4, 9.6], target: [4.3, 0.3, -0.4], lens: 35 };
   return {
     labels,
     frame(f, { avoid = [] } = {}) {
