@@ -40496,11 +40496,6 @@ async function createSF(pipe) {
   for (let i = 0; i < zs.length; i++) {
     const L = roofs.find((r) => r.i === i && r.side < 0), Rr = roofs.find((r) => r.i === i && r.side > 0);
     if (i % 2 === 0) scene.add(walkway(new Vector3(-2, L.y + 0.05, zs[i]), new Vector3(2, Rr.y + 0.05, zs[i])));
-    if (i === 1 || i === 4) {
-      const side = i % 2 ? 1 : -1;
-      const a2 = roofs.find((r) => r.i === i && r.side === side), b = roofs.find((r) => r.i === i + 1 && r.side === side);
-      scene.add(walkway(new Vector3(side * 2.2, a2.y + 0.05, zs[i] - 0.55), new Vector3(side * 2.2, b.y + 0.05, zs[i + 1] + 0.55), 0.42));
-    }
   }
   for (const [x, z0, y0] of [[-1.38, 2.9, slopeY(3.6)], [1.38, -0.1, slopeY(0.6)]]) {
     for (let k = 0; k < 4; k++) scene.add(mesh(rbox(0.32, 0.05, 0.42, 0.015), clay(S.wood, 0.65), { pos: [x + Math.sign(x) * 0, y0 + 0.5 + k * 0.48, z0 - 0.45 + k % 2 * 0.9] }));
@@ -41942,7 +41937,7 @@ async function createKitchen(pipe) {
   herbs.scale.setScalar(0.45);
   herbs.position.set(0.85, 0.91, cz - 0.1);
   room.add(herbs);
-  const shade = new MeshStandardMaterial({ color: tone(C2.lamp, 1, 0.2), emissive: tone(C2.lamp, 1), emissiveIntensity: 1, roughness: 0.5, side: DoubleSide });
+  const shade = new MeshStandardMaterial({ color: tone(C2.lamp, 1, 0.2), emissive: tone(C2.lamp, 1), emissiveIntensity: 0.62, roughness: 0.5, side: DoubleSide });
   room.add(mesh(new CylinderGeometry(4e-3, 4e-3, 0.7, 4), clay(tone(C2.cream, 0.3), 0.5), { pos: [0.5, 2.55, 0.3], cast: false }));
   room.add(mesh(new ConeGeometry(0.22, 0.2, 28, 1, true), shade, { pos: [0.5, 2.1, 0.3], cast: false }));
   const lamp = new PointLight(tone(C2.lamp, 1), 3.2, 6, 1.4);
@@ -41992,7 +41987,7 @@ async function createKitchen(pipe) {
   const A = { pos: [-0.5, 0.5, 3.3], target: [0.3, 0.7, -0.1], lens: 35 };
   const B = { pos: [-0.32, 0.46, 2.4], target: [0.35, 0.68, -0.1], lens: 35 };
   const E = { pos: [-0.22, 0.52, 2.2], target: [0.35, 0.74, -0.1], lens: 35 };
-  const handPos = new Vector3(), floorCan = new Vector3(0.12, 0, 0.32);
+  const handPos = new Vector3(), floorCan = new Vector3(0.2, 0, 0.32);
   return {
     frame(f2) {
       const t = (f2 - T0) / FPS14;
@@ -42018,7 +42013,7 @@ async function createKitchen(pipe) {
         m3.material.opacity = 1 - k;
       });
       const walk = ease.inOutSine(prog(t, 3, 4.6));
-      const p02 = new Vector3(-0.22, 0, 0.42), p12 = new Vector3(0.56, 0, 0.02);
+      const p02 = new Vector3(-0.12, 0, 0.42), p12 = new Vector3(0.56, 0, 0.02);
       const rub = Math.sin(Math.max(0, t - 4.6) * 2.2) * 0.05;
       gov.group.position.lerpVectors(p02, p12, walk).add(new Vector3(rub * 0.6, 0, -rub));
       gov.group.rotation.y = 1.5 - 0.95 * walk + rub * 2;

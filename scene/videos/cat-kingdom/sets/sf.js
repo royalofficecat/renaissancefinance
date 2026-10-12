@@ -124,11 +124,6 @@ export async function createSF(pipe) {
   for (let i = 0; i < zs.length; i++) {
     const L = roofs.find((r) => r.i === i && r.side < 0), Rr = roofs.find((r) => r.i === i && r.side > 0);
     if (i % 2 === 0) scene.add(walkway(new THREE.Vector3(-2.0, L.y + 0.05, zs[i]), new THREE.Vector3(2.0, Rr.y + 0.05, zs[i])));
-    if (i === 1 || i === 4) {
-      const side = i % 2 ? 1 : -1;
-      const a = roofs.find((r) => r.i === i && r.side === side), b = roofs.find((r) => r.i === i + 1 && r.side === side);
-      scene.add(walkway(new THREE.Vector3(side * 2.2, a.y + 0.05, zs[i] - 0.55), new THREE.Vector3(side * 2.2, b.y + 0.05, zs[i + 1] + 0.55), 0.42));
-    }
   }
   // little climbing shelves zig-zagging up two façades
   for (const [x, z0, y0] of [[-1.38, 2.9, slopeY(3.6)], [1.38, -0.1, slopeY(0.6)]]) {

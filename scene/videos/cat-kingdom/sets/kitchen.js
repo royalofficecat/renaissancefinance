@@ -71,7 +71,7 @@ export async function createKitchen(pipe) {
   room.add(fruitBowl);
   const herbs = plant({ h: 0.6, seed: 4 }); herbs.scale.setScalar(0.45); herbs.position.set(0.85, 0.91, cz - 0.1); room.add(herbs);
   // the pendant lamp: a warm glowing shade
-  const shade = new THREE.MeshStandardMaterial({ color: tone(C.lamp, 1, 0.2), emissive: tone(C.lamp, 1.0), emissiveIntensity: 1.0, roughness: 0.5, side: THREE.DoubleSide });
+  const shade = new THREE.MeshStandardMaterial({ color: tone(C.lamp, 1, 0.2), emissive: tone(C.lamp, 1.0), emissiveIntensity: 0.62, roughness: 0.5, side: THREE.DoubleSide });
   room.add(mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.7, 4), clay(tone(C.cream, 0.3), 0.5), { pos: [0.5, 2.55, 0.3], cast: false }));
   room.add(mesh(new THREE.ConeGeometry(0.22, 0.2, 28, 1, true), shade, { pos: [0.5, 2.1, 0.3], cast: false }));
   const lamp = new THREE.PointLight(tone(C.lamp, 1.0), 3.2, 6, 1.4);
@@ -127,7 +127,7 @@ export async function createKitchen(pipe) {
   const A = { pos: [-0.5, 0.5, 3.3], target: [0.3, 0.7, -0.1], lens: 35 };
   const B = { pos: [-0.32, 0.46, 2.4], target: [0.35, 0.68, -0.1], lens: 35 };
   const E = { pos: [-0.22, 0.52, 2.2], target: [0.35, 0.74, -0.1], lens: 35 };
-  const handPos = new THREE.Vector3(), floorCan = new THREE.Vector3(0.12, 0, 0.32);
+  const handPos = new THREE.Vector3(), floorCan = new THREE.Vector3(0.2, 0, 0.32);
 
   return {
     frame(f) {
@@ -158,7 +158,7 @@ export async function createKitchen(pipe) {
       });
       // the cat: nudging at the can, looking up at the pop, then rubbing along the person's leg, tail up
       const walk = ease.inOutSine(prog(t, 3.0, 4.6));
-      const p0 = new THREE.Vector3(-0.22, 0, 0.42), p1 = new THREE.Vector3(0.56, 0, 0.02);
+      const p0 = new THREE.Vector3(-0.12, 0, 0.42), p1 = new THREE.Vector3(0.56, 0, 0.02);
       const rub = Math.sin(Math.max(0, t - 4.6) * 2.2) * 0.05;
       gov.group.position.lerpVectors(p0, p1, walk).add(new THREE.Vector3(rub * 0.6, 0, -rub));
       gov.group.rotation.y = 1.5 - 0.95 * walk + rub * 2;
