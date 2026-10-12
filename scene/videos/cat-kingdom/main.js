@@ -14,7 +14,9 @@ if (params.get('safe') === '1') document.getElementById('safe').hidden = false;
 
 // Which set is on screen, by frame. Every change of set is a short dissolve (see transitionAt).
 const SCHEDULE = [
-  [0, 300, 'office'], [300, 660, 'state'], [660, 780, 'freeway'], [780, 1500, 'state'], [1500, 1620, 'state'], [1620, 1920, 'state'],
+  [0, 180, 'office'], [180, 300, 'bullpen'], [300, 420, 'state'], [420, 540, 'porch'], [540, 660, 'sf'], [660, 780, 'freeway'],
+  [780, 900, 'techlab'], [900, 1020, 'valley'], [1020, 1140, 'chamber'], [1140, 1260, 'oc'], [1260, 1380, 'sanctuary'],
+  [1380, 1500, 'palms'], [1500, 1620, 'state'], [1620, 1920, 'kitchen'],
 ];
 const CUTS = SCHEDULE.map((s) => s[0]).filter((f, i) => i > 0 && SCHEDULE[i - 1][2] !== SCHEDULE[i][2]);
 
@@ -35,9 +37,30 @@ async function fontsReady() {
 const LOADERS = {
   lab: () => import('./sets/lab.js').then((m) => m.createLab),
   office: () => import('./sets/office.js').then((m) => m.createOffice),
-  freeway: () => import('./sets/freeway.js').then((m) => m.createFreeway),
+  bullpen: () => import('./sets/bullpen.js').then((m) => m.createBullpen),
   state: () => import('./sets/state.js').then((m) => m.createState),
+  porch: () => import('./sets/porch.js').then((m) => m.createPorch),
+  sf: () => import('./sets/sf.js').then((m) => m.createSF),
+  freeway: () => import('./sets/freeway.js').then((m) => m.createFreeway),
+  techlab: () => import('./sets/techlab.js').then((m) => m.createTechlab),
+  valley: () => import('./sets/valley.js').then((m) => m.createValley),
+  chamber: () => import('./sets/chamber.js').then((m) => m.createChamber),
+  oc: () => import('./sets/oc.js').then((m) => m.createOC),
+  sanctuary: () => import('./sets/sanctuary.js').then((m) => m.createSanctuary),
+  palms: () => import('./sets/palms.js').then((m) => m.createPalms),
+  kitchen: () => import('./sets/kitchen.js').then((m) => m.createKitchen),
 };
+
+// Free the shadow maps of sets that are off screen (they are rebuilt automatically when needed again),
+// so thirteen sets fit in the software renderer's memory.
+const scenesOf = new Map();
+function releaseShadows(activeNames, sets) {
+  for (const [name, scene] of scenesOf) {
+    if (activeNames.includes(name)) continue;
+    scene.traverse((o) => { if (o.isLight && o.shadow && o.shadow.map) { o.shadow.map.dispose(); o.shadow.map = null; } });
+  }
+  void sets;
+}
 
 async function boot() {
   await fontsReady();
@@ -73,6 +96,8 @@ async function boot() {
       name = setNameAt(f);
       const set = sets[name] || fallback;
       const out = set.frame(f, { avoid });
+      scenesOf.set(name, out.scene);
+      releaseShadows([name], sets);
       pipe.render({ ...out, frame: f });
       labels = set.labels && set.labels.visible ? set.labels.visible() : [];
     } else {
@@ -80,7 +105,10 @@ async function boot() {
       const A = sets[nA] || fallback, B = sets[nB] || fallback;
       const outA = A.frame(Math.min(f, tr.c - 1), { avoid });
       const labA = A.labels && A.labels.visible ? A.labels.visible().map((l) => ({ ...l, opacity: l.opacity * (1 - tr.p) })) : [];
+      scenesOf.set(nA, outA.scene);
       const outB = B.frame(Math.max(f, tr.c), { avoid });
+      scenesOf.set(nB, outB.scene);
+      releaseShadows([nA, nB], sets);
       const labB = B.labels && B.labels.visible ? B.labels.visible().map((l) => ({ ...l, opacity: l.opacity * tr.p })) : [];
       pipe.blend(outA, outB, { frame: f, p: tr.p, zoomA: 1 + 0.08 * ease.inOutSine(tr.p) });
       name = `${nA}>${nB}`;

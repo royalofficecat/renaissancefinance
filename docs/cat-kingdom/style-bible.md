@@ -39,7 +39,7 @@ The same house style as the rain video. California is a tabletop model: maps are
 ## 3. Lighting (same rig in every scene)
 
 - **Key:** gold late-afternoon sun (about 4,300 K, `#FFD48C`), upper left, 35° high, so shadows are long and soft. Sun patches are part of the story: cats always end up in them.
-- **Fill:** sky hemisphere, coastal blue above and warm cream bounce below, at 35% of the key.
+- **Fill:** sky hemisphere, coastal blue above and warm cream bounce below. Outdoors it is about a fifth of the key; indoors it is lower still, so the sunlight through the windows lands in clear, warm pools (cats always end up in them).
 - **Rim:** warm back light at 50%, which lifts ears and tails off the background.
 - **Environment:** a soft sky gradient generated in code and evaluated directly in the water and glass shaders. This is the same fast technique as the rain video, with no sampled environment map.
 - **The one story change:** the final kitchen is evening, lit by a warm lamp (`#FFC98F`). It's home time.
@@ -53,7 +53,7 @@ ACES filmic tone mapping · bloom only on the brightest highlights (sun glints, 
 - Every move eases in and out. Objects arrive on a damped spring (about 6% overshoot). The camera travels on curved paths, never cuts mid-move, and holds for at least 0.5 s whenever a caption lands.
 - **Cats move like cats:** slow blinks, tail sways, ear twitches and loaf-settling. Small, unhurried and frequent, so every shot feels alive. The single deliberate "snap" is comic: the moment every door-sitting cat turns its head at once.
 - Text: words rise 24 px and fade in with a 40 ms stagger (in 450 ms, out 250 ms). Never spinning, bouncing or letter by letter.
-- **Scene changes:** a map fly-to (zoom out, pan, zoom in) between places on the map, then the soft 0.8 s dissolve into each miniature city, the one approved on the rain video. Nothing grey or opaque ever covers the frame.
+- **Scene changes:** every place is its own miniature diorama, and places join with the soft 0.8 s dissolve approved on the rain video. As the camera arrives, a map-style label names the place. Nothing grey or opaque ever covers the frame. (The plan first had map fly-tos between places; with 4-second beats and a 0.5 s camera hold on every caption, a flight across the map would eat most of each beat, so the statewide map is used for the takeover (beat 3) and the finale (beat 13) instead.)
 
 ## 6. Type and layout
 

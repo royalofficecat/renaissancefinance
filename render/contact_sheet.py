@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FONT = ROOT / "scene" / "fonts"
-BEATS = json.loads((ROOT / "scene" / "beats.json").read_text())
+BEATS = None  # set in main() (default: the first video's scene/beats.json)
 
 
 def font(style, size):
@@ -34,7 +34,10 @@ def main():
     ap.add_argument("--cols", type=int, default=7)
     ap.add_argument("--title", default="Contact sheet")
     ap.add_argument("--only", default="")
+    ap.add_argument("--beats", default=str(ROOT / "scene" / "beats.json"))
     a = ap.parse_args()
+    global BEATS
+    BEATS = json.loads(pathlib.Path(a.beats).read_text())
     files = sorted(pathlib.Path(a.frames_dir).glob("f*.png"))
     if a.only:
         keep = set(a.only.split(","))

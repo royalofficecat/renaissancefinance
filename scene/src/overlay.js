@@ -12,18 +12,24 @@ const RISE = 24; // px
 const SAFE = { top: 154, bottom: 1536, right: 950 };
 
 function wordsHTML(text) {
-  // "**bold**" marks the key number; "\n" separates lines.
+  // "**bold**" marks the key number; "\n" separates lines. Punctuation right after a bold part
+  // (e.g. "**30–38 °C**, so") stays glued to it: no space is inserted between them.
   return text
     .split('\n')
     .map((line) => {
       const out = [];
-      let bold = false;
+      let bold = false, prev = '';
       for (const part of line.split('**')) {
-        for (const w of part.split(' ').filter(Boolean)) out.push({ w, bold });
+        const glue = out.length > 0 && part.length > 0 && !part.startsWith(' ') && !prev.endsWith(' ');
+        prev = part;
+        part.split(' ').filter(Boolean).forEach((w, k) => {
+          if (k === 0 && glue) out[out.length - 1].pieces.push({ w, bold });
+          else out.push({ pieces: [{ w, bold }] });
+        });
         bold = !bold;
       }
       return `<span class="line">${out
-        .map((o, i) => `<span class="w">${o.bold ? `<b>${o.w}</b>` : o.w}${i < out.length - 1 ? ' ' : ''}</span>`)
+        .map((o, i) => `<span class="w">${o.pieces.map((p) => (p.bold ? `<b>${p.w}</b>` : p.w)).join('')}${i < out.length - 1 ? ' ' : ''}</span>`)
         .join('')}</span>`;
     })
     .join('');

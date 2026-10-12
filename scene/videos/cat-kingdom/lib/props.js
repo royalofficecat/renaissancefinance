@@ -410,3 +410,45 @@ export function catTree({ h = 6, seed = 3 } = {}) {
   }
   return g;
 }
+
+/** An office desk with a monitor, keyboard and mouse (faces +z: the person sits on the +z side). */
+export function workDesk({ w = 1.4, d = 0.75, seed = 1 } = {}) {
+  const g = new THREE.Group();
+  const top = clay(tone(C.cream, 1, 0.15), 0.6), leg = clay(tone(C.cream, 0.55), 0.6);
+  g.add(mesh(rbox(w, 0.05, d, 0.02), top, { pos: [0, 0.74, 0] }));
+  for (const sx of [-1, 1]) g.add(mesh(rbox(0.05, 0.72, d - 0.08, 0.02), leg, { pos: [sx * (w / 2 - 0.05), 0.36, 0] }));
+  // monitor: a dark screen with a soft cool glow
+  const scr = new THREE.MeshStandardMaterial({ color: tone(C.blue, 0.35), emissive: tone(C.blue, 0.75, 0.35), emissiveIntensity: 0.55, roughness: 0.3 });
+  g.add(mesh(rbox(0.62, 0.4, 0.04, 0.02), clay(tone(C.cream, 0.3), 0.5), { pos: [0, 1.06, -d / 2 + 0.16] }));
+  g.add(mesh(new THREE.PlaneGeometry(0.56, 0.34), scr, { pos: [0, 1.06, -d / 2 + 0.181], cast: false }));
+  g.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.18, 8), leg, { pos: [0, 0.85, -d / 2 + 0.13] }));
+  g.add(mesh(rbox(0.2, 0.015, 0.14, 0.006), leg, { pos: [0, 0.77, -d / 2 + 0.13] }));
+  // keyboard (with a grid of keys) and mouse
+  const kb = clay(tone(C.cream, 1, 0.3), 0.55);
+  kb.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vOP;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvOP = position;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vOP;').replace('#include <color_fragment>', `#include <color_fragment>
+      vec2 k = fract(vOP.xz * vec2(34.0, 30.0));
+      diffuseColor.rgb *= mix(0.8, 1.0, smoothstep(0.06, 0.16, min(min(k.x, 1.0 - k.x), min(k.y, 1.0 - k.y))) * step(0.012, vOP.y + 0.012));`);
+  };
+  g.add(mesh(rbox(0.46, 0.025, 0.16, 0.01), kb, { pos: [0, 0.78, 0.08] }));
+  g.add(mesh(new THREE.SphereGeometry(0.035, 12, 8).scale(1, 0.5, 1.4), kb, { pos: [0.33, 0.78, 0.09] }));
+  // a mug
+  g.add(mesh(new THREE.CylinderGeometry(0.04, 0.036, 0.1, 16), clay(rng(seed)() < 0.5 ? S.terra : tone(C.blue, 1, 0.3), 0.5), { pos: [-0.45, 0.82, 0.02] }));
+  return g;
+}
+
+/** Office chair on a five-star base (faces -z towards its desk), seat at y = 0.48. */
+export function officeChair({ fabric = tone(C.blue, 0.62) } = {}) {
+  const g = new THREE.Group();
+  const f = clay(fabric, 0.85), dark = clay(tone(C.cream, 0.25), 0.5);
+  g.add(mesh(rbox(0.5, 0.09, 0.48, 0.04), f, { pos: [0, 0.48, 0] }));
+  g.add(mesh(rbox(0.46, 0.5, 0.07, 0.04), f, { pos: [0, 0.8, 0.24], rot: [0.08, 0, 0] }));
+  g.add(mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.36, 8), dark, { pos: [0, 0.27, 0] }));
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    g.add(mesh(rbox(0.3, 0.03, 0.04, 0.01), dark, { pos: [Math.cos(a) * 0.14, 0.06, Math.sin(a) * 0.14], rot: [0, -a, 0] }));
+    g.add(mesh(new THREE.SphereGeometry(0.03, 8, 6), dark, { pos: [Math.cos(a) * 0.28, 0.03, Math.sin(a) * 0.28], cast: false }));
+  }
+  return g;
+}

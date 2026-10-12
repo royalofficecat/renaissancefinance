@@ -11,7 +11,9 @@ import { Labels } from '../../../src/core/labels.js';
 import { applyCam, move } from '../../../src/core/camera.js';
 import { clamp, ease, prog, rng } from '../../../src/core/util.js';
 import { C, HEX, S, SKY_REFL, SKY_U, clay, glossy, mixc, rig, tone } from '../look.js';
-import { makeCat } from '../lib/cat.js';
+import { catParts, coatMaterial, makeCat } from '../lib/cat.js';
+import { beatMove } from '../lib/beat.js';
+import { spring } from '../../../src/core/util.js';
 import { bowl, catTree, cushion, mesh, rbox, shrub, sisalMaterial, yarnBall } from '../lib/props.js';
 
 const KM = 10000;
@@ -115,7 +117,7 @@ export async function createState(pipe) {
         float field = ex.b * ca * uFieldK;
         landCol = mix(landCol, mix(uGreen, uGreen2, step(0.5, rows)), smoothstep(0.25, 0.6, field) * 0.9);
         landCol = mix(landCol, uUrbanCol, smoothstep(0.2, 0.6, urb) * ca);
-        landCol = mix(mix(landCol * 0.9, uBg, 0.72), landCol, ca);
+        landCol = mix(mix(landCol * 0.9, uSea * 0.86, 0.8), landCol, ca);
         gCA = ca;
         vec3 seaCol = mix(uShore, uSea * 0.92, smoothstep(0.0, 0.35, ex.g));
         vec3 col = mix(seaCol, landCol, land);
@@ -357,6 +359,49 @@ export async function createState(pipe) {
   giant('sit', 'cream', 9, shastaTop, 0.5, 4.0, [0.4, 0.1, 0]);
   giant('sprawl', 'cream', 8, ground(-120.05, 36.95), 2.0, 7.0);
 
+  // ---------- beat 3: tiny terracotta cats appear by doors in every city, then all turn their heads at once
+  const doorCats = new THREE.Group();
+  scene.add(doorCats);
+  const parts = catParts('sit', 'lo');
+  const DR = rng(12);
+  const sac = ll(-121.49, 38.58);
+  // one cat per ~25 km of city, at the centre of the city blocks in that cell
+  const cells = new Map();
+  for (const [x, y] of cats.blocks) {
+    const k = `${Math.floor(x / 34000)},${Math.floor(y / 34000)}`;
+    const c = cells.get(k) || { x: 0, y: 0, n: 0 };
+    c.x += x; c.y += y; c.n++;
+    cells.set(k, c);
+  }
+  const spots = [...cells.values()].filter((c) => c.n >= 2).map((c) => {
+    const p = toW(c.x / c.n, c.y / c.n);
+    p.y = meshY(p.x, p.z) + 0.01;
+    return { p, yaw: (DR() - 0.5) * 1.0, look: (DR() - 0.5) * 1.8, delay: 0.3 + 1.4 * Math.min(1, p.distanceTo(sac) / 95) + DR() * 0.2, s: 4.6 + DR() * 0.6 };
+  });
+  const coat = coatMaterial('ginger');
+  const bodies = new THREE.InstancedMesh(parts.body, coat, spots.length), heads = new THREE.InstancedMesh(parts.head, coat, spots.length);
+  bodies.castShadow = heads.castShadow = true;
+  doorCats.add(bodies, heads);
+  const mB = new THREE.Matrix4(), mH = new THREE.Matrix4(), mR = new THREE.Matrix4(), qq = new THREE.Quaternion(), vS = new THREE.Vector3(), vP = new THREE.Vector3();
+  function updateDoorCats(f, camPos) {
+    const t = (f - 300) / FPS;
+    const snap = ease.outCubic(prog(t, 2.3, 2.43)); // the one deliberate snap
+    spots.forEach((c, i) => {
+      const perk = 1 + 0.12 * Math.sin(Math.PI * prog(t, 2.3, 2.6));
+      const k = spring(t - c.delay, 0.5) * c.s * perk;
+      qq.setFromEuler(new THREE.Euler(0, c.yaw, 0));
+      mB.compose(c.p, qq, vS.setScalar(Math.max(1e-4, k)));
+      bodies.setMatrixAt(i, mB);
+      // head: idle glance, then everyone looks up at the camera
+      const toCam = Math.atan2(camPos.x - c.p.x, camPos.z - c.p.z) - c.yaw;
+      const yaw = c.look * (1 - snap) + Math.atan2(Math.sin(toCam), Math.cos(toCam)) * snap;
+      mR.makeRotationFromEuler(new THREE.Euler(parts.headRot.x - 0.75 * snap, yaw, 0, 'YXZ'));
+      mH.makeTranslation(parts.headPos.x, parts.headPos.y, parts.headPos.z).multiply(mR).multiply(new THREE.Matrix4().makeScale(parts.headScale, parts.headScale, parts.headScale));
+      heads.setMatrixAt(i, mB.clone().multiply(mH));
+    });
+    bodies.instanceMatrix.needsUpdate = heads.instanceMatrix.needsUpdate = true;
+  }
+
   // ---------- labels (the brief's places only)
   const labels = new Labels({ text: HEX.text, halo: HEX.panel });
   const PLACES = [['sac', 'Sacramento', -121.49, 38.58], ['sf', 'San Francisco', -122.42, 37.77], ['la', 'Los Angeles', -118.24, 34.05], ['ps', 'Palm Springs', -116.55, 33.83]];
@@ -369,15 +414,24 @@ export async function createState(pipe) {
   const A13 = { pos: ll(-116.2, 32.6).add(new THREE.Vector3(18, 26, 22)), target: ll(-118.0, 34.3), lens: 35 };
   const B13 = { pos: new THREE.Vector3(27, 92, 89), target: new THREE.Vector3(0, 0, 10), lens: 24 };
 
+  // Beat 3 (300-420): the flat takeover map, seen from straight above, slow push-in
+  const A3 = { pos: new THREE.Vector3(2, 196, 78), target: new THREE.Vector3(2, 0, 5), lens: 35 };
+  const B3 = { pos: new THREE.Vector3(1, 172, 69), target: new THREE.Vector3(1, 0, 6), lens: 35 };
+
   return {
     labels,
     frame(f, { avoid = [] } = {}) {
       const t = f / FPS;
+      const finale = f >= 1460;
       const dbg = new URLSearchParams(location.search).get('debug');
-      const s = dbg === 'top' ? { pos: new THREE.Vector3(0, 230, 0.01), target: new THREE.Vector3(0, 0, 0), lens: 35 } : move(f, 1515, 1590, A13, B13, { fn: ease.inOutCubic, via: new THREE.Vector3(30, 52, 80) });
+      const s = dbg === 'top' ? { pos: new THREE.Vector3(0, 230, 0.01), target: new THREE.Vector3(0, 0, 0), lens: 35 }
+        : finale ? move(f, 1515, 1590, A13, B13, { fn: ease.inOutCubic, via: new THREE.Vector3(30, 52, 80) }) : beatMove(f, [300, 420], A3, B3);
       applyCam(cam, s);
-      U.uWinK.value = 1;
-      U.uEstK.value = 1;
+      room.visible = network.visible = pawInst.visible = finale;
+      doorCats.visible = !finale;
+      if (!finale) updateDoorCats(f, cam.position);
+      U.uWinK.value = finale ? 1 : 0;
+      U.uEstK.value = finale ? 1 : 0;
       giants.forEach((c, i) => c.update(t + i * 2.1));
       lineMats.forEach((m) => updateRibbon(m, cam, t));
       labels.update(cam, { sac: 1, sf: 1, la: 1, ps: 1, cv: 0.9 }, avoid);

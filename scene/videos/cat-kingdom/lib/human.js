@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { C, S, mixc, tone } from '../look.js';
 import { capsule, ellipsoid, meshSDF, mirrorX, union } from './sdf.js';
 import { paintedMaterial } from './paint.js';
+import { bowl } from './props.js';
 import { rng, smoothstep } from '../../../src/core/util.js';
 
 const ss = smoothstep;
@@ -13,8 +14,8 @@ const ss = smoothstep;
 const POSES = {
   stand: { drop: 0, arms: { R: [[0.135, 0.7, 0], [0.155, 0.53, -0.01], [0.16, 0.37, 0.02]] }, legs: 'stand' },
   holdFolder: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.17, 0.54, 0.04], [0.085, 0.6, 0.15]], L: [[-0.15, 0.71, 0], [-0.17, 0.54, 0.04], [-0.07, 0.59, 0.15]] }, legs: 'stand', prop: 'folder' },
-  carry: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.165, 0.54, 0.03], [0.11, 0.55, 0.2]] }, legs: 'stand', prop: 'bowl' },
-  sitTyping: { drop: 0.18, arms: { R: [[0.15, 0.71, 0], [0.16, 0.55, 0.09], [0.1, 0.56, 0.26]] }, legs: 'sit' },
+  carry: { drop: 0, arms: { R: [[0.14, 0.7, 0], [0.16, 0.55, 0.06], [0.1, 0.55, 0.22]] }, legs: 'stand', prop: 'bowl' },
+  sitTyping: { drop: 0.18, arms: { R: [[0.15, 0.71, 0], [0.165, 0.6, 0.1], [0.1, 0.64, 0.28]] }, legs: 'sit' },
   openCan: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.18, 0.56, 0.06], [0.07, 0.6, 0.2]], L: [[-0.15, 0.71, 0], [-0.17, 0.55, 0.05], [-0.05, 0.57, 0.19]] }, legs: 'stand', prop: 'can' },
 };
 export const HUMAN_POSES = Object.keys(POSES);
@@ -140,6 +141,7 @@ export function makeHuman({ pose = 'stand', seed = 1, lod = 'hi', shirt, trouser
   head.add(headMesh);
   group.add(head);
   if (P.prop === 'folder') group.add(prop('folder'));
+  if (P.prop === 'bowl') { const b = bowl({ r: 0.13, h: 0.06, kind: 'food' }); b.position.set(0.0, 0.56 - P.drop, 0.24); group.add(b); }
   const ph = R() * 10;
   const state = { nod: 0, turn: 0, tilt: 0 };
   function update(t) {

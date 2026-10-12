@@ -320,3 +320,9 @@ export function makeCat({ pose = 'sit', coat = 'ginger', lod = 'hi', seed = 1, s
 }
 
 export const CAT_POSES = Object.keys(POSES);
+
+/** Raw parts for instanced crowds: body and head geometry plus where the head sits for a pose. */
+export function catParts(pose = 'sit', lod = 'lo') {
+  const P = POSES[pose];
+  return { body: bodyGeo(pose, lod), head: headGeo(lod), headPos: new THREE.Vector3(...P.head.pos), headRot: new THREE.Euler(...P.head.rot, 'YXZ'), headScale: 1.08 };
+}

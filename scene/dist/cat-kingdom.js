@@ -13609,11 +13609,11 @@ var init_three_module = __esm({
         this.b = scalar;
         return this;
       }
-      setHex(hex, colorSpace = SRGBColorSpace) {
-        hex = Math.floor(hex);
-        this.r = (hex >> 16 & 255) / 255;
-        this.g = (hex >> 8 & 255) / 255;
-        this.b = (hex & 255) / 255;
+      setHex(hex2, colorSpace = SRGBColorSpace) {
+        hex2 = Math.floor(hex2);
+        this.r = (hex2 >> 16 & 255) / 255;
+        this.g = (hex2 >> 8 & 255) / 255;
+        this.b = (hex2 & 255) / 255;
         ColorManagement.toWorkingColorSpace(this, colorSpace);
         return this;
       }
@@ -13690,17 +13690,17 @@ var init_three_module = __esm({
               console.warn("THREE.Color: Unknown color model " + style);
           }
         } else if (m3 = /^\#([A-Fa-f\d]+)$/.exec(style)) {
-          const hex = m3[1];
-          const size = hex.length;
+          const hex2 = m3[1];
+          const size = hex2.length;
           if (size === 3) {
             return this.setRGB(
-              parseInt(hex.charAt(0), 16) / 15,
-              parseInt(hex.charAt(1), 16) / 15,
-              parseInt(hex.charAt(2), 16) / 15,
+              parseInt(hex2.charAt(0), 16) / 15,
+              parseInt(hex2.charAt(1), 16) / 15,
+              parseInt(hex2.charAt(2), 16) / 15,
               colorSpace
             );
           } else if (size === 6) {
-            return this.setHex(parseInt(hex, 16), colorSpace);
+            return this.setHex(parseInt(hex2, 16), colorSpace);
           } else {
             console.warn("THREE.Color: Invalid hex color " + style);
           }
@@ -13710,9 +13710,9 @@ var init_three_module = __esm({
         return this;
       }
       setColorName(style, colorSpace = SRGBColorSpace) {
-        const hex = _colorKeywords[style.toLowerCase()];
-        if (hex !== void 0) {
-          this.setHex(hex, colorSpace);
+        const hex2 = _colorKeywords[style.toLowerCase()];
+        if (hex2 !== void 0) {
+          this.setHex(hex2, colorSpace);
         } else {
           console.warn("THREE.Color: Unknown color " + style);
         }
@@ -20905,17 +20905,17 @@ void main() {
         this.list = [];
       }
       push(start, count, z, index) {
-        const pool = this.pool;
+        const pool2 = this.pool;
         const list = this.list;
-        if (this.index >= pool.length) {
-          pool.push({
+        if (this.index >= pool2.length) {
+          pool2.push({
             start: -1,
             count: -1,
             z: -1,
             index: -1
           });
         }
-        const item = pool[this.index];
+        const item = pool2[this.index];
         list.push(item);
         this.index++;
         item.start = start;
@@ -31245,8 +31245,8 @@ void main() {
       }
     };
     PlaneHelper = class extends Line {
-      constructor(plane, size = 1, hex = 16776960) {
-        const color = hex;
+      constructor(plane, size = 1, hex2 = 16776960) {
+        const color = hex2;
         const positions = [1, -1, 0, -1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0];
         const geometry = new BufferGeometry();
         geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
@@ -31599,6 +31599,14 @@ void main() {
 });
 
 // scene/src/core/util.js
+function spring(t, dur = 0.7) {
+  if (t <= 0) return 0;
+  const x = t / dur;
+  if (x >= 2.2) return 1;
+  const zeta = 0.66, w = 7.2;
+  const wd = w * Math.sqrt(1 - zeta * zeta);
+  return 1 - Math.exp(-zeta * w * x) * (Math.cos(wd * x) + zeta * w / wd * Math.sin(wd * x));
+}
 function rng(seed) {
   let a2 = seed >>> 0;
   return () => {
@@ -32323,6 +32331,10 @@ function makeCat({ pose = "sit", coat = "ginger", lod = "hi", seed = 1, scale = 
     }
   };
 }
+function catParts(pose = "sit", lod = "lo") {
+  const P = POSES[pose];
+  return { body: bodyGeo(pose, lod), head: headGeo(lod), headPos: new Vector3(...P.head.pos), headRot: new Euler(...P.head.rot, "YXZ"), headScale: 1.08 };
+}
 var ss, V, POSES, earL, outerEar, innerEar, HEAD, headPale, headStripes, headRosy, cache2, COATS, eyeGeo, CAT_POSES;
 var init_cat = __esm({
   "scene/videos/cat-kingdom/lib/cat.js"() {
@@ -32541,219 +32553,6 @@ var init_camera = __esm({
   }
 });
 
-// scene/videos/cat-kingdom/lib/human.js
-var human_exports = {};
-__export(human_exports, {
-  HUMAN_POSES: () => HUMAN_POSES,
-  makeHuman: () => makeHuman
-});
-function bodyField(P) {
-  const d = P.drop;
-  const y = (v2) => v2 - d;
-  const parts = [
-    [ellipsoid([0, y(0.655), 0], [0.132, 0.12, 0.085]), 0],
-    [ellipsoid([0, y(0.5), 0], [0.118, 0.1, 0.08]), 0.08],
-    [mirrorX(ellipsoid([0.1, y(0.71), 0], [0.06, 0.05, 0.058])), 0.07],
-    [capsule([0, y(0.74), 0], [0, y(0.84), 5e-3], 0.042), 0.04]
-  ];
-  const arm = (pts, s = 1) => {
-    const [sh, el, wr] = pts.map(([a2, b, c]) => [a2 * s, y(b), c]);
-    parts.push([capsule(sh, el, 0.042), 0.03], [capsule(el, wr, 0.036), 0.025], [ellipsoid(wr.map((v2, i) => v2 + [0, -0.02, 0.012][i]), [0.032, 0.038, 0.03]), 0.02]);
-  };
-  arm(P.arms.R);
-  if (P.arms.L) arm(P.arms.L);
-  else arm(P.arms.R, -1);
-  if (P.legs === "stand") {
-    parts.push(
-      [mirrorX(capsule([0.06, 0.45, 0], [0.062, 0.24, 0.01], 0.054)), 0.04],
-      [mirrorX(capsule([0.062, 0.24, 0.01], [0.062, 0.055, 0], 0.045)), 0.03],
-      [mirrorX(ellipsoid([0.062, 0.027, 0.03], [0.045, 0.028, 0.075])), 0.02]
-    );
-  } else {
-    parts.push(
-      [mirrorX(capsule([0.06, y(0.45), 0], [0.065, y(0.46), 0.22], 0.056)), 0.04],
-      [mirrorX(capsule([0.065, y(0.46), 0.22], [0.065, 0.055, 0.24], 0.045)), 0.03],
-      [mirrorX(ellipsoid([0.065, 0.027, 0.27], [0.045, 0.028, 0.075])), 0.02]
-    );
-  }
-  return union(parts);
-}
-function bodyPat(P) {
-  const d = P.drop;
-  return (p) => {
-    const skinNeck = ss2(0.735 - d, 0.75 - d, p.y) * (1 - ss2(0.86 - d, 0.88 - d, p.y));
-    let hands = 0;
-    const hs = [P.arms.R[2], P.arms.L ? P.arms.L[2] : [-P.arms.R[2][0], P.arms.R[2][1], P.arms.R[2][2]]];
-    for (const [x, y, z] of hs) hands = Math.max(hands, 1 - ss2(0.04, 0.05, Math.hypot(p.x - x, p.y - (y - d) + 0.02, p.z - z - 0.012)));
-    const trousers = P.legs === "stand" ? 1 - ss2(0.44, 0.47, p.y) : 1 - ss2(0.44 - d, 0.47 - d, p.y) + (1 - ss2(0.2, 0.25, p.y));
-    const shoes = 1 - ss2(0.05, 0.065, p.y);
-    return [Math.min(1, trousers) * (1 - shoes), Math.max(skinNeck, hands), shoes];
-  };
-}
-function headGeo2(cut, lod) {
-  const key = `${cut}:${lod}`;
-  if (!headCache.has(key)) {
-    const hair = HAIR[cut];
-    const hairCut = (x, y, z) => Math.max(hair(x, y, z), 0.11 - y + z * 0.6 - Math.max(0, -z) * 1.2);
-    const f2 = union([[skull, 0], [hairCut, 0.012]]);
-    headCache.set(key, meshSDF(f2, [-0.13, -0.04, -0.14], [0.13, 0.25, 0.13], lod === "hi" ? 70 : 32, {
-      attrs: { pat: [3, (p) => [ss2(-8e-3, 8e-3, skull(p.x, p.y, p.z) + 3e-3 - hairCut(p.x, p.y, p.z)), 0, 0]] }
-    }));
-  }
-  return headCache.get(key);
-}
-function bodyGeo2(pose, lod) {
-  const key = `${pose}:${lod}`;
-  if (!bodyCache.has(key)) {
-    const P = POSES2[pose];
-    bodyCache.set(key, meshSDF(bodyField(P), [-0.26, -0.01, -0.14], [0.26, 0.9, 0.36], lod === "hi" ? 110 : 46, { attrs: { pat: [3, bodyPat(P)] } }));
-  }
-  return bodyCache.get(key);
-}
-function prop(kind) {
-  const g = new Group();
-  if (kind === "folder") {
-    const f2 = new Mesh(new BoxGeometry(0.2, 0.26, 0.014), new MeshStandardMaterial({ color: tone(C2.cream, 1, 0.3), roughness: 0.75 }));
-    f2.rotation.x = -0.35;
-    const seal = new Mesh(new CylinderGeometry(0.03, 0.03, 6e-3, 24), new MeshStandardMaterial({ color: C2.terra, roughness: 0.6 }));
-    seal.rotation.x = Math.PI / 2 - 0.35;
-    seal.position.set(0, 0.03, 0.012);
-    f2.castShadow = true;
-    g.add(f2, seal);
-    g.position.set(0, 0.6, 0.165);
-  }
-  return g;
-}
-function makeHuman({ pose = "stand", seed = 1, lod = "hi", shirt, trousers, skin, hair, cut, scale = 1 } = {}) {
-  const P = POSES2[pose];
-  const R = rng(seed * 104729 + 7);
-  const pick = (a2, v2) => v2 !== void 0 ? typeof v2 === "number" ? a2[v2] : v2 : a2[Math.floor(R() * a2.length)];
-  const shirtC = pick(SHIRTS, shirt), trouserC = pick(TROUSERS, trousers), skinC = pick(SKINS, skin), hairC = pick(HAIRS, hair);
-  const hairCut = cut !== void 0 ? cut : Math.floor(R() * HAIR.length);
-  const group = new Group();
-  const bodyMat = paintedMaterial({ base: shirtC, x: trouserC, y: skinC, z: tone(C2.cream, 0.2) }, { roughness: 0.68, rim: 0.06 });
-  const body = new Mesh(bodyGeo2(pose, lod), bodyMat);
-  body.castShadow = body.receiveShadow = true;
-  group.add(body);
-  const head = new Group();
-  head.position.set(0, 0.835 - P.drop, 4e-3);
-  head.scale.setScalar(0.98);
-  const headMat = paintedMaterial({ base: skinC, x: hairC }, { roughness: 0.62, rim: 0.06 });
-  const headMesh = new Mesh(headGeo2(hairCut, lod), headMat);
-  headMesh.castShadow = headMesh.receiveShadow = true;
-  head.add(headMesh);
-  group.add(head);
-  if (P.prop === "folder") group.add(prop("folder"));
-  const ph = R() * 10;
-  const state = { nod: 0, turn: 0, tilt: 0 };
-  function update(t) {
-    const sway = Math.sin((t + ph) * 0.9) * 8e-3;
-    body.rotation.z = sway;
-    head.rotation.set(state.nod + Math.sin((t + ph) * 0.7) * 0.02, state.turn, state.tilt + sway * 0.8);
-    body.scale.y = 1 + Math.sin((t + ph) * 1.6) * 4e-3;
-  }
-  update(0);
-  group.scale.setScalar(scale);
-  return { group, head, body, state, update };
-}
-var ss2, POSES2, HUMAN_POSES, HAIR, skull, headCache, bodyCache, SHIRTS, TROUSERS, SKINS, HAIRS;
-var init_human = __esm({
-  "scene/videos/cat-kingdom/lib/human.js"() {
-    init_three_module();
-    init_look2();
-    init_sdf();
-    init_paint();
-    init_util();
-    ss2 = smoothstep2;
-    POSES2 = {
-      stand: { drop: 0, arms: { R: [[0.135, 0.7, 0], [0.155, 0.53, -0.01], [0.16, 0.37, 0.02]] }, legs: "stand" },
-      holdFolder: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.17, 0.54, 0.04], [0.085, 0.6, 0.15]], L: [[-0.15, 0.71, 0], [-0.17, 0.54, 0.04], [-0.07, 0.59, 0.15]] }, legs: "stand", prop: "folder" },
-      carry: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.165, 0.54, 0.03], [0.11, 0.55, 0.2]] }, legs: "stand", prop: "bowl" },
-      sitTyping: { drop: 0.18, arms: { R: [[0.15, 0.71, 0], [0.16, 0.55, 0.09], [0.1, 0.56, 0.26]] }, legs: "sit" },
-      openCan: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.18, 0.56, 0.06], [0.07, 0.6, 0.2]], L: [[-0.15, 0.71, 0], [-0.17, 0.55, 0.05], [-0.05, 0.57, 0.19]] }, legs: "stand", prop: "can" }
-    };
-    HUMAN_POSES = Object.keys(POSES2);
-    HAIR = [
-      (x, y, z) => ellipsoid([0, 0.1, -0.012], [0.094, 0.098, 0.096])(x, y, z),
-      // short
-      (x, y, z) => union([[ellipsoid([0, 0.1, -0.014], [0.096, 0.1, 0.098]), 0], [ellipsoid([0, 0.035, -0.05], [0.09, 0.09, 0.06]), 0.04]])(x, y, z),
-      // bob
-      (x, y, z) => union([[ellipsoid([0, 0.1, -0.012], [0.094, 0.098, 0.096]), 0], [ellipsoid([0, 0.17, -0.06], [0.05, 0.05, 0.05]), 0.03]])(x, y, z)
-      // bun
-    ];
-    skull = ellipsoid([0, 0.085, 6e-3], [0.085, 0.1, 0.09]);
-    headCache = /* @__PURE__ */ new Map();
-    bodyCache = /* @__PURE__ */ new Map();
-    SHIRTS = [S.blue, tone(C2.blue, 1, 0.18), tone(C2.blue, 0.78), tone(C2.blue, 0.92, 0.1)];
-    TROUSERS = [S.blueDeep, tone(C2.cream, 0.55), tone(C2.blue, 0.55)];
-    SKINS = [tone(C2.cream, 0.98), mixc(tone(C2.cream, 0.85), C2.terra, 0.18), mixc(tone(C2.cream, 0.62), C2.terra, 0.25), mixc(tone(C2.cream, 0.42), C2.terra, 0.2)];
-    HAIRS = [S.hair, tone(C2.cream, 0.22), mixc(tone(C2.cream, 0.55), C2.terra, 0.3), tone(C2.cream, 0.8), tone(C2.cream, 0.35)];
-  }
-});
-
-// scene/videos/cat-kingdom/sets/lab.js
-var lab_exports = {};
-__export(lab_exports, {
-  createLab: () => createLab
-});
-async function createLab(pipe) {
-  const scene = new Scene();
-  backdrop(scene);
-  const floor = new Mesh(new CircleGeometry(30, 64), clay(tone(C2.cream, 0.9), 0.8));
-  floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
-  scene.add(floor);
-  const lights = rig2(scene, pipe.renderer, { size: 4, dist: 20 });
-  lights.follow(new Vector3(0, 0, 0), 4);
-  const cats = [];
-  CAT_POSES.forEach((pose, i) => {
-    const coat = ["ginger", "cream", "ginger2"][i % 3];
-    const c = makeCat({ pose, coat, seed: i + 1 });
-    c.group.position.set((i % 3 - 1) * 1.25, 0, Math.floor(i / 3) * -1.4 + 0.6);
-    scene.add(c.group);
-    cats.push(c);
-  });
-  let humans = [];
-  try {
-    const { makeHuman: makeHuman2, HUMAN_POSES: HUMAN_POSES2 } = await Promise.resolve().then(() => (init_human(), human_exports));
-    HUMAN_POSES2.forEach((pose, i) => {
-      const h = makeHuman2({ pose, seed: i + 3, scale: 2.6 });
-      h.group.position.set(2.4 + i % 3 * 0.9, 0, Math.floor(i / 3) * -1.3);
-      scene.add(h.group);
-      humans.push(h);
-    });
-  } catch (e3) {
-    console.warn("humans not ready", e3.message);
-  }
-  const cam = new PerspectiveCamera(30, 1080 / 1920, 0.05, 900);
-  const views = [
-    { pos: [0.4, 2.2, 5], target: [0, 0.3, -0.2], lens: 32 },
-    { pos: [-2.2, 1.4, 3.4], target: [-0.2, 0.3, -0.4], lens: 40 },
-    { pos: [-0.6, 0.95, 2.1], target: [-1.25, 0.62, 0.6], lens: 85 },
-    { pos: [3, 2, 4.2], target: [3.3, 1.1, -0.6], lens: 30 }
-  ];
-  return {
-    frame(f2) {
-      const v2 = views[f2 % views.length];
-      applyCam(cam, { pos: new Vector3(...v2.pos), target: new Vector3(...v2.target), lens: v2.lens });
-      cats.forEach((c, i) => {
-        c.look(i === 0 ? 0.25 : 0, 0, 0);
-        c.update(1.3 + i);
-      });
-      humans.forEach((h) => h.update && h.update(1));
-      return { scene, camera: cam, bloom: 0.2, exposure: 1 };
-    }
-  };
-}
-var init_lab = __esm({
-  "scene/videos/cat-kingdom/sets/lab.js"() {
-    init_three_module();
-    init_look2();
-    init_cat();
-    init_camera();
-  }
-});
-
 // node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js
 function getUv(faceDirVector, normal, uvAxis, projectionAxis, radius, sideLength) {
   const totArcLength = 2 * Math.PI * radius / 4;
@@ -32871,7 +32670,7 @@ function pawSeal(radius = 0.5) {
     const raised = (x, y, z) => Math.max(paw(x * 1.25, y * 1.25 - 0.02, (z - 0.02) * 1.5) / 1.25, -z + 0);
     const f2 = union([[discR, 0], [rim, 0.02], [raised, 0.025]]);
     sealGeo = meshSDF((x, y, z) => f2(x, y, z) - 4e-3, [-1.05, -1.05, -0.12], [1.05, 1.05, 0.14], 150, {
-      attrs: { pat: [3, (p) => [ss3(0.03, 0.045, p.z), 0, 0]] }
+      attrs: { pat: [3, (p) => [ss2(0.03, 0.045, p.z), 0, 0]] }
     });
   }
   const m3 = new Mesh(sealGeo, paintedMaterial({ base: tone(C2.terra, 0.95), x: tone(C2.cream, 1, 0.2) }, { roughness: 0.55, rim: 0.05, key: "seal" }));
@@ -33088,14 +32887,14 @@ function framedPicture({ w = 0.5, h = 0.4, kind = 0 } = {}) {
   cv.width = 256;
   cv.height = Math.round(256 * h / w);
   const c = cv.getContext("2d"), W2 = cv.width, H2 = cv.height;
-  const hex = (col2) => "#" + col2.getHexString();
+  const hex2 = (col2) => "#" + col2.getHexString();
   const sky = c.createLinearGradient(0, 0, 0, H2);
-  sky.addColorStop(0, hex(tone(C2.blue, 1, 0.3)));
-  sky.addColorStop(1, hex(tone(C2.cream, 1, 0.3)));
+  sky.addColorStop(0, hex2(tone(C2.blue, 1, 0.3)));
+  sky.addColorStop(1, hex2(tone(C2.cream, 1, 0.3)));
   c.fillStyle = sky;
   c.fillRect(0, 0, W2, H2);
   if (kind === 0) {
-    c.fillStyle = hex(tone(C2.green, 0.85));
+    c.fillStyle = hex2(tone(C2.green, 0.85));
     c.beginPath();
     c.moveTo(0, H2 * 0.7);
     c.quadraticCurveTo(W2 * 0.3, H2 * 0.45, W2 * 0.6, H2 * 0.62);
@@ -33103,7 +32902,7 @@ function framedPicture({ w = 0.5, h = 0.4, kind = 0 } = {}) {
     c.lineTo(W2, H2);
     c.lineTo(0, H2);
     c.fill();
-    c.fillStyle = hex(tone(C2.green, 0.65));
+    c.fillStyle = hex2(tone(C2.green, 0.65));
     c.beginPath();
     c.moveTo(0, H2 * 0.85);
     c.quadraticCurveTo(W2 * 0.5, H2 * 0.7, W2, H2 * 0.82);
@@ -33111,15 +32910,15 @@ function framedPicture({ w = 0.5, h = 0.4, kind = 0 } = {}) {
     c.lineTo(0, H2);
     c.fill();
   } else {
-    c.fillStyle = hex(tone(C2.blue, 0.85));
+    c.fillStyle = hex2(tone(C2.blue, 0.85));
     c.fillRect(0, H2 * 0.62, W2, H2 * 0.38);
-    c.fillStyle = hex(tone(C2.cream, 0.8));
+    c.fillStyle = hex2(tone(C2.cream, 0.8));
     c.beginPath();
     c.moveTo(0, H2 * 0.62);
     c.lineTo(W2 * 0.25, H2 * 0.3);
     c.lineTo(W2 * 0.45, H2 * 0.62);
     c.fill();
-    c.fillStyle = hex(C2.terra);
+    c.fillStyle = hex2(C2.terra);
     c.fillRect(W2 * 0.62, H2 * 0.5, W2 * 0.05, H2 * 0.14);
   }
   const tex = new CanvasTexture(cv);
@@ -33248,7 +33047,42 @@ function catTree({ h = 6, seed = 3 } = {}) {
   }
   return g;
 }
-var ss3, rbox, sealGeo;
+function workDesk({ w = 1.4, d = 0.75, seed = 1 } = {}) {
+  const g = new Group();
+  const top = clay(tone(C2.cream, 1, 0.15), 0.6), leg = clay(tone(C2.cream, 0.55), 0.6);
+  g.add(mesh(rbox(w, 0.05, d, 0.02), top, { pos: [0, 0.74, 0] }));
+  for (const sx of [-1, 1]) g.add(mesh(rbox(0.05, 0.72, d - 0.08, 0.02), leg, { pos: [sx * (w / 2 - 0.05), 0.36, 0] }));
+  const scr = new MeshStandardMaterial({ color: tone(C2.blue, 0.35), emissive: tone(C2.blue, 0.75, 0.35), emissiveIntensity: 0.55, roughness: 0.3 });
+  g.add(mesh(rbox(0.62, 0.4, 0.04, 0.02), clay(tone(C2.cream, 0.3), 0.5), { pos: [0, 1.06, -d / 2 + 0.16] }));
+  g.add(mesh(new PlaneGeometry(0.56, 0.34), scr, { pos: [0, 1.06, -d / 2 + 0.181], cast: false }));
+  g.add(mesh(new CylinderGeometry(0.02, 0.02, 0.18, 8), leg, { pos: [0, 0.85, -d / 2 + 0.13] }));
+  g.add(mesh(rbox(0.2, 0.015, 0.14, 6e-3), leg, { pos: [0, 0.77, -d / 2 + 0.13] }));
+  const kb = clay(tone(C2.cream, 1, 0.3), 0.55);
+  kb.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vOP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvOP = position;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vOP;").replace("#include <color_fragment>", `#include <color_fragment>
+      vec2 k = fract(vOP.xz * vec2(34.0, 30.0));
+      diffuseColor.rgb *= mix(0.8, 1.0, smoothstep(0.06, 0.16, min(min(k.x, 1.0 - k.x), min(k.y, 1.0 - k.y))) * step(0.012, vOP.y + 0.012));`);
+  };
+  g.add(mesh(rbox(0.46, 0.025, 0.16, 0.01), kb, { pos: [0, 0.78, 0.08] }));
+  g.add(mesh(new SphereGeometry(0.035, 12, 8).scale(1, 0.5, 1.4), kb, { pos: [0.33, 0.78, 0.09] }));
+  g.add(mesh(new CylinderGeometry(0.04, 0.036, 0.1, 16), clay(rng(seed)() < 0.5 ? S.terra : tone(C2.blue, 1, 0.3), 0.5), { pos: [-0.45, 0.82, 0.02] }));
+  return g;
+}
+function officeChair({ fabric = tone(C2.blue, 0.62) } = {}) {
+  const g = new Group();
+  const f2 = clay(fabric, 0.85), dark = clay(tone(C2.cream, 0.25), 0.5);
+  g.add(mesh(rbox(0.5, 0.09, 0.48, 0.04), f2, { pos: [0, 0.48, 0] }));
+  g.add(mesh(rbox(0.46, 0.5, 0.07, 0.04), f2, { pos: [0, 0.8, 0.24], rot: [0.08, 0, 0] }));
+  g.add(mesh(new CylinderGeometry(0.025, 0.025, 0.36, 8), dark, { pos: [0, 0.27, 0] }));
+  for (let i = 0; i < 5; i++) {
+    const a2 = i / 5 * Math.PI * 2;
+    g.add(mesh(rbox(0.3, 0.03, 0.04, 0.01), dark, { pos: [Math.cos(a2) * 0.14, 0.06, Math.sin(a2) * 0.14], rot: [0, -a2, 0] }));
+    g.add(mesh(new SphereGeometry(0.03, 8, 6), dark, { pos: [Math.cos(a2) * 0.28, 0.03, Math.sin(a2) * 0.28], cast: false }));
+  }
+  return g;
+}
+var ss2, rbox, sealGeo;
 var init_props = __esm({
   "scene/videos/cat-kingdom/lib/props.js"() {
     init_three_module();
@@ -33257,21 +33091,236 @@ var init_props = __esm({
     init_sdf();
     init_paint();
     init_util();
-    ss3 = smoothstep2;
+    ss2 = smoothstep2;
     rbox = (w, h, d, r = 0.02, seg = 3) => new RoundedBoxGeometry(w, h, d, seg, Math.min(r, w / 2 - 1e-4, h / 2 - 1e-4, d / 2 - 1e-4));
     sealGeo = null;
   }
 });
 
-// scene/videos/cat-kingdom/sets/office.js
-var office_exports = {};
-__export(office_exports, {
-  createOffice: () => createOffice
+// scene/videos/cat-kingdom/lib/human.js
+var human_exports = {};
+__export(human_exports, {
+  HUMAN_POSES: () => HUMAN_POSES,
+  makeHuman: () => makeHuman
 });
-function parquet() {
-  const m3 = clay(S.wood, 0.62);
+function bodyField(P) {
+  const d = P.drop;
+  const y = (v2) => v2 - d;
+  const parts = [
+    [ellipsoid([0, y(0.655), 0], [0.132, 0.12, 0.085]), 0],
+    [ellipsoid([0, y(0.5), 0], [0.118, 0.1, 0.08]), 0.08],
+    [mirrorX(ellipsoid([0.1, y(0.71), 0], [0.06, 0.05, 0.058])), 0.07],
+    [capsule([0, y(0.74), 0], [0, y(0.84), 5e-3], 0.042), 0.04]
+  ];
+  const arm = (pts, s = 1) => {
+    const [sh, el, wr] = pts.map(([a2, b, c]) => [a2 * s, y(b), c]);
+    parts.push([capsule(sh, el, 0.042), 0.03], [capsule(el, wr, 0.036), 0.025], [ellipsoid(wr.map((v2, i) => v2 + [0, -0.02, 0.012][i]), [0.032, 0.038, 0.03]), 0.02]);
+  };
+  arm(P.arms.R);
+  if (P.arms.L) arm(P.arms.L);
+  else arm(P.arms.R, -1);
+  if (P.legs === "stand") {
+    parts.push(
+      [mirrorX(capsule([0.06, 0.45, 0], [0.062, 0.24, 0.01], 0.054)), 0.04],
+      [mirrorX(capsule([0.062, 0.24, 0.01], [0.062, 0.055, 0], 0.045)), 0.03],
+      [mirrorX(ellipsoid([0.062, 0.027, 0.03], [0.045, 0.028, 0.075])), 0.02]
+    );
+  } else {
+    parts.push(
+      [mirrorX(capsule([0.06, y(0.45), 0], [0.065, y(0.46), 0.22], 0.056)), 0.04],
+      [mirrorX(capsule([0.065, y(0.46), 0.22], [0.065, 0.055, 0.24], 0.045)), 0.03],
+      [mirrorX(ellipsoid([0.065, 0.027, 0.27], [0.045, 0.028, 0.075])), 0.02]
+    );
+  }
+  return union(parts);
+}
+function bodyPat(P) {
+  const d = P.drop;
+  return (p) => {
+    const skinNeck = ss3(0.735 - d, 0.75 - d, p.y) * (1 - ss3(0.86 - d, 0.88 - d, p.y));
+    let hands = 0;
+    const hs = [P.arms.R[2], P.arms.L ? P.arms.L[2] : [-P.arms.R[2][0], P.arms.R[2][1], P.arms.R[2][2]]];
+    for (const [x, y, z] of hs) hands = Math.max(hands, 1 - ss3(0.04, 0.05, Math.hypot(p.x - x, p.y - (y - d) + 0.02, p.z - z - 0.012)));
+    const trousers = P.legs === "stand" ? 1 - ss3(0.44, 0.47, p.y) : 1 - ss3(0.44 - d, 0.47 - d, p.y) + (1 - ss3(0.2, 0.25, p.y));
+    const shoes = 1 - ss3(0.05, 0.065, p.y);
+    return [Math.min(1, trousers) * (1 - shoes), Math.max(skinNeck, hands), shoes];
+  };
+}
+function headGeo2(cut, lod) {
+  const key = `${cut}:${lod}`;
+  if (!headCache.has(key)) {
+    const hair = HAIR[cut];
+    const hairCut = (x, y, z) => Math.max(hair(x, y, z), 0.11 - y + z * 0.6 - Math.max(0, -z) * 1.2);
+    const f2 = union([[skull, 0], [hairCut, 0.012]]);
+    headCache.set(key, meshSDF(f2, [-0.13, -0.04, -0.14], [0.13, 0.25, 0.13], lod === "hi" ? 70 : 32, {
+      attrs: { pat: [3, (p) => [ss3(-8e-3, 8e-3, skull(p.x, p.y, p.z) + 3e-3 - hairCut(p.x, p.y, p.z)), 0, 0]] }
+    }));
+  }
+  return headCache.get(key);
+}
+function bodyGeo2(pose, lod) {
+  const key = `${pose}:${lod}`;
+  if (!bodyCache.has(key)) {
+    const P = POSES2[pose];
+    bodyCache.set(key, meshSDF(bodyField(P), [-0.26, -0.01, -0.14], [0.26, 0.9, 0.36], lod === "hi" ? 110 : 46, { attrs: { pat: [3, bodyPat(P)] } }));
+  }
+  return bodyCache.get(key);
+}
+function prop(kind) {
+  const g = new Group();
+  if (kind === "folder") {
+    const f2 = new Mesh(new BoxGeometry(0.2, 0.26, 0.014), new MeshStandardMaterial({ color: tone(C2.cream, 1, 0.3), roughness: 0.75 }));
+    f2.rotation.x = -0.35;
+    const seal = new Mesh(new CylinderGeometry(0.03, 0.03, 6e-3, 24), new MeshStandardMaterial({ color: C2.terra, roughness: 0.6 }));
+    seal.rotation.x = Math.PI / 2 - 0.35;
+    seal.position.set(0, 0.03, 0.012);
+    f2.castShadow = true;
+    g.add(f2, seal);
+    g.position.set(0, 0.6, 0.165);
+  }
+  return g;
+}
+function makeHuman({ pose = "stand", seed = 1, lod = "hi", shirt, trousers, skin, hair, cut, scale = 1 } = {}) {
+  const P = POSES2[pose];
+  const R = rng(seed * 104729 + 7);
+  const pick = (a2, v2) => v2 !== void 0 ? typeof v2 === "number" ? a2[v2] : v2 : a2[Math.floor(R() * a2.length)];
+  const shirtC = pick(SHIRTS, shirt), trouserC = pick(TROUSERS, trousers), skinC = pick(SKINS, skin), hairC = pick(HAIRS, hair);
+  const hairCut = cut !== void 0 ? cut : Math.floor(R() * HAIR.length);
+  const group = new Group();
+  const bodyMat = paintedMaterial({ base: shirtC, x: trouserC, y: skinC, z: tone(C2.cream, 0.2) }, { roughness: 0.68, rim: 0.06 });
+  const body = new Mesh(bodyGeo2(pose, lod), bodyMat);
+  body.castShadow = body.receiveShadow = true;
+  group.add(body);
+  const head = new Group();
+  head.position.set(0, 0.835 - P.drop, 4e-3);
+  head.scale.setScalar(0.98);
+  const headMat = paintedMaterial({ base: skinC, x: hairC }, { roughness: 0.62, rim: 0.06 });
+  const headMesh = new Mesh(headGeo2(hairCut, lod), headMat);
+  headMesh.castShadow = headMesh.receiveShadow = true;
+  head.add(headMesh);
+  group.add(head);
+  if (P.prop === "folder") group.add(prop("folder"));
+  if (P.prop === "bowl") {
+    const b = bowl({ r: 0.13, h: 0.06, kind: "food" });
+    b.position.set(0, 0.56 - P.drop, 0.24);
+    group.add(b);
+  }
+  const ph = R() * 10;
+  const state = { nod: 0, turn: 0, tilt: 0 };
+  function update(t) {
+    const sway = Math.sin((t + ph) * 0.9) * 8e-3;
+    body.rotation.z = sway;
+    head.rotation.set(state.nod + Math.sin((t + ph) * 0.7) * 0.02, state.turn, state.tilt + sway * 0.8);
+    body.scale.y = 1 + Math.sin((t + ph) * 1.6) * 4e-3;
+  }
+  update(0);
+  group.scale.setScalar(scale);
+  return { group, head, body, state, update };
+}
+var ss3, POSES2, HUMAN_POSES, HAIR, skull, headCache, bodyCache, SHIRTS, TROUSERS, SKINS, HAIRS;
+var init_human = __esm({
+  "scene/videos/cat-kingdom/lib/human.js"() {
+    init_three_module();
+    init_look2();
+    init_sdf();
+    init_paint();
+    init_props();
+    init_util();
+    ss3 = smoothstep2;
+    POSES2 = {
+      stand: { drop: 0, arms: { R: [[0.135, 0.7, 0], [0.155, 0.53, -0.01], [0.16, 0.37, 0.02]] }, legs: "stand" },
+      holdFolder: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.17, 0.54, 0.04], [0.085, 0.6, 0.15]], L: [[-0.15, 0.71, 0], [-0.17, 0.54, 0.04], [-0.07, 0.59, 0.15]] }, legs: "stand", prop: "folder" },
+      carry: { drop: 0, arms: { R: [[0.14, 0.7, 0], [0.16, 0.55, 0.06], [0.1, 0.55, 0.22]] }, legs: "stand", prop: "bowl" },
+      sitTyping: { drop: 0.18, arms: { R: [[0.15, 0.71, 0], [0.165, 0.6, 0.1], [0.1, 0.64, 0.28]] }, legs: "sit" },
+      openCan: { drop: 0, arms: { R: [[0.15, 0.71, 0], [0.18, 0.56, 0.06], [0.07, 0.6, 0.2]], L: [[-0.15, 0.71, 0], [-0.17, 0.55, 0.05], [-0.05, 0.57, 0.19]] }, legs: "stand", prop: "can" }
+    };
+    HUMAN_POSES = Object.keys(POSES2);
+    HAIR = [
+      (x, y, z) => ellipsoid([0, 0.1, -0.012], [0.094, 0.098, 0.096])(x, y, z),
+      // short
+      (x, y, z) => union([[ellipsoid([0, 0.1, -0.014], [0.096, 0.1, 0.098]), 0], [ellipsoid([0, 0.035, -0.05], [0.09, 0.09, 0.06]), 0.04]])(x, y, z),
+      // bob
+      (x, y, z) => union([[ellipsoid([0, 0.1, -0.012], [0.094, 0.098, 0.096]), 0], [ellipsoid([0, 0.17, -0.06], [0.05, 0.05, 0.05]), 0.03]])(x, y, z)
+      // bun
+    ];
+    skull = ellipsoid([0, 0.085, 6e-3], [0.085, 0.1, 0.09]);
+    headCache = /* @__PURE__ */ new Map();
+    bodyCache = /* @__PURE__ */ new Map();
+    SHIRTS = [S.blue, tone(C2.blue, 1, 0.18), tone(C2.blue, 0.78), tone(C2.blue, 0.92, 0.1)];
+    TROUSERS = [S.blueDeep, tone(C2.cream, 0.55), tone(C2.blue, 0.55)];
+    SKINS = [tone(C2.cream, 0.98), mixc(tone(C2.cream, 0.85), C2.terra, 0.18), mixc(tone(C2.cream, 0.62), C2.terra, 0.25), mixc(tone(C2.cream, 0.42), C2.terra, 0.2)];
+    HAIRS = [S.hair, tone(C2.cream, 0.22), mixc(tone(C2.cream, 0.55), C2.terra, 0.3), tone(C2.cream, 0.8), tone(C2.cream, 0.35)];
+  }
+});
+
+// scene/videos/cat-kingdom/sets/lab.js
+var lab_exports = {};
+__export(lab_exports, {
+  createLab: () => createLab
+});
+async function createLab(pipe) {
+  const scene = new Scene();
+  backdrop(scene);
+  const floor = new Mesh(new CircleGeometry(30, 64), clay(tone(C2.cream, 0.9), 0.8));
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+  const lights = rig2(scene, pipe.renderer, { size: 4, dist: 20 });
+  lights.follow(new Vector3(0, 0, 0), 4);
+  const cats = [];
+  CAT_POSES.forEach((pose, i) => {
+    const coat = ["ginger", "cream", "ginger2"][i % 3];
+    const c = makeCat({ pose, coat, seed: i + 1 });
+    c.group.position.set((i % 3 - 1) * 1.25, 0, Math.floor(i / 3) * -1.4 + 0.6);
+    scene.add(c.group);
+    cats.push(c);
+  });
+  let humans = [];
+  try {
+    const { makeHuman: makeHuman2, HUMAN_POSES: HUMAN_POSES2 } = await Promise.resolve().then(() => (init_human(), human_exports));
+    HUMAN_POSES2.forEach((pose, i) => {
+      const h = makeHuman2({ pose, seed: i + 3, scale: 2.6 });
+      h.group.position.set(2.4 + i % 3 * 0.9, 0, Math.floor(i / 3) * -1.3);
+      scene.add(h.group);
+      humans.push(h);
+    });
+  } catch (e3) {
+    console.warn("humans not ready", e3.message);
+  }
+  const cam = new PerspectiveCamera(30, 1080 / 1920, 0.05, 900);
+  const views = [
+    { pos: [0.4, 2.2, 5], target: [0, 0.3, -0.2], lens: 32 },
+    { pos: [-2.2, 1.4, 3.4], target: [-0.2, 0.3, -0.4], lens: 40 },
+    { pos: [-0.6, 0.95, 2.1], target: [-1.25, 0.62, 0.6], lens: 85 },
+    { pos: [3, 2, 4.2], target: [3.3, 1.1, -0.6], lens: 30 }
+  ];
+  return {
+    frame(f2) {
+      const v2 = views[f2 % views.length];
+      applyCam(cam, { pos: new Vector3(...v2.pos), target: new Vector3(...v2.target), lens: v2.lens });
+      cats.forEach((c, i) => {
+        c.look(i === 0 ? 0.25 : 0, 0, 0);
+        c.update(1.3 + i);
+      });
+      humans.forEach((h) => h.update && h.update(1));
+      return { scene, camera: cam, bloom: 0.2, exposure: 1 };
+    }
+  };
+}
+var init_lab = __esm({
+  "scene/videos/cat-kingdom/sets/lab.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_camera();
+  }
+});
+
+// scene/videos/cat-kingdom/lib/room.js
+function parquet(color = S.wood) {
+  const m3 = clay(color, 0.62);
   m3.onBeforeCompile = (sh) => {
-    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
+    worldPos(sh);
     sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
         varying vec3 vWP;
         float h1(float n) { return fract(sin(n * 127.1) * 43758.5453); }`).replace("#include <color_fragment>", `#include <color_fragment>
@@ -33287,25 +33336,78 @@ function parquet() {
   };
   return m3;
 }
-function wallWithWindow(mat, frameMat) {
-  const g = new Group();
-  const t = 0.24, x = ROOM.x0 - t / 2, zLen = ROOM.z1 - ROOM.z0;
-  const box = (z0, z1, y0, y1) => g.add(mesh(new BoxGeometry(t, y1 - y0, z1 - z0), mat, { pos: [x, (y0 + y1) / 2, (z0 + z1) / 2] }));
-  box(ROOM.z0, WIN.z0, 0, ROOM.h);
-  box(WIN.z1, ROOM.z1, 0, ROOM.h);
-  box(WIN.z0, WIN.z1, 0, WIN.y0);
-  box(WIN.z0, WIN.z1, WIN.y1, ROOM.h);
-  const fz = (WIN.z0 + WIN.z1) / 2, fw = WIN.z1 - WIN.z0, fh = WIN.y1 - WIN.y0;
-  g.add(mesh(rbox(0.1, 0.08, fw + 0.22, 0.02), frameMat, { pos: [x + 0.1, WIN.y0 - 0.02, fz] }));
-  for (const s of [-1, 1]) g.add(mesh(rbox(0.06, fh + 0.1, 0.09, 0.015), frameMat, { pos: [x + 0.07, (WIN.y0 + WIN.y1) / 2, fz + s * (fw / 2 + 0.03)] }));
-  g.add(mesh(rbox(0.06, 0.09, fw + 0.1, 0.015), frameMat, { pos: [x + 0.07, WIN.y1 + 0.03, fz] }));
-  g.add(mesh(new BoxGeometry(0.04, fh, 0.04), frameMat, { pos: [x, (WIN.y0 + WIN.y1) / 2, fz] }));
-  for (const y of [WIN.y0 + fh * 0.36, WIN.y0 + fh * 0.7]) g.add(mesh(new BoxGeometry(0.04, 0.04, fw), frameMat, { pos: [x, y, fz] }));
-  return g;
+function tiles(a2 = tone(C2.cream, 0.95), b = tone(C2.cream, 0.82), size = 0.4) {
+  const m3 = clay(16777215, 0.5);
+  m3.onBeforeCompile = (sh) => {
+    worldPos(sh);
+    sh.uniforms.uA = { value: a2 };
+    sh.uniforms.uB = { value: b };
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+        varying vec3 vWP; uniform vec3 uA, uB;`).replace("#include <color_fragment>", `#include <color_fragment>
+        vec2 c = floor(vWP.xz / ${size.toFixed(3)});
+        vec2 f = fract(vWP.xz / ${size.toFixed(3)});
+        float grout = smoothstep(0.0, 0.025, min(min(f.x, 1.0 - f.x), min(f.y, 1.0 - f.y)));
+        vec3 col = mod(c.x + c.y, 2.0) < 1.0 ? uA : uB;
+        diffuseColor.rgb = col * mix(0.78, 1.0, grout);`);
+  };
+  return m3;
 }
-function lightShaft(dir) {
-  const corners = [[WIN.z0, WIN.y0], [WIN.z1, WIN.y0], [WIN.z1, WIN.y1], [WIN.z0, WIN.y1]].map(([z, y]) => new Vector3(ROOM.x0 - 0.05, y, z));
-  const d = dir.clone().negate();
+function occluded(mat, R) {
+  mat.onBeforeCompile = (sh) => {
+    worldPos(sh);
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <aomap_fragment>", `#include <aomap_fragment>
+        float occ = mix(0.62, 1.0, smoothstep(0.0, 0.9, vWP.y)) * mix(0.7, 1.0, smoothstep(0.0, 1.2, vWP.x - ${R.x0.toFixed(2)})) * mix(0.72, 1.0, smoothstep(0.0, 1.0, vWP.z - ${R.z0.toFixed(2)}));
+        reflectedLight.indirectDiffuse *= occ;`);
+  };
+  return mat;
+}
+function buildRoom(R, { windows = [], floor = parquet(), wall = tone(C2.cream, 0.9), wainscot = tone(C2.cream, 0.8), pilasters = [], panels = true, slab = tone(C2.cream, 0.9), ghosts = true } = {}) {
+  const g = new Group();
+  const plaster = occluded(clay(wall, 0.85), R), wain = wainscot ? occluded(clay(wainscot, 0.75), R) : null, trim = clay(tone(C2.cream, 1, 0.25), 0.6);
+  const W2 = R.x1 - R.x0, D = R.z1 - R.z0, cx = (R.x0 + R.x1) / 2, cz = (R.z0 + R.z1) / 2;
+  g.add(mesh(new BoxGeometry(W2, 0.02, D), floor, { pos: [cx, -0.01, cz] }));
+  g.add(mesh(rbox(W2 + 0.24, 0.32, D + 0.02, 0.03), clay(slab, 0.8), { pos: [cx - 0.12, -0.18, cz] }));
+  g.add(mesh(new BoxGeometry(W2 + 0.24, R.h, 0.24), plaster, { pos: [cx - 0.12, R.h / 2, R.z0 - 0.12] }));
+  if (wainscot) {
+    g.add(mesh(new BoxGeometry(W2, 1, 0.03), wain, { pos: [cx, 0.5, R.z0 + 0.015] }));
+    g.add(mesh(rbox(W2, 0.07, 0.06, 0.02), trim, { pos: [cx, 1.02, R.z0 + 0.03] }));
+  }
+  g.add(mesh(rbox(W2, 0.16, 0.1, 0.03), trim, { pos: [cx, R.h - 0.08, R.z0 + 0.05] }));
+  g.add(mesh(rbox(W2, 0.12, 0.05, 0.02), trim, { pos: [cx, 0.06, R.z0 + 0.025] }));
+  for (const x2 of pilasters) g.add(mesh(rbox(0.3, R.h - 0.2, 0.08, 0.02), trim, { pos: [x2, (R.h - 0.2) / 2, R.z0 + 0.04] }));
+  if (wainscot && panels) for (let x2 = R.x0 + 0.5; x2 < R.x1 - 0.4; x2 += 0.75) g.add(mesh(rbox(0.6, 0.62, 0.02, 0.01), clay(tone(wainscot, 1.12), 0.75), { pos: [x2 + 0.3, 0.52, R.z0 + 0.04], cast: false }));
+  const t = 0.24, x = R.x0 - t / 2;
+  const box = (z0, z1, y0, y1) => {
+    if (z1 - z0 > 1e-3 && y1 - y0 > 1e-3) g.add(mesh(new BoxGeometry(t, y1 - y0, z1 - z0), plaster, { pos: [x, (y0 + y1) / 2, (z0 + z1) / 2] }));
+  };
+  const ws = [...windows].sort((a2, b) => a2.z0 - b.z0);
+  let z = R.z0;
+  for (const w of ws) {
+    box(z, w.z0, 0, R.h);
+    box(w.z0, w.z1, 0, w.y0);
+    box(w.z0, w.z1, w.y1, R.h);
+    z = w.z1;
+    const fz = (w.z0 + w.z1) / 2, fw = w.z1 - w.z0, fh = w.y1 - w.y0;
+    g.add(mesh(rbox(0.1, 0.08, fw + 0.22, 0.02), trim, { pos: [x + 0.1, w.y0 - 0.02, fz] }));
+    for (const s of [-1, 1]) g.add(mesh(rbox(0.06, fh + 0.1, 0.09, 0.015), trim, { pos: [x + 0.07, (w.y0 + w.y1) / 2, fz + s * (fw / 2 + 0.03)] }));
+    g.add(mesh(rbox(0.06, 0.09, fw + 0.1, 0.015), trim, { pos: [x + 0.07, w.y1 + 0.03, fz] }));
+    g.add(mesh(new BoxGeometry(0.04, fh, 0.04), trim, { pos: [x, (w.y0 + w.y1) / 2, fz] }));
+    for (const y of [w.y0 + fh * 0.36, w.y0 + fh * 0.7]) g.add(mesh(new BoxGeometry(0.04, 0.04, fw), trim, { pos: [x, y, fz] }));
+  }
+  box(z, R.z1, 0, R.h);
+  if (wainscot) {
+    g.add(mesh(new BoxGeometry(0.03, 1, D), wain, { pos: [R.x0 + 0.015, 0.5, cz] }));
+    g.add(mesh(rbox(0.06, 0.07, D, 0.02), trim, { pos: [R.x0 + 0.03, 1.02, cz] }));
+  }
+  g.add(mesh(rbox(0.1, 0.16, D, 0.03), trim, { pos: [R.x0 + 0.05, R.h - 0.08, cz] }));
+  const ghost = new MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+  if (ghosts) g.add(mesh(new BoxGeometry(W2 + 8, 0.2, D + 12), ghost, { pos: [R.x0 - 0.24 + (W2 + 8) / 2, R.h + 0.1, R.z0 - 0.3 + (D + 12) / 2], receive: false }));
+  if (ghosts) g.add(mesh(new BoxGeometry(0.2, R.h, 10), ghost, { pos: [R.x0 - 0.15, R.h / 2, R.z1 + 5], receive: false }));
+  return { group: g, plaster, trim, wain };
+}
+function lightShaft(R, w, keyDir, k = 0.14) {
+  const corners = [[w.z0, w.y0], [w.z1, w.y0], [w.z1, w.y1], [w.z0, w.y1]].map(([z, y]) => new Vector3(R.x0 - 0.05, y, z));
+  const d = keyDir.clone().negate();
   const far = corners.map((c) => c.clone().addScaledVector(d, c.y / -d.y));
   const pos = [], uv = [];
   for (let i = 0; i < 4; i++) {
@@ -33321,7 +33423,7 @@ function lightShaft(dir) {
     depthWrite: false,
     blending: AdditiveBlending,
     side: DoubleSide,
-    uniforms: { uCol: { value: tone(C2.gold, 1) }, uK: { value: 0.14 } },
+    uniforms: { uCol: { value: tone(C2.gold, 1) }, uK: { value: k } },
     vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
     fragmentShader: `uniform vec3 uCol; uniform float uK; varying vec2 vUv;
       void main(){ float a = pow(sin(3.14159 * vUv.x), 1.5) * (1.0 - 0.75 * vUv.y) * smoothstep(0.0, 0.08, vUv.y);
@@ -33332,38 +33434,61 @@ function lightShaft(dir) {
   m3.renderOrder = 5;
   return m3;
 }
-function occluded(mat) {
-  mat.onBeforeCompile = (sh) => {
-    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
-    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <aomap_fragment>", `#include <aomap_fragment>
-        float occ = mix(0.62, 1.0, smoothstep(0.0, 0.9, vWP.y)) * mix(0.7, 1.0, smoothstep(0.0, 1.2, vWP.x - ${ROOM.x0.toFixed(2)})) * mix(0.72, 1.0, smoothstep(0.0, 1.0, vWP.z - ${ROOM.z0.toFixed(2)}));
-        reflectedLight.indirectDiffuse *= occ;`);
+function dustMotes(R, w, keyDir, dpr, n2 = 70, seed = 21) {
+  const r = rng(seed), seeds = [];
+  const dg = new BufferGeometry(), dp = new Float32Array(n2 * 3);
+  for (let i = 0; i < n2; i++) seeds.push([r(), r(), r(), r()]);
+  dg.setAttribute("position", new BufferAttribute(dp, 3));
+  const dm = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uSize: { value: 5 * dpr }, uCol: { value: tone(C2.gold, 1, 0.3) } },
+    vertexShader: "uniform float uSize; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = uSize * 3.0 / -mv.z; gl_Position = projectionMatrix * mv; }",
+    fragmentShader: "uniform vec3 uCol; void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(uCol * (1.0 - smoothstep(0.2, 0.5, d)) * 0.35, 1.0); }"
+  });
+  dm.toneMapped = false;
+  const points = new Points(dg, dm);
+  const travel = keyDir.clone().negate(), p = new Vector3();
+  return {
+    points,
+    update(t) {
+      for (let i = 0; i < n2; i++) {
+        const [a2, b, c, d] = seeds[i];
+        const y = w.y0 + (w.y1 - w.y0) * b;
+        const s = (0.15 + 0.85 * ((a2 + t * 0.012 * (0.5 + d)) % 1)) * (y / -travel.y);
+        p.set(R.x0, y, w.z0 + (w.z1 - w.z0) * c).addScaledVector(travel, s);
+        p.y += Math.sin(t * 0.4 + d * 20) * 0.04;
+        dp.set([p.x, p.y, p.z], i * 3);
+      }
+      dg.attributes.position.needsUpdate = true;
+    }
   };
-  return mat;
 }
+var worldPos;
+var init_room = __esm({
+  "scene/videos/cat-kingdom/lib/room.js"() {
+    init_three_module();
+    init_look2();
+    init_props();
+    init_util();
+    worldPos = (sh) => {
+      sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
+    };
+  }
+});
+
+// scene/videos/cat-kingdom/sets/office.js
+var office_exports = {};
+__export(office_exports, {
+  createOffice: () => createOffice
+});
 async function createOffice(pipe) {
   const scene = new Scene();
   backdrop(scene, { glowAmt: 0.2 });
-  const plaster = occluded(clay(tone(C2.cream, 0.9), 0.85)), wainscot = occluded(clay(tone(C2.cream, 0.8), 0.75)), trim = clay(tone(C2.cream, 1, 0.25), 0.6);
   const room = new Group();
   scene.add(room);
-  const W2 = ROOM.x1 - ROOM.x0, D = ROOM.z1 - ROOM.z0, cx = (ROOM.x0 + ROOM.x1) / 2, cz = (ROOM.z0 + ROOM.z1) / 2;
-  room.add(mesh(new BoxGeometry(W2, 0.02, D), parquet(), { pos: [cx, -0.01, cz] }));
-  room.add(mesh(rbox(W2 + 0.24, 0.32, D + 0.02, 0.03), clay(tone(C2.cream, 0.9), 0.8), { pos: [cx - 0.12, -0.18, cz] }));
-  room.add(mesh(new BoxGeometry(W2 + 0.24, ROOM.h, 0.24), plaster, { pos: [cx - 0.12, ROOM.h / 2, ROOM.z0 - 0.12] }));
-  room.add(mesh(new BoxGeometry(W2, 1, 0.03), wainscot, { pos: [cx, 0.5, ROOM.z0 + 0.015] }));
-  room.add(mesh(rbox(W2, 0.07, 0.06, 0.02), trim, { pos: [cx, 1.02, ROOM.z0 + 0.03] }));
-  room.add(mesh(rbox(W2, 0.16, 0.1, 0.03), trim, { pos: [cx, ROOM.h - 0.08, ROOM.z0 + 0.05] }));
-  room.add(mesh(rbox(W2, 0.12, 0.05, 0.02), trim, { pos: [cx, 0.06, ROOM.z0 + 0.025] }));
-  for (const x of [-1.55, 1.25]) room.add(mesh(rbox(0.3, ROOM.h - 0.2, 0.08, 0.02), trim, { pos: [x, (ROOM.h - 0.2) / 2, ROOM.z0 + 0.04] }));
-  for (let x = ROOM.x0 + 0.5; x < ROOM.x1 - 0.4; x += 0.75) room.add(mesh(rbox(0.6, 0.62, 0.02, 0.01), clay(tone(C2.cream, 0.9), 0.75), { pos: [x + 0.3, 0.52, ROOM.z0 + 0.04], cast: false }));
-  room.add(wallWithWindow(plaster, trim));
-  room.add(mesh(new BoxGeometry(0.03, 1, D), wainscot, { pos: [ROOM.x0 + 0.015, 0.5, cz] }));
-  room.add(mesh(rbox(0.06, 0.07, D, 0.02), trim, { pos: [ROOM.x0 + 0.03, 1.02, cz] }));
-  room.add(mesh(rbox(0.1, 0.16, D, 0.03), trim, { pos: [ROOM.x0 + 0.05, ROOM.h - 0.08, cz] }));
-  const ghost = new MeshBasicMaterial({ colorWrite: false, depthWrite: false });
-  room.add(mesh(new BoxGeometry(8, 0.2, 14), ghost, { pos: [ROOM.x0 - 0.24 + 4, ROOM.h + 0.1, 2], receive: false }));
-  room.add(mesh(new BoxGeometry(0.2, ROOM.h, 8), ghost, { pos: [ROOM.x0 - 0.15, ROOM.h / 2, ROOM.z1 + 4], receive: false }));
+  room.add(buildRoom(ROOM, { windows: [WIN], pilasters: [-1.55, 1.25] }).group);
   room.add(mesh(rbox(3.9, 0.02, 2.9, 8e-3), clay(tone(C2.cream, 0.92), 0.9), { pos: [-0.2, 0.01, -1.2] }));
   room.add(mesh(rbox(3.6, 0.024, 2.6, 8e-3), clay(S.blueDark, 0.92), { pos: [-0.2, 0.012, -1.2] }));
   room.add(mesh(rbox(3.2, 0.026, 2.2, 8e-3), clay(tone(C2.blue, 0.72), 0.92), { pos: [-0.2, 0.013, -1.2], cast: false }));
@@ -33410,8 +33535,7 @@ async function createOffice(pipe) {
   room.add(gov.group);
   const napper = makeCat({ pose: "curl", coat: "cream", seed: 6 });
   napper.group.scale.setScalar(0.5);
-  napper.group.position.set(2.3, 2.3 * 5 / 5 - 0 + 0, ROOM.z0 + 0.22);
-  napper.group.position.y = 0.05 + 5 * (2.3 - 0.1) / 5 + 0.02;
+  napper.group.position.set(2.3, 2.27, ROOM.z0 + 0.22);
   room.add(napper.group);
   const boxCat = makeCat({ pose: "loaf", coat: "cream", seed: 3 });
   const box = cardboardBox({ w: 0.56, h: 0.3, d: 0.46 });
@@ -33428,36 +33552,9 @@ async function createOffice(pipe) {
   const keyDir = [-0.7, 0.42, 0.57];
   const lights = rig2(scene, pipe.renderer, { size: 5.2, dist: 30, intensity: 8.5, keyDir, fillK: 0.115, rimK: 0.1, rimDir: [0.6, 0.5, 0.6] });
   lights.follow(new Vector3(0, 1.4, -0.4), 5.2);
-  const shaft = lightShaft(lights.keyDir);
-  scene.add(shaft);
-  const R = rng(21), N = 70, seeds = [];
-  const dg = new BufferGeometry();
-  const dp = new Float32Array(N * 3);
-  for (let i = 0; i < N; i++) seeds.push([R(), R(), R(), R()]);
-  dg.setAttribute("position", new BufferAttribute(dp, 3));
-  const dm = new ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: AdditiveBlending,
-    uniforms: { uSize: { value: 5 * pipe.dpr }, uCol: { value: tone(C2.gold, 1, 0.3) } },
-    vertexShader: "uniform float uSize; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = uSize * 3.0 / -mv.z; gl_Position = projectionMatrix * mv; }",
-    fragmentShader: "uniform vec3 uCol; void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(uCol * (1.0 - smoothstep(0.2, 0.5, d)) * 0.35, 1.0); }"
-  });
-  dm.toneMapped = false;
-  const dust = new Points(dg, dm);
-  scene.add(dust);
-  const travel = lights.keyDir.clone().negate();
-  function updateDust(t) {
-    for (let i = 0; i < N; i++) {
-      const [a2, b, c, d] = seeds[i];
-      const y = WIN.y0 + (WIN.y1 - WIN.y0) * b;
-      const s = (0.15 + 0.85 * ((a2 + t * 0.012 * (0.5 + d)) % 1)) * (y / -travel.y);
-      const p = new Vector3(ROOM.x0, y, WIN.z0 + (WIN.z1 - WIN.z0) * c).addScaledVector(travel, s);
-      p.y += Math.sin(t * 0.4 + d * 20) * 0.04;
-      dp.set([p.x, p.y, p.z], i * 3);
-    }
-    dg.attributes.position.needsUpdate = true;
-  }
+  scene.add(lightShaft(ROOM, WIN, lights.keyDir));
+  const dust = dustMotes(ROOM, WIN, lights.keyDir, pipe.dpr);
+  scene.add(dust.points);
   const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
   const A = { pos: [1.15, 1.72, 3.05], target: [0.32, 1.3, -1.35], lens: 35 };
   const B = { pos: [0.95, 1.62, 2.25], target: [0.3, 1.24, -1.4], lens: 40 };
@@ -33480,7 +33577,7 @@ async function createOffice(pipe) {
       boxCat.update(t + 3);
       staffer.state.nod = 0.12 + 0.06 * ease.inOutSine(prog(t, 3.2, 4));
       staffer.update(t);
-      updateDust(t);
+      dust.update(t);
       return { scene, camera: cam, bloom: 0.22, exposure: 1, vignette: 0.22 };
     }
   };
@@ -33495,405 +33592,10 @@ var init_office = __esm({
     init_props();
     init_camera();
     init_util();
+    init_room();
     FPS2 = 30;
     ROOM = { x0: -3.2, x1: 3.4, z0: -3, z1: 2.4, h: 3.7 };
     WIN = { z0: 0.1, z1: 2.1, y0: 0.55, y1: 3.25 };
-  }
-});
-
-// scene/videos/cat-kingdom/sets/freeway.js
-var freeway_exports = {};
-__export(freeway_exports, {
-  createFreeway: () => createFreeway
-});
-function groundMaterial() {
-  const m3 = clay(tone(C2.cream, 0.92), 0.85);
-  m3.onBeforeCompile = (sh) => {
-    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
-    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
-        varying vec3 vWP;
-        uniform vec3 uRoad, uGrass, uDash, uShoulder;`).replace("#include <color_fragment>", `#include <color_fragment>
-        float z = abs(vWP.z);
-        vec3 c = diffuseColor.rgb;
-        // lawns: soft-edged patches away from the road
-        float lawn = smoothstep(2.6, 3.0, z) * (0.5 + 0.5 * sin(vWP.x * 0.35 + 1.0) * cos(vWP.z * 0.3));
-        c = mix(c, uGrass, smoothstep(0.35, 0.45, lawn));
-        float road = 1.0 - smoothstep(${ROAD.toFixed(2)} - 0.01, ${ROAD.toFixed(2)} + 0.01, z);
-        float shoulder = (1.0 - smoothstep(${(ROAD + 0.3).toFixed(2)} - 0.01, ${(ROAD + 0.3).toFixed(2)} + 0.01, z)) * (1.0 - road);
-        c = mix(c, uShoulder, shoulder);
-        c = mix(c, uRoad, road);
-        // dashed lane lines (light blue) and solid edge lines
-        float lane = 1.0 - smoothstep(0.035, 0.05, abs(z - 0.9));
-        float dash = step(0.45, fract(vWP.x / 1.6));
-        float edge = 1.0 - smoothstep(0.035, 0.05, abs(z - ${(ROAD - 0.12).toFixed(2)}));
-        c = mix(c, uDash, (lane * dash + edge) * road);
-        diffuseColor.rgb = c;`);
-    Object.assign(sh.uniforms, {
-      uRoad: { value: mixc(tone(C2.blue, 0.42), tone(C2.cream, 0.45), 0.35) },
-      uGrass: { value: tone(C2.green, 0.95) },
-      uDash: { value: tone(C2.blue, 1, 0.55) },
-      uShoulder: { value: tone(C2.cream, 0.8) }
-    });
-  };
-  return m3;
-}
-function gardenMaterial() {
-  const m3 = clay(S.green, 0.82);
-  m3.onBeforeCompile = (sh) => {
-    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
-    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <color_fragment>", `#include <color_fragment>
-        float n = sin(vWP.x * 7.1 + sin(vWP.z * 5.3)) * sin(vWP.z * 6.7 + sin(vWP.x * 4.1));
-        diffuseColor.rgb *= 0.92 + 0.1 * n;`);
-  };
-  return m3;
-}
-async function createFreeway(pipe) {
-  const scene = new Scene();
-  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
-  scene.fog = new Fog(tone(C2.blue, 1, 0.5), 40, 160);
-  const R = rng(66);
-  const plate = new Group();
-  scene.add(plate);
-  plate.add(mesh(new PlaneGeometry(HALF * 2, HALF * 2, 1, 1).rotateX(-Math.PI / 2), groundMaterial(), {}));
-  plate.add(mesh(rbox(HALF * 2 + 0.3, 0.7, HALF * 2 + 0.3, 0.12), clay(tone(C2.cream, 0.78), 0.85), { pos: [0, -0.36, 0] }));
-  plate.add(mesh(rbox(HALF * 2 + 0.34, 0.12, HALF * 2 + 0.34, 0.05), clay(S.terraDark, 0.7), { pos: [0, -0.62, 0], cast: false }));
-  plate.add(mesh(rbox(HALF * 2 - 3.2, 0.22, 0.16, 0.05), clay(tone(C2.cream, 1, 0.1), 0.7), { pos: [0, 0.11, 0] }));
-  for (const s of [-1, 1]) {
-    const tg = new Group();
-    tg.add(mesh(rbox(1.6, 1.5, ROAD * 2 + 1.4, 0.1), clay(tone(C2.cream, 0.95), 0.8), { pos: [0, 0.75, 0] }));
-    tg.add(mesh(rbox(1.7, 0.25, ROAD * 2 + 1.6, 0.1), gardenMaterial(), { pos: [0, 1.58, 0] }));
-    for (const z of [-0.9, 0.9]) tg.add(mesh(rbox(0.06, 0.95, 1.5, 0.02), clay(tone(C2.blue, 0.3), 0.9), { pos: [-s * 0.79, 0.5, z], cast: false }));
-    tg.position.set(s * (HALF - 0.8), 0, 0);
-    plate.add(tg);
-  }
-  const cars = [];
-  const carCols = [S.blue, tone(C2.blue, 1, 0.35), tone(C2.cream, 1, 0.3), tone(C2.cream, 1, 0.3), tone(C2.blue, 1, 0.55)];
-  for (const [lane, dir] of [[-1.35, -1], [-0.45, -1], [0.45, 1], [1.35, 1]]) {
-    const n2 = 8, speed = 2.1 + R() * 0.6;
-    for (let i = 0; i < n2; i++) {
-      const car = toyCar({ color: carCols[Math.floor(R() * carCols.length)], scale: 0.7 });
-      car.rotation.y = dir > 0 ? 0 : Math.PI;
-      scene.add(car);
-      cars.push({ car, lane, dir, speed, x0: i / n2 * (HALF * 2 - 1.6) + R() * 1.2 });
-    }
-  }
-  const L = HALF * 2 - 1.6;
-  function updateCars(t) {
-    for (const c of cars) {
-      const x = ((c.x0 + c.speed * t) % L + L) % L - L / 2;
-      c.car.position.set(c.dir * x, 0, c.lane);
-      c.car.visible = Math.abs(x) < L / 2 - 0.2;
-    }
-  }
-  const deckMat = clay(tone(C2.cream, 0.97), 0.78), underMat = clay(tone(C2.cream, 0.74), 0.85), parapetMat = clay(tone(C2.cream, 1, 0.18), 0.7);
-  const garden = gardenMaterial(), post = sisalMaterial();
-  const W2 = 2.5, TH = 0.42;
-  const deckDefs = [
-    { pts: [[-2.4, 2.3, -HALF], [-1, 2.3, -4.5], [0.4, 2.3, 0], [1.4, 2.3, 4.5], [2.6, 2.3, HALF]] },
-    { pts: [[-HALF, 3.3, 7.5], [-5.5, 3.7, 4.6], [0, 3.8, 1.6], [5.5, 3.7, -2.5], [HALF, 3.3, -5.2]] },
-    { pts: [[HALF, 5.1, 6], [5, 5.3, 4.8], [0, 5.3, -3.6], [-5, 5.2, -7.2], [-HALF + 1.2, 5, -HALF]] }
-  ];
-  const decks = deckDefs.map((d) => {
-    const curve = new CatmullRomCurve3(d.pts.map((p) => new Vector3(...p)), false, "centripetal");
-    const g = new Group();
-    g.add(mesh(sweepProfile(curve, [[-W2 / 2, -TH], [W2 / 2, -TH], [W2 / 2, 0], [-W2 / 2, 0]], 160), deckMat, {}));
-    g.add(mesh(sweepProfile(curve, [[-W2 / 2 + 0.05, -TH - 0.06], [W2 / 2 - 0.05, -TH - 0.06], [W2 / 2 - 0.05, -TH + 0.02], [-W2 / 2 + 0.05, -TH + 0.02]], 160), underMat, {}));
-    for (const [u0, u1] of [[-W2 / 2, -W2 / 2 + 0.16], [W2 / 2 - 0.16, W2 / 2]]) g.add(mesh(sweepProfile(curve, [[u0, 0], [u1, 0], [u1, 0.3], [u0, 0.3]], 160), parapetMat, {}));
-    g.add(mesh(sweepProfile(curve, [[-0.82, 0], [0.82, 0], [0.82, 0.1], [-0.82, 0.1]], 160), garden, {}));
-    scene.add(g);
-    const len = curve.getLength(), n2 = Math.floor(len / 3.4);
-    for (let i = 1; i < n2; i++) {
-      const p = curve.getPointAt(i / n2);
-      if (Math.abs(p.z) < ROAD + 0.7 || Math.abs(p.x) > HALF - 1 || Math.abs(p.z) > HALF - 1) continue;
-      const h = p.y - TH;
-      g.add(mesh(new CylinderGeometry(0.3, 0.34, h, 22), post, { pos: [p.x, h / 2, p.z] }));
-      g.add(mesh(rbox(0.9, 0.16, 0.9, 0.05), underMat, { pos: [p.x, h - 0.08, p.z] }));
-    }
-    return { curve, g, len };
-  });
-  const onDeck = (d, t, u, lift = 0.1) => {
-    const p = d.curve.getPointAt(t), T = d.curve.getTangentAt(t);
-    const r = new Vector3().crossVectors(T, new Vector3(0, 1, 0)).normalize();
-    return { p: p.addScaledVector(r, u).setY(p.y + lift), yaw: Math.atan2(T.x, T.z) };
-  };
-  decks.forEach((d, di) => {
-    const n2 = Math.floor(d.len / 1.1);
-    for (let i = 0; i < n2; i++) {
-      const t = (i + 0.5) / n2;
-      if (R() < 0.35) continue;
-      const side = i % 2 ? 1 : -1;
-      const { p } = onDeck(d, t, side * (0.45 + R() * 0.25));
-      if (Math.abs(p.x) > HALF - 0.6 || Math.abs(p.z) > HALF - 0.6) continue;
-      const big = R() < 0.25;
-      const sh = shrub({ r: big ? 0.42 : 0.22 + R() * 0.12, stem: big ? 0.5 : 0.05, seed: di * 100 + i, dark: R() < 0.4 });
-      sh.position.copy(p);
-      scene.add(sh);
-    }
-  });
-  const cats = [];
-  const spots = [
-    [0, 0.42, 0, "sprawl", "ginger"],
-    [0, 0.6, 0, "loaf", "cream"],
-    [0, 0.27, 0, "sit", "ginger2"],
-    [1, 0.48, 0, "curl", "ginger"],
-    [1, 0.33, 0, "sphinx", "cream"],
-    [1, 0.62, 0, "sit", "ginger"],
-    [1, 0.73, 0, "loaf", "ginger2"],
-    [2, 0.45, 0, "sprawl", "cream"],
-    [2, 0.3, 0, "loaf", "ginger"],
-    [2, 0.58, 0, "sit", "cream"]
-  ];
-  spots.forEach(([di, t, u, pose, coat], i) => {
-    const d = decks[di];
-    const { p, yaw } = onDeck(d, t, u, 0.1);
-    const cu = cushion({ w: 1.4, d: 1.15, h: 0.17, color: i % 3 === 1 ? tone(C2.cream, 1, 0.1) : S.terra, piping: tone(C2.cream, 1, 0.2) });
-    cu.position.copy(p);
-    cu.rotation.y = yaw;
-    scene.add(cu);
-    const cat = makeCat({ pose, coat, seed: 40 + i, lod: "lo" });
-    cat.group.scale.setScalar(1.05);
-    cat.group.position.copy(p).add(new Vector3(0, 0.17, 0));
-    cat.group.rotation.y = yaw + (R() - 0.5) * 1.6 + (i % 2 ? Math.PI : 0);
-    scene.add(cat.group);
-    cats.push(cat);
-  });
-  {
-    const { p, yaw } = onDeck(decks[1], 0.2, 0, 0.1);
-    const walker = makeCat({ pose: "stand", coat: "ginger", seed: 77, lod: "lo" });
-    walker.group.scale.setScalar(1.05);
-    walker.group.position.copy(p);
-    walker.group.rotation.y = yaw;
-    scene.add(walker.group);
-    cats.push(walker);
-  }
-  for (const [t, u, coat, seed] of [[0.47, 1.17, "ginger", 91], [0.53, 1.17, "cream", 92]]) {
-    const d = decks[0];
-    const { p } = onDeck(d, t, u, 0.3);
-    const watcher = makeCat({ pose: "sit", coat, seed, lod: "lo" });
-    watcher.group.scale.setScalar(0.95);
-    watcher.group.position.copy(p);
-    watcher.group.rotation.y = Math.PI / 2 + (seed % 2 ? 0.5 : -0.4);
-    watcher.look(0, 0.45, 0);
-    watcher.fixed = true;
-    scene.add(watcher.group);
-    cats.push(watcher);
-  }
-  for (const [x, z, h, s] of [[-8.6, -4.2, 6.2, 3], [-6.2, -8.4, 5.4, 5], [-9.2, 2.6, 6.6, 7], [-8.6, 7.4, 5.2, 9], [4.2, -8.8, 6, 13], [8.6, -3.6, 4.6, 15], [9.3, -8.9, 5.6, 17]]) {
-    const palm = palmTree({ h, seed: s });
-    palm.position.set(x, 0, z);
-    scene.add(palm);
-  }
-  const lights = rig2(scene, pipe.renderer, { size: 15, dist: 60, intensity: 5.6, fillK: 0.22, rimK: 0.3 });
-  lights.follow(new Vector3(0, 2, 0), 15);
-  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.1, 900);
-  return {
-    frame(f2) {
-      const t = f2 / FPS3;
-      const s = orbit(f2, 660, 780, { center: [0, 2.6, 0], a0: 0.52, a1: 0.86, r0: 20.5, r1: 19, h0: 8.6, h1: 7.9, lens0: 35, target: [-0.6, 2.7, 0.4], fn: ease.inOutSine });
-      applyCam(cam, s);
-      cats.forEach((c, i) => {
-        if (!c.fixed) c.look(Math.sin(t * 0.4 + i) * 0.25, 0.05, 0);
-        else c.look(Math.sin(t * 2.2 + i) * 0.35, 0.45, 0);
-        c.update(t + i * 1.7);
-      });
-      updateCars(t);
-      return { scene, camera: cam, bloom: 0.2, exposure: 1, vignette: 0.24 };
-    }
-  };
-}
-var FPS3, HALF, ROAD;
-var init_freeway = __esm({
-  "scene/videos/cat-kingdom/sets/freeway.js"() {
-    init_three_module();
-    init_look2();
-    init_cat();
-    init_props();
-    init_camera();
-    init_util();
-    FPS3 = 30;
-    HALF = 11;
-    ROAD = 1.9;
-  }
-});
-
-// scene/src/core/albers.js
-function albers(lon, lat) {
-  const rho = a * Math.sqrt(C3 - n * q(lat * rad)) / n;
-  const th = n * (lon * rad - l0);
-  return [rho * Math.sin(th), rho0 - rho * Math.cos(th) - 4e6];
-}
-var a, f, e2, e, rad, q, m, p1, p2, p0, l0, m1, m2, q1, q2, q0, n, C3, rho0;
-var init_albers = __esm({
-  "scene/src/core/albers.js"() {
-    a = 6378137;
-    f = 1 / 298.257222101;
-    e2 = 2 * f - f * f;
-    e = Math.sqrt(e2);
-    rad = Math.PI / 180;
-    q = (phi) => {
-      const s = Math.sin(phi);
-      return (1 - e2) * (s / (1 - e2 * s * s) - 1 / (2 * e) * Math.log((1 - e * s) / (1 + e * s)));
-    };
-    m = (phi) => Math.cos(phi) / Math.sqrt(1 - e2 * Math.sin(phi) ** 2);
-    p1 = 34 * rad;
-    p2 = 40.5 * rad;
-    p0 = 0;
-    l0 = -120 * rad;
-    m1 = m(p1);
-    m2 = m(p2);
-    q1 = q(p1);
-    q2 = q(p2);
-    q0 = q(p0);
-    n = (m1 * m1 - m2 * m2) / (q2 - q1);
-    C3 = m1 * m1 + n * q1;
-    rho0 = a * Math.sqrt(C3 - n * q0) / n;
-  }
-});
-
-// scene/src/core/data.js
-async function loadPixels(name) {
-  const img = new Image();
-  img.src = DATA + name;
-  await img.decode();
-  const c = document.createElement("canvas");
-  c.width = img.width;
-  c.height = img.height;
-  const g = c.getContext("2d", { willReadFrequently: true, colorSpace: "srgb" });
-  g.drawImage(img, 0, 0);
-  return { w: img.width, h: img.height, data: g.getImageData(0, 0, img.width, img.height, { colorSpace: "srgb" }).data };
-}
-function dataTexture({ w, h, data }, { mip = true } = {}) {
-  const out = new Uint8Array(w * h * 4);
-  for (let y = 0; y < h; y++) out.set(data.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4);
-  const t = new DataTexture(out, w, h, RGBAFormat, UnsignedByteType);
-  t.colorSpace = NoColorSpace;
-  t.magFilter = LinearFilter;
-  t.minFilter = mip ? LinearMipmapLinearFilter : LinearFilter;
-  t.generateMipmaps = mip;
-  t.anisotropy = 4;
-  t.needsUpdate = true;
-  return t;
-}
-function samplePix(px2, x, y, c) {
-  const { w, h, data } = px2;
-  x = Math.min(w - 1.001, Math.max(0, x - 0.5));
-  y = Math.min(h - 1.001, Math.max(0, y - 0.5));
-  const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
-  const g = (xx, yy) => data[(yy * w + xx) * 4 + c];
-  return ((g(x0, y0) * (1 - fx) + g(x0 + 1, y0) * fx) * (1 - fy) + (g(x0, y0 + 1) * (1 - fx) + g(x0 + 1, y0 + 1) * fx) * fy) / 255;
-}
-var DATA, loadJSON, loadBin;
-var init_data = __esm({
-  "scene/src/core/data.js"() {
-    init_three_module();
-    DATA = new URL("/data/build/", location.origin).href;
-    loadJSON = async (name) => (await fetch(DATA + name)).json();
-    loadBin = async (name) => (await fetch(DATA + name)).arrayBuffer();
-  }
-});
-
-// scene/src/core/ribbon.js
-function ribbonGeometry(points) {
-  const n2 = points.length;
-  const pos = new Float32Array(n2 * 2 * 3), side = new Float32Array(n2 * 2 * 3), along = new Float32Array(n2 * 2), edge = new Float32Array(n2 * 2);
-  let d = 0;
-  for (let i = 0; i < n2; i++) {
-    const p = points[i];
-    if (i > 0) d += p.distanceTo(points[i - 1]);
-    const a2 = points[Math.max(0, i - 1)], b = points[Math.min(n2 - 1, i + 1)];
-    const t = new Vector3(b.x - a2.x, 0, b.z - a2.z).normalize();
-    const s = new Vector3(-t.z, 0, t.x);
-    for (let k = 0; k < 2; k++) {
-      const j = i * 2 + k;
-      pos.set([p.x, p.y, p.z], j * 3);
-      side.set([s.x, s.y, s.z], j * 3);
-      along[j] = d;
-      edge[j] = k ? 1 : -1;
-    }
-  }
-  const idx = [];
-  for (let i = 0; i < n2 - 1; i++) {
-    const a2 = i * 2;
-    idx.push(a2, a2 + 1, a2 + 2, a2 + 1, a2 + 3, a2 + 2);
-  }
-  const g = new BufferGeometry();
-  g.setAttribute("position", new BufferAttribute(pos, 3));
-  g.setAttribute("side", new BufferAttribute(side, 3));
-  g.setAttribute("along", new BufferAttribute(along, 1));
-  g.setAttribute("edge", new BufferAttribute(edge, 1));
-  g.setIndex(idx);
-  g.userData.length = d;
-  return g;
-}
-function ribbonMaterial({ color, px: px2 = 4, maxW = 0.15, opacity = 1, dash = 0, flow = 0, edgeColor = new Color(0, 0, 0), emissive = 0 }) {
-  return new ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    polygonOffset: true,
-    polygonOffsetFactor: -2,
-    polygonOffsetUnits: -2,
-    uniforms: {
-      uColor: { value: color.clone() },
-      uEdgeColor: { value: edgeColor.clone() },
-      uPx: { value: px2 },
-      uMaxW: { value: maxW },
-      uTanHalf: { value: 0.5 },
-      uOpacity: { value: opacity },
-      uDash: { value: dash },
-      uFlow: { value: flow },
-      uTime: { value: 0 },
-      uReveal: { value: 1e9 },
-      uRevealFrom: { value: 0 },
-      uEdge: { value: 0 },
-      uEmissive: { value: emissive },
-      uFlowPeriod: { value: 1.6 }
-    },
-    vertexShader: (
-      /* glsl */
-      `
-      attribute vec3 side; attribute float along; attribute float edge;
-      uniform float uPx, uTanHalf, uMaxW;
-      varying float vAlong, vEdge, vWpp;
-      void main() {
-        vec4 wp = modelMatrix * vec4(position, 1.0);
-        float dist = length(cameraPosition - wp.xyz);
-        float wpp = 2.0 * dist * uTanHalf / 1920.0;
-        wp.xyz += side * edge * min(uPx * wpp, uMaxW) * 0.5;
-        vAlong = along; vEdge = edge; vWpp = wpp;
-        gl_Position = projectionMatrix * viewMatrix * wp;
-      }`
-    ),
-    fragmentShader: (
-      /* glsl */
-      `
-      uniform vec3 uColor, uEdgeColor; uniform float uOpacity, uDash, uFlow, uTime, uReveal, uRevealFrom, uEdge, uEmissive, uFlowPeriod;
-      varying float vAlong, vEdge, vWpp;
-      void main() {
-        if (vAlong > uReveal || vAlong < uRevealFrom) discard;
-        float e = abs(vEdge);
-        float a = 1.0 - smoothstep(0.65, 1.0, e);
-        if (uDash > 0.0) a *= step(fract(vAlong / (uDash * vWpp)), 0.58);
-        // Flow pulses travel downstream (lines are stored source -> mouth).
-        float s = fract(vAlong / uFlowPeriod - uTime * 0.55);
-        float pulse = smoothstep(0.0, 0.12, s) * (1.0 - smoothstep(0.12, 0.42, s));
-        vec3 col = uColor * (1.0 + uEmissive + uFlow * pulse * 0.9);
-        // Levee edges glow amber along both banks.
-        float lev = uEdge * smoothstep(0.35, 0.8, e);
-        col = mix(col, uEdgeColor * 2.2, lev);
-        a = max(a, lev * 0.9 * (1.0 - smoothstep(0.95, 1.0, e)));
-        gl_FragColor = vec4(col, a * uOpacity);
-        if (gl_FragColor.a < 0.01) discard;
-      }`
-    )
-  });
-}
-function updateRibbon(mat, cam, time) {
-  mat.uniforms.uTanHalf.value = Math.tan(cam.fov * Math.PI / 360);
-  mat.uniforms.uTime.value = time;
-}
-var init_ribbon = __esm({
-  "scene/src/core/ribbon.js"() {
-    init_three_module();
   }
 });
 
@@ -39628,6 +39330,344 @@ var init_labels = __esm({
   }
 });
 
+// scene/videos/cat-kingdom/lib/beat.js
+function placeLabels(list) {
+  const labels = new Labels({ text: HEX2.text, halo: HEX2.panel });
+  for (const { id, text, pos, dot = true, italic = false, size = 30 } of list) labels.add(id, { text, pos: pos instanceof Vector3 ? pos : new Vector3(...pos), dot, italic, size, priority: 2 });
+  return labels;
+}
+var HOLD, SETTLE, beatMove, beatOrbit;
+var init_beat = __esm({
+  "scene/videos/cat-kingdom/lib/beat.js"() {
+    init_three_module();
+    init_camera();
+    init_util();
+    init_labels();
+    init_look2();
+    HOLD = 20;
+    SETTLE = 18;
+    beatMove = (f2, [s, e3], A, B, o = {}) => move(f2, s + HOLD, e3 - SETTLE, A, B, { fn: ease.inOutSine, ...o });
+    beatOrbit = (f2, [s, e3], o) => orbit(f2, s + HOLD, e3 - SETTLE, { fn: ease.inOutSine, ...o });
+  }
+});
+
+// scene/videos/cat-kingdom/sets/bullpen.js
+var bullpen_exports = {};
+__export(bullpen_exports, {
+  createBullpen: () => createBullpen
+});
+async function createBullpen(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.2 });
+  const room = new Group();
+  scene.add(room);
+  room.add(buildRoom(ROOM2, { windows: WINS, pilasters: [-1.9, 1.6], wall: tone(C2.cream, 0.92) }).group);
+  const seal = pawSeal(0.32);
+  seal.position.set(0.2, 2.35, ROOM2.z0 + 0.04);
+  room.add(seal);
+  room.add(mesh(rbox(6.4, 0.02, 4.4, 0.01), clay(tone(C2.blue, 0.55), 0.95), { pos: [0.2, 0.01, -1.1], cast: false }));
+  const cats = [], people = [];
+  const addCat = (pose, coat, seed, pos, yaw, scale, look = [0, 0, 0], closed = false) => {
+    const c = makeCat({ pose, coat, seed });
+    c.group.position.set(...pos);
+    c.group.rotation.y = yaw;
+    c.group.scale.setScalar(scale);
+    c.look(...look);
+    if (closed) c.state.open = 0;
+    room.add(c.group);
+    cats.push(c);
+    return c;
+  };
+  const addPerson = (pose, seed, pos, yaw, o = {}) => {
+    const h = makeHuman({ pose, seed, scale: 1.72, ...o });
+    h.group.position.set(...pos);
+    h.group.rotation.y = yaw;
+    room.add(h.group);
+    people.push(h);
+    return h;
+  };
+  const xs = [-1.55, 0, 1.55];
+  const desks = [];
+  for (const [row, z, yaw] of [[0, -0.95, 0], [1, -1.72, Math.PI]]) {
+    xs.forEach((x, i) => {
+      const d = workDesk({ seed: row * 3 + i });
+      d.position.set(x, 0, z);
+      d.rotation.y = yaw;
+      room.add(d);
+      desks.push(d);
+    });
+  }
+  addCat("curl", "ginger", 21, [-1.55, 0.795, -0.86], 0.3, 0.55, [0, 0, 0], true);
+  const ch0 = officeChair();
+  ch0.position.set(-1.5, 0, -0.25);
+  ch0.rotation.y = 0.15;
+  room.add(ch0);
+  addPerson("holdFolder", 32, [-2.35, 0, -0.35], 2.2, { shirt: 2, skin: 3, hair: 0, cut: 0 });
+  addCat("sprawl", "cream", 22, [0.14, 0.77, -1], 1.9, 0.55, [0, 0, 0], true);
+  const typist = addPerson("sitTyping", 31, [-0.3, 0, -0.27], Math.PI, { shirt: 1, skin: 0, hair: 2, cut: 2 });
+  const ch1 = officeChair();
+  ch1.position.set(-0.3, 0, -0.3);
+  ch1.rotation.y = 0;
+  room.add(ch1);
+  addPerson("stand", 35, [3.2, 0, -0.6], -1.9, { shirt: 0, skin: 1, hair: 4, cut: 1 });
+  const ch2 = officeChair();
+  ch2.position.set(1.55, 0, -0.18);
+  ch2.rotation.y = 0.35;
+  room.add(ch2);
+  addCat("curl", "ginger2", 23, [1.55, 0.53, -0.18], 0.4, 0.52, [0, 0, 0], true);
+  const ch3 = officeChair();
+  ch3.position.set(-1.55, 0, -2.5);
+  ch3.rotation.y = Math.PI;
+  room.add(ch3);
+  addPerson("sitTyping", 34, [-1.55, 0, -2.5], 0, { shirt: 3, skin: 2, hair: 1, cut: 0 });
+  const stack = paperStack(9, 7);
+  stack.position.set(0.2, 0.77, -1.75);
+  room.add(stack);
+  addCat("loaf", "cream", 24, [0.2, 0.84, -1.75], 2.6, 0.52, [0.3, 0, 0], true);
+  addCat("sit", "ginger", 25, [1.2, 0.77, -1.62], 0.5, 0.5, [0.2, 0.15, 0]);
+  const ch4 = officeChair();
+  ch4.position.set(1.55, 0, -2.5);
+  ch4.rotation.y = Math.PI;
+  room.add(ch4);
+  const box = cardboardBox({ w: 0.5, h: 0.28, d: 0.42 });
+  box.position.set(-2.7, 0, 0.9);
+  box.rotation.y = 0.4;
+  room.add(box);
+  const bc = makeCat({ pose: "loaf", coat: "ginger", seed: 26 });
+  bc.group.scale.setScalar(0.42);
+  bc.group.position.set(0, 0.02, 0);
+  bc.look(0.5, 0.1, 0);
+  box.add(bc.group);
+  cats.push(bc);
+  room.add(plant({ h: 1.3, seed: 3 }).translateX(-3.7).translateZ(-3.3));
+  room.add(plant({ h: 1.1, seed: 4 }).translateX(3.9).translateZ(-3.3));
+  const cooler = new Group();
+  cooler.add(mesh(rbox(0.36, 1, 0.36, 0.05), clay(tone(C2.cream, 1, 0.3), 0.6), { pos: [0, 0.5, 0] }));
+  cooler.add(mesh(new CylinderGeometry(0.15, 0.15, 0.4, 20), clay(tone(C2.blue, 1, 0.35), 0.2), { pos: [0, 1.2, 0] }));
+  cooler.position.set(3.3, 0, -3.2);
+  room.add(cooler);
+  const keyDir = [-0.7, 0.42, 0.57];
+  const lights = rig2(scene, pipe.renderer, { size: 6.5, dist: 34, intensity: 8.5, keyDir, fillK: 0.12, rimK: 0.1, rimDir: [0.6, 0.5, 0.6] });
+  lights.follow(new Vector3(0, 1.2, -1), 6.5);
+  const dusts = WINS.map((w, i) => {
+    const d = dustMotes(ROOM2, w, lights.keyDir, pipe.dpr, 40, 30 + i);
+    scene.add(d.points);
+    scene.add(lightShaft(ROOM2, w, lights.keyDir, 0.12));
+    return d;
+  });
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  return {
+    frame(f2) {
+      const t = f2 / FPS3;
+      const s = beatOrbit(f2, BEAT, { center: [-0.8, 0, -1.2], a0: 0.18, a1: 0.58, r0: 3.7, r1: 3.3, h0: 3.6, h1: 3.25, lens0: 35, target: [-0.78, 0.72, -1.12] });
+      applyCam(cam, s);
+      cats.forEach((c, i) => c.update(t + i * 1.3));
+      people.forEach((p) => p.update(t));
+      typist.state.nod = 0.35 + Math.sin(t * 7) * 0.015;
+      dusts.forEach((d) => d.update(t));
+      return { scene, camera: cam, bloom: 0.22, exposure: 1, vignette: 0.22 };
+    }
+  };
+}
+var FPS3, BEAT, ROOM2, WINS;
+var init_bullpen = __esm({
+  "scene/videos/cat-kingdom/sets/bullpen.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_room();
+    init_beat();
+    init_camera();
+    FPS3 = 30;
+    BEAT = [180, 300];
+    ROOM2 = { x0: -4.2, x1: 4.6, z0: -3.8, z1: 3, h: 3.6 };
+    WINS = [{ z0: -2, z1: -0.4, y0: 0.6, y1: 3.1 }, { z0: 0.4, z1: 2, y0: 0.6, y1: 3.1 }];
+  }
+});
+
+// scene/src/core/albers.js
+function albers(lon, lat) {
+  const rho = a * Math.sqrt(C3 - n * q(lat * rad)) / n;
+  const th = n * (lon * rad - l0);
+  return [rho * Math.sin(th), rho0 - rho * Math.cos(th) - 4e6];
+}
+var a, f, e2, e, rad, q, m, p1, p2, p0, l0, m1, m2, q1, q2, q0, n, C3, rho0;
+var init_albers = __esm({
+  "scene/src/core/albers.js"() {
+    a = 6378137;
+    f = 1 / 298.257222101;
+    e2 = 2 * f - f * f;
+    e = Math.sqrt(e2);
+    rad = Math.PI / 180;
+    q = (phi) => {
+      const s = Math.sin(phi);
+      return (1 - e2) * (s / (1 - e2 * s * s) - 1 / (2 * e) * Math.log((1 - e * s) / (1 + e * s)));
+    };
+    m = (phi) => Math.cos(phi) / Math.sqrt(1 - e2 * Math.sin(phi) ** 2);
+    p1 = 34 * rad;
+    p2 = 40.5 * rad;
+    p0 = 0;
+    l0 = -120 * rad;
+    m1 = m(p1);
+    m2 = m(p2);
+    q1 = q(p1);
+    q2 = q(p2);
+    q0 = q(p0);
+    n = (m1 * m1 - m2 * m2) / (q2 - q1);
+    C3 = m1 * m1 + n * q1;
+    rho0 = a * Math.sqrt(C3 - n * q0) / n;
+  }
+});
+
+// scene/src/core/data.js
+async function loadPixels(name) {
+  const img = new Image();
+  img.src = DATA + name;
+  await img.decode();
+  const c = document.createElement("canvas");
+  c.width = img.width;
+  c.height = img.height;
+  const g = c.getContext("2d", { willReadFrequently: true, colorSpace: "srgb" });
+  g.drawImage(img, 0, 0);
+  return { w: img.width, h: img.height, data: g.getImageData(0, 0, img.width, img.height, { colorSpace: "srgb" }).data };
+}
+function dataTexture({ w, h, data }, { mip = true } = {}) {
+  const out = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) out.set(data.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4);
+  const t = new DataTexture(out, w, h, RGBAFormat, UnsignedByteType);
+  t.colorSpace = NoColorSpace;
+  t.magFilter = LinearFilter;
+  t.minFilter = mip ? LinearMipmapLinearFilter : LinearFilter;
+  t.generateMipmaps = mip;
+  t.anisotropy = 4;
+  t.needsUpdate = true;
+  return t;
+}
+function samplePix(px2, x, y, c) {
+  const { w, h, data } = px2;
+  x = Math.min(w - 1.001, Math.max(0, x - 0.5));
+  y = Math.min(h - 1.001, Math.max(0, y - 0.5));
+  const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+  const g = (xx, yy) => data[(yy * w + xx) * 4 + c];
+  return ((g(x0, y0) * (1 - fx) + g(x0 + 1, y0) * fx) * (1 - fy) + (g(x0, y0 + 1) * (1 - fx) + g(x0 + 1, y0 + 1) * fx) * fy) / 255;
+}
+var DATA, loadJSON, loadBin;
+var init_data = __esm({
+  "scene/src/core/data.js"() {
+    init_three_module();
+    DATA = new URL("/data/build/", location.origin).href;
+    loadJSON = async (name) => (await fetch(DATA + name)).json();
+    loadBin = async (name) => (await fetch(DATA + name)).arrayBuffer();
+  }
+});
+
+// scene/src/core/ribbon.js
+function ribbonGeometry(points) {
+  const n2 = points.length;
+  const pos = new Float32Array(n2 * 2 * 3), side = new Float32Array(n2 * 2 * 3), along = new Float32Array(n2 * 2), edge = new Float32Array(n2 * 2);
+  let d = 0;
+  for (let i = 0; i < n2; i++) {
+    const p = points[i];
+    if (i > 0) d += p.distanceTo(points[i - 1]);
+    const a2 = points[Math.max(0, i - 1)], b = points[Math.min(n2 - 1, i + 1)];
+    const t = new Vector3(b.x - a2.x, 0, b.z - a2.z).normalize();
+    const s = new Vector3(-t.z, 0, t.x);
+    for (let k = 0; k < 2; k++) {
+      const j = i * 2 + k;
+      pos.set([p.x, p.y, p.z], j * 3);
+      side.set([s.x, s.y, s.z], j * 3);
+      along[j] = d;
+      edge[j] = k ? 1 : -1;
+    }
+  }
+  const idx = [];
+  for (let i = 0; i < n2 - 1; i++) {
+    const a2 = i * 2;
+    idx.push(a2, a2 + 1, a2 + 2, a2 + 1, a2 + 3, a2 + 2);
+  }
+  const g = new BufferGeometry();
+  g.setAttribute("position", new BufferAttribute(pos, 3));
+  g.setAttribute("side", new BufferAttribute(side, 3));
+  g.setAttribute("along", new BufferAttribute(along, 1));
+  g.setAttribute("edge", new BufferAttribute(edge, 1));
+  g.setIndex(idx);
+  g.userData.length = d;
+  return g;
+}
+function ribbonMaterial({ color, px: px2 = 4, maxW = 0.15, opacity = 1, dash = 0, flow = 0, edgeColor = new Color(0, 0, 0), emissive = 0 }) {
+  return new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+    uniforms: {
+      uColor: { value: color.clone() },
+      uEdgeColor: { value: edgeColor.clone() },
+      uPx: { value: px2 },
+      uMaxW: { value: maxW },
+      uTanHalf: { value: 0.5 },
+      uOpacity: { value: opacity },
+      uDash: { value: dash },
+      uFlow: { value: flow },
+      uTime: { value: 0 },
+      uReveal: { value: 1e9 },
+      uRevealFrom: { value: 0 },
+      uEdge: { value: 0 },
+      uEmissive: { value: emissive },
+      uFlowPeriod: { value: 1.6 }
+    },
+    vertexShader: (
+      /* glsl */
+      `
+      attribute vec3 side; attribute float along; attribute float edge;
+      uniform float uPx, uTanHalf, uMaxW;
+      varying float vAlong, vEdge, vWpp;
+      void main() {
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        float dist = length(cameraPosition - wp.xyz);
+        float wpp = 2.0 * dist * uTanHalf / 1920.0;
+        wp.xyz += side * edge * min(uPx * wpp, uMaxW) * 0.5;
+        vAlong = along; vEdge = edge; vWpp = wpp;
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }`
+    ),
+    fragmentShader: (
+      /* glsl */
+      `
+      uniform vec3 uColor, uEdgeColor; uniform float uOpacity, uDash, uFlow, uTime, uReveal, uRevealFrom, uEdge, uEmissive, uFlowPeriod;
+      varying float vAlong, vEdge, vWpp;
+      void main() {
+        if (vAlong > uReveal || vAlong < uRevealFrom) discard;
+        float e = abs(vEdge);
+        float a = 1.0 - smoothstep(0.65, 1.0, e);
+        if (uDash > 0.0) a *= step(fract(vAlong / (uDash * vWpp)), 0.58);
+        // Flow pulses travel downstream (lines are stored source -> mouth).
+        float s = fract(vAlong / uFlowPeriod - uTime * 0.55);
+        float pulse = smoothstep(0.0, 0.12, s) * (1.0 - smoothstep(0.12, 0.42, s));
+        vec3 col = uColor * (1.0 + uEmissive + uFlow * pulse * 0.9);
+        // Levee edges glow amber along both banks.
+        float lev = uEdge * smoothstep(0.35, 0.8, e);
+        col = mix(col, uEdgeColor * 2.2, lev);
+        a = max(a, lev * 0.9 * (1.0 - smoothstep(0.95, 1.0, e)));
+        gl_FragColor = vec4(col, a * uOpacity);
+        if (gl_FragColor.a < 0.01) discard;
+      }`
+    )
+  });
+}
+function updateRibbon(mat, cam, time) {
+  mat.uniforms.uTanHalf.value = Math.tan(cam.fov * Math.PI / 360);
+  mat.uniforms.uTime.value = time;
+}
+var init_ribbon = __esm({
+  "scene/src/core/ribbon.js"() {
+    init_three_module();
+  }
+});
+
 // scene/videos/cat-kingdom/sets/state.js
 var state_exports = {};
 __export(state_exports, {
@@ -39748,7 +39788,7 @@ async function createState(pipe) {
         float field = ex.b * ca * uFieldK;
         landCol = mix(landCol, mix(uGreen, uGreen2, step(0.5, rows)), smoothstep(0.25, 0.6, field) * 0.9);
         landCol = mix(landCol, uUrbanCol, smoothstep(0.2, 0.6, urb) * ca);
-        landCol = mix(mix(landCol * 0.9, uBg, 0.72), landCol, ca);
+        landCol = mix(mix(landCol * 0.9, uSea * 0.86, 0.8), landCol, ca);
         gCA = ca;
         vec3 seaCol = mix(uShore, uSea * 0.92, smoothstep(0.0, 0.35, ex.g));
         vec3 col = mix(seaCol, landCol, land);
@@ -39820,18 +39860,18 @@ async function createState(pipe) {
   }
   scene.add(network);
   const pawGeo = (() => {
-    const parts = [];
+    const parts2 = [];
     const disc = (x, z, rx, rz) => {
       const g = new CircleGeometry(1, 18).rotateX(-Math.PI / 2);
       g.scale(rx, 1, rz);
       g.translate(x, 0, z);
-      parts.push(g);
+      parts2.push(g);
     };
     disc(0, 0.08, 0.34, 0.28);
     for (const [x, z] of [[-0.32, -0.2], [-0.12, -0.38], [0.12, -0.38], [0.32, -0.2]]) disc(x, z, 0.11, 0.14);
     const merged = new BufferGeometry();
     const pos = [], idx = [];
-    for (const g of parts) {
+    for (const g of parts2) {
       const base = pos.length / 3, p = g.attributes.position.array;
       for (let i = 0; i < p.length; i++) pos.push(p[i]);
       const ix = g.index.array;
@@ -39960,8 +40000,8 @@ async function createState(pipe) {
     room.add(y);
   }
   const giants = [];
-  const giant = (pose, coat, seed, pos, yaw, scale, look = [0, 0, 0]) => {
-    const c = makeCat({ pose, coat, seed, lod: "hi" });
+  const giant = (pose, coat2, seed, pos, yaw, scale, look = [0, 0, 0]) => {
+    const c = makeCat({ pose, coat: coat2, seed, lod: "hi" });
     c.group.position.copy(pos);
     c.group.rotation.y = yaw;
     c.group.scale.setScalar(scale);
@@ -39985,6 +40025,47 @@ async function createState(pipe) {
   giant("curl", "cream", 7, ground(-116.53, 33.82), 0.6, 6);
   giant("sit", "cream", 9, shastaTop, 0.5, 4, [0.4, 0.1, 0]);
   giant("sprawl", "cream", 8, ground(-120.05, 36.95), 2, 7);
+  const doorCats = new Group();
+  scene.add(doorCats);
+  const parts = catParts("sit", "lo");
+  const DR = rng(12);
+  const sac = ll(-121.49, 38.58);
+  const cells = /* @__PURE__ */ new Map();
+  for (const [x, y] of cats.blocks) {
+    const k = `${Math.floor(x / 34e3)},${Math.floor(y / 34e3)}`;
+    const c = cells.get(k) || { x: 0, y: 0, n: 0 };
+    c.x += x;
+    c.y += y;
+    c.n++;
+    cells.set(k, c);
+  }
+  const spots = [...cells.values()].filter((c) => c.n >= 2).map((c) => {
+    const p = toW(c.x / c.n, c.y / c.n);
+    p.y = meshY(p.x, p.z) + 0.01;
+    return { p, yaw: (DR() - 0.5) * 1, look: (DR() - 0.5) * 1.8, delay: 0.3 + 1.4 * Math.min(1, p.distanceTo(sac) / 95) + DR() * 0.2, s: 4.6 + DR() * 0.6 };
+  });
+  const coat = coatMaterial("ginger");
+  const bodies = new InstancedMesh(parts.body, coat, spots.length), heads = new InstancedMesh(parts.head, coat, spots.length);
+  bodies.castShadow = heads.castShadow = true;
+  doorCats.add(bodies, heads);
+  const mB = new Matrix4(), mH = new Matrix4(), mR = new Matrix4(), qq = new Quaternion(), vS = new Vector3(), vP = new Vector3();
+  function updateDoorCats(f2, camPos) {
+    const t = (f2 - 300) / FPS4;
+    const snap = ease.outCubic(prog(t, 2.3, 2.43));
+    spots.forEach((c, i) => {
+      const perk = 1 + 0.12 * Math.sin(Math.PI * prog(t, 2.3, 2.6));
+      const k = spring(t - c.delay, 0.5) * c.s * perk;
+      qq.setFromEuler(new Euler(0, c.yaw, 0));
+      mB.compose(c.p, qq, vS.setScalar(Math.max(1e-4, k)));
+      bodies.setMatrixAt(i, mB);
+      const toCam = Math.atan2(camPos.x - c.p.x, camPos.z - c.p.z) - c.yaw;
+      const yaw = c.look * (1 - snap) + Math.atan2(Math.sin(toCam), Math.cos(toCam)) * snap;
+      mR.makeRotationFromEuler(new Euler(parts.headRot.x - 0.75 * snap, yaw, 0, "YXZ"));
+      mH.makeTranslation(parts.headPos.x, parts.headPos.y, parts.headPos.z).multiply(mR).multiply(new Matrix4().makeScale(parts.headScale, parts.headScale, parts.headScale));
+      heads.setMatrixAt(i, mB.clone().multiply(mH));
+    });
+    bodies.instanceMatrix.needsUpdate = heads.instanceMatrix.needsUpdate = true;
+  }
   const labels = new Labels({ text: HEX2.text, halo: HEX2.panel });
   const PLACES = [["sac", "Sacramento", -121.49, 38.58], ["sf", "San Francisco", -122.42, 37.77], ["la", "Los Angeles", -118.24, 34.05], ["ps", "Palm Springs", -116.55, 33.83]];
   for (const [id, text, lo, la] of PLACES) labels.add(id, { text, pos: ll(lo, la, 0.05), dot: true, size: 30, priority: 2 });
@@ -39993,15 +40074,21 @@ async function createState(pipe) {
   const cam = new PerspectiveCamera(35, 1080 / 1920, 0.5, 1200);
   const A13 = { pos: ll(-116.2, 32.6).add(new Vector3(18, 26, 22)), target: ll(-118, 34.3), lens: 35 };
   const B13 = { pos: new Vector3(27, 92, 89), target: new Vector3(0, 0, 10), lens: 24 };
+  const A3 = { pos: new Vector3(2, 196, 78), target: new Vector3(2, 0, 5), lens: 35 };
+  const B3 = { pos: new Vector3(1, 172, 69), target: new Vector3(1, 0, 6), lens: 35 };
   return {
     labels,
     frame(f2, { avoid = [] } = {}) {
       const t = f2 / FPS4;
+      const finale = f2 >= 1460;
       const dbg = new URLSearchParams(location.search).get("debug");
-      const s = dbg === "top" ? { pos: new Vector3(0, 230, 0.01), target: new Vector3(0, 0, 0), lens: 35 } : move(f2, 1515, 1590, A13, B13, { fn: ease.inOutCubic, via: new Vector3(30, 52, 80) });
+      const s = dbg === "top" ? { pos: new Vector3(0, 230, 0.01), target: new Vector3(0, 0, 0), lens: 35 } : finale ? move(f2, 1515, 1590, A13, B13, { fn: ease.inOutCubic, via: new Vector3(30, 52, 80) }) : beatMove(f2, [300, 420], A3, B3);
       applyCam(cam, s);
-      U.uWinK.value = 1;
-      U.uEstK.value = 1;
+      room.visible = network.visible = pawInst.visible = finale;
+      doorCats.visible = !finale;
+      if (!finale) updateDoorCats(f2, cam.position);
+      U.uWinK.value = finale ? 1 : 0;
+      U.uEstK.value = finale ? 1 : 0;
       giants.forEach((c, i) => c.update(t + i * 2.1));
       lineMats.forEach((m3) => updateRibbon(m3, cam, t));
       labels.update(cam, { sac: 1, sf: 1, la: 1, ps: 1, cv: 0.9 }, avoid);
@@ -40021,6 +40108,8 @@ var init_state = __esm({
     init_util();
     init_look2();
     init_cat();
+    init_beat();
+    init_util();
     init_props();
     KM = 1e4;
     EXAG = 2;
@@ -40030,6 +40119,1937 @@ var init_state = __esm({
     FPS4 = 30;
     ESTATES = [[-116.53, 33.82, 4.2], [-119.3, 34.55, 2.8], [-117.75, 33.78, 2.4], [-120.45, 35.45, 2.6], [-121.5, 36.55, 2.3], [-117.2, 34.6, 3], [-119.45, 35.55, 2.4]];
     WINDOW = { lon: -120.35, lat: 37.35, hw: 15, hh: 21, ang: -0.62 };
+  }
+});
+
+// scene/videos/cat-kingdom/lib/town.js
+function basePlate({ w = 20, d = 20, top = null, ground = tone(C2.cream, 0.92), slab = tone(C2.cream, 0.78) } = {}) {
+  const g = new Group();
+  g.add(mesh(new PlaneGeometry(w, d).rotateX(-Math.PI / 2), top || clay(ground, 0.85), {}));
+  g.add(mesh(rbox(w + 0.3, 0.7, d + 0.3, 0.12), clay(slab, 0.85), { pos: [0, -0.36, 0] }));
+  g.add(mesh(rbox(w + 0.34, 0.12, d + 0.34, 0.05), clay(S.terraDark, 0.7), { pos: [0, -0.62, 0], cast: false }));
+  return g;
+}
+function tileRoof(color = S.terra) {
+  const m3 = clay(color, 0.7);
+  m3.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vOP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvOP = position;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vOP;").replace("#include <color_fragment>", `#include <color_fragment>
+        float r = fract(vOP.y * 9.0);
+        float c = fract(vOP.x * 7.0 + step(0.5, fract(vOP.y * 4.5)) * 0.5);
+        diffuseColor.rgb *= 0.86 + 0.14 * smoothstep(0.0, 0.35, r) * (0.8 + 0.2 * smoothstep(0.0, 0.2, min(c, 1.0 - c)));`);
+  };
+  return m3;
+}
+function house({ w = 2.2, d = 1.8, h = 1.3, wall = tone(C2.cream, 0.97), roof = S.terra, roofType = "gable", lit = 0, seed = 1, door = true, chimney = false } = {}) {
+  const g = new Group(), R = rng(seed);
+  const wallM = clay(wall, 0.82), trim = clay(tone(C2.cream, 1, 0.3), 0.6);
+  g.add(mesh(rbox(w, h, d, 0.05), wallM, { pos: [0, h / 2, 0] }));
+  if (roofType === "gable") {
+    const sh = new Shape();
+    sh.moveTo(-w / 2 - 0.14, 0);
+    sh.lineTo(w / 2 + 0.14, 0);
+    sh.lineTo(0, h * 0.62);
+    sh.closePath();
+    const rg = new ExtrudeGeometry(sh, { depth: d + 0.24, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2 });
+    rg.translate(0, 0, -(d + 0.24) / 2);
+    g.add(mesh(rg, tileRoof(roof), { pos: [0, h, 0] }));
+  } else if (roofType === "hip") {
+    const rg = new ConeGeometry(Math.hypot(w, d) * 0.62, h * 0.55, 4, 1);
+    rg.rotateY(Math.PI / 4);
+    rg.scale(w / Math.hypot(w, d) * 1.414, 1, d / Math.hypot(w, d) * 1.414);
+    g.add(mesh(rg, tileRoof(roof), { pos: [0, h + h * 0.275, 0] }));
+  } else {
+    g.add(mesh(rbox(w + 0.24, 0.14, d + 0.24, 0.05), clay(tone(C2.cream, 1, 0.2), 0.7), { pos: [0, h + 0.07, 0] }));
+  }
+  if (chimney) g.add(mesh(rbox(0.26, 0.6, 0.26, 0.04), clay(tone(C2.terra, 0.8), 0.8), { pos: [w * 0.25, h + h * 0.45, -d * 0.15] }));
+  const windows = [];
+  const nW = Math.max(1, Math.round(w / 0.8));
+  for (let i = 0; i < nW; i++) {
+    const x = -w / 2 + w / nW * (i + 0.5);
+    if (door && i === Math.floor(nW / 2)) {
+      g.add(mesh(rbox(0.36, 0.66, 0.06, 0.03), clay(S.woodDark, 0.6), { pos: [x, 0.33, d / 2 + 0.01], cast: false }));
+      continue;
+    }
+    const isLit = R() < lit;
+    g.add(mesh(rbox(0.42, 0.46, 0.05, 0.02), trim, { pos: [x, h * 0.55, d / 2 + 0.01], cast: false }));
+    g.add(mesh(new PlaneGeometry(0.34, 0.38), isLit ? litMat() : glassMat(), { pos: [x, h * 0.55, d / 2 + 0.04], cast: false }));
+    windows.push({ pos: new Vector3(x, h * 0.55 - 0.22, d / 2 + 0.08), lit: isLit });
+  }
+  g.userData.windows = windows;
+  return g;
+}
+function rowHouse({ w = 1.4, d = 2.2, floors = 3, color = tone(C2.cream, 0.97), trimCol = tone(C2.cream, 1, 0.35), lit = 0.6, seed = 1 } = {}) {
+  const g = new Group(), R = rng(seed);
+  const fh = 0.85, h = floors * fh + 0.3;
+  const wallM = clay(color, 0.8), trim = clay(trimCol, 0.6);
+  g.add(mesh(rbox(w, h, d, 0.04), wallM, { pos: [0, h / 2, 0] }));
+  g.add(mesh(rbox(w + 0.16, 0.18, d + 0.1, 0.04), trim, { pos: [0, h + 0.05, 0.02] }));
+  g.add(mesh(rbox(w + 0.06, 0.16, 0.12, 0.03), trim, { pos: [0, h - 0.12, d / 2 + 0.05] }));
+  const sills = [];
+  for (let f2 = 0; f2 < floors; f2++) {
+    const y = 0.35 + f2 * fh + fh * 0.45;
+    if (f2 === 0) {
+      g.add(mesh(rbox(0.38, 0.62, 0.06, 0.03), clay(S.woodDark, 0.6), { pos: [-w * 0.25, 0.31 + 0.05, d / 2 + 0.01], cast: false }));
+      g.add(mesh(rbox(0.5, 0.08, 0.3, 0.02), trim, { pos: [-w * 0.25, 0.04, d / 2 + 0.15] }));
+    }
+    if (f2 > 0) {
+      const bay = new Group();
+      bay.add(mesh(rbox(w * 0.66, fh * 0.78, 0.3, 0.04), wallM, { pos: [0, 0, 0.15] }));
+      const isLit = R() < lit;
+      bay.add(mesh(new PlaneGeometry(w * 0.5, fh * 0.52), isLit ? litMat() : glassMat(), { pos: [0, 0.02, 0.305], cast: false }));
+      bay.add(mesh(rbox(w * 0.56, 0.06, 0.12, 0.02), trim, { pos: [0, -fh * 0.25, 0.34], cast: false }));
+      bay.position.set(0, y, d / 2);
+      g.add(bay);
+      sills.push({ pos: new Vector3(0, y - fh * 0.25 + 0.03, d / 2 + 0.36), lit: isLit });
+    } else {
+      g.add(mesh(new PlaneGeometry(w * 0.32, fh * 0.45), glassMat(), { pos: [w * 0.22, y, d / 2 + 0.01], cast: false }));
+    }
+  }
+  g.userData.sills = sills;
+  g.userData.height = h + 0.14;
+  return g;
+}
+function fence(L = 3, color = tone(C2.cream, 1, 0.3)) {
+  const g = new Group(), m3 = clay(color, 0.7);
+  const n2 = Math.max(2, Math.round(L / 0.16));
+  for (let i = 0; i <= n2; i++) g.add(mesh(rbox(0.06, 0.42, 0.04, 0.015, 1), m3, { pos: [-L / 2 + L * i / n2, 0.21, 0], cast: true }));
+  for (const y of [0.14, 0.32]) g.add(mesh(rbox(L, 0.05, 0.03, 0.01, 1), m3, { pos: [0, y, -0.03] }));
+  return g;
+}
+function pool({ w = 1.6, d = 1 } = {}) {
+  const g = new Group();
+  g.add(mesh(rbox(w + 0.24, 0.1, d + 0.24, 0.06), clay(tone(C2.cream, 1, 0.3), 0.6), { pos: [0, 0.05, 0] }));
+  g.add(mesh(rbox(w, 0.03, d, 0.2), glossy(tone(C2.blue, 1.05, 0.15), { roughness: 0.08, reflect: 1 }), { pos: [0, 0.09, 0], cast: false }));
+  return g;
+}
+function street(L = 10, wdt = 1.2) {
+  const g = new Group();
+  g.add(mesh(new BoxGeometry(L, 0.02, wdt), clay(mixc(tone(C2.blue, 0.42), tone(C2.cream, 0.45), 0.35), 0.8), { pos: [0, 0.01, 0], cast: false }));
+  const dash = clay(tone(C2.blue, 1, 0.55), 0.6);
+  for (let x = -L / 2 + 0.3; x < L / 2; x += 0.7) g.add(mesh(new BoxGeometry(0.35, 5e-3, 0.05), dash, { pos: [x, 0.023, 0], cast: false }));
+  return g;
+}
+var glassMat, litMat;
+var init_town = __esm({
+  "scene/videos/cat-kingdom/lib/town.js"() {
+    init_three_module();
+    init_look2();
+    init_props();
+    init_util();
+    glassMat = () => glossy(tone(C2.blue, 0.45), { roughness: 0.12, reflect: 0.9 });
+    litMat = () => new MeshStandardMaterial({ color: tone(C2.gold, 1, 0.15), emissive: tone(C2.gold, 0.9), emissiveIntensity: 0.9, roughness: 0.5 });
+  }
+});
+
+// scene/videos/cat-kingdom/sets/porch.js
+var porch_exports = {};
+__export(porch_exports, {
+  createPorch: () => createPorch
+});
+function parcel(w, h, d, seed) {
+  const g = new Group(), R = rng(seed);
+  const card = clay(mixc(tone(C2.cream, 0.7 + R() * 0.08), C2.terra, 0.12), 0.85);
+  g.add(mesh(rbox(w, h, d, 0.015), card, { pos: [0, h / 2, 0] }));
+  g.add(mesh(new BoxGeometry(w + 4e-3, 4e-3, 0.07), clay(S.terra, 0.6), { pos: [0, h + 1e-3, 0], cast: false }));
+  g.add(mesh(new BoxGeometry(0.07, h * 0.5, 4e-3), clay(S.terra, 0.6), { pos: [0, h * 0.75, d / 2 + 2e-3], cast: false }));
+  return g;
+}
+async function createPorch(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
+  const R = rng(4);
+  const plateG = basePlate({ w: 9, d: 7 });
+  plateG.position.set(0, 0, 1);
+  scene.add(plateG);
+  for (const s of [-1, 1]) scene.add(mesh(rbox(3.4, 0.04, 3.2, 0.02), clay(S.green, 0.85), { pos: [s * 2.55, 0.02, 3], cast: false }));
+  for (let i = 0; i < 4; i++) scene.add(mesh(rbox(0.9, 0.04, 0.5, 0.03), clay(tone(C2.cream, 0.78), 0.8), { pos: [(R() - 0.5) * 0.1, 0.02, 2.55 + i * 0.62], cast: false }));
+  const wall = clay(tone(C2.cream, 0.97), 0.85), trim = clay(tone(C2.cream, 1, 0.3), 0.6);
+  scene.add(mesh(rbox(5.4, FLOOR, 2, 0.03), clay(tone(C2.cream, 0.84), 0.8), { pos: [0, FLOOR / 2, 0.85] }));
+  for (const [z, y2] of [[2, 0.21], [2.3, 0.105]]) scene.add(mesh(rbox(1.6, y2, 0.34, 0.02), clay(tone(C2.cream, 0.86), 0.8), { pos: [0, y2 / 2, z] }));
+  const doorW = 1.05, doorH = 2.15, wallH = 3.3;
+  const wz = -0.12;
+  const wallPart = (x0, x1, y0, y1) => scene.add(mesh(new BoxGeometry(x1 - x0, y1 - y0, 0.24), wall, { pos: [(x0 + x1) / 2, (y0 + y1) / 2, wz] }));
+  wallPart(-2.8, -doorW / 2, 0, wallH);
+  wallPart(doorW / 2, 2.8, 0, wallH);
+  wallPart(-doorW / 2, doorW / 2, FLOOR + doorH, wallH);
+  scene.add(mesh(rbox(doorW + 0.24, 0.14, 0.32, 0.03), trim, { pos: [0, FLOOR + doorH + 0.07, wz + 0.02] }));
+  for (const s of [-1, 1]) scene.add(mesh(rbox(0.12, doorH, 0.3, 0.03), trim, { pos: [s * (doorW / 2 + 0.06), FLOOR + doorH / 2, wz + 0.02] }));
+  const hinge = new Group();
+  hinge.position.set(doorW / 2, FLOOR, wz - 0.06);
+  const door = new Group();
+  door.add(mesh(rbox(doorW, doorH, 0.07, 0.02), clay(S.woodDark, 0.6), { pos: [-doorW / 2, doorH / 2, 0] }));
+  for (const y2 of [0.55, 1.45]) door.add(mesh(rbox(doorW * 0.7, 0.62, 0.02, 0.01), clay(tone(S.woodDark, 1.18), 0.6), { pos: [-doorW / 2, y2, 0.04], cast: false }));
+  door.add(mesh(new SphereGeometry(0.04, 12, 8), clay(tone(C2.cream, 1, 0.1), 0.4), { pos: [-doorW + 0.12, 1, 0.07] }));
+  hinge.add(door);
+  scene.add(hinge);
+  scene.add(mesh(new BoxGeometry(3, 0.04, 2.6), clay(S.wood, 0.6), { pos: [0, FLOOR - 0.02, -1.45], cast: false }));
+  scene.add(mesh(new BoxGeometry(3, wallH, 0.2), clay(tone(C2.cream, 0.82), 0.85), { pos: [0, wallH / 2, -2.75] }));
+  for (const s of [-1, 1]) scene.add(mesh(new BoxGeometry(0.2, wallH, 2.6), clay(tone(C2.cream, 0.82), 0.85), { pos: [s * 1.5, wallH / 2, -1.45] }));
+  scene.add(mesh(new BoxGeometry(3.2, 0.2, 2.8), clay(tone(C2.cream, 0.82), 0.85), { pos: [0, wallH + 0.1, -1.45] }));
+  const hallLamp = new PointLight(tone(C2.lamp, 1), 2.2, 5, 1.6);
+  hallLamp.position.set(0.3, 2.6, -1.6);
+  scene.add(hallLamp);
+  const eave = mesh(rbox(6.2, 0.5, 1.8, 0.06), tileRoof(S.terra), { pos: [0, wallH + 0.12, 0.45], rot: [0.32, 0, 0] });
+  scene.add(eave);
+  for (const s of [-1, 1]) {
+    const x = s * 1.85;
+    scene.add(mesh(rbox(0.95, 1.15, 0.06, 0.02), trim, { pos: [x, 1.75, wz + 0.13] }));
+    scene.add(mesh(new PlaneGeometry(0.8, 1), new MeshStandardMaterial({ color: tone(C2.blue, 0.42), roughness: 0.15 }), { pos: [x, 1.75, wz + 0.165], cast: false }));
+    for (const k of [-1, 1]) scene.add(mesh(rbox(0.32, 1.15, 0.05, 0.02), clay(S.terra, 0.7), { pos: [x + k * 0.66, 1.75, wz + 0.15] }));
+    scene.add(mesh(rbox(1, 0.18, 0.26, 0.03), clay(S.terraDark, 0.8), { pos: [x, 1.12, wz + 0.25] }));
+    for (let i = 0; i < 4; i++) scene.add(mesh(new SphereGeometry(0.11, 12, 8), clay(i % 2 ? S.green : S.greenDark, 0.8), { pos: [x - 0.36 + i * 0.24, 1.26, wz + 0.27] }));
+  }
+  scene.add(mesh(rbox(0.16, 0.3, 0.12, 0.04), new MeshStandardMaterial({ color: tone(C2.gold, 1, 0.3), emissive: tone(C2.gold, 0.7), emissiveIntensity: 0.6, roughness: 0.4 }), { pos: [-0.9, 2.05, wz + 0.2] }));
+  scene.add(mesh(rbox(0.9, 0.025, 0.55, 0.02), clay(S.terraDark, 0.95), { pos: [0, FLOOR + 0.012, 0.42], cast: false }));
+  for (const [x, z, h, sd] of [[-1.35, 0.55, 0.9, 3], [1.4, 1.5, 0.7, 5]]) {
+    const p = plant({ h, seed: sd });
+    p.scale.setScalar(0.85);
+    p.position.set(x, FLOOR, z);
+    scene.add(p);
+  }
+  for (const [x, z] of [[-3.6, 1], [3.7, 0.6], [-3.2, -0.2]]) {
+    const sh = shrub({ r: 0.5, stem: 0.1, seed: x * 10 });
+    sh.position.set(x, 0, z);
+    scene.add(sh);
+  }
+  const stack = new Group();
+  let y = FLOOR;
+  for (let i = 0; i < 6; i++) {
+    const w = 0.75 - i * 0.05 + R() * 0.05, h = 0.32 + R() * 0.12, d = 0.55 - i * 0.03;
+    const p = parcel(w, h, d, 10 + i);
+    p.position.set((R() - 0.5) * 0.08, y, (R() - 0.5) * 0.06);
+    p.rotation.y = (R() - 0.5) * 0.3;
+    stack.add(p);
+    y += h;
+  }
+  stack.position.set(1.22, 0, 0.62);
+  scene.add(stack);
+  const bag = new Group();
+  bag.add(mesh(rbox(0.5, 0.7, 0.24, 0.1), clay(tone(C2.cream, 1, 0.2), 0.8), { pos: [0, 0.35, 0] }));
+  bag.add(mesh(new CircleGeometry(0.13, 24), clay(S.terra, 0.7), { pos: [0, 0.42, 0.123], cast: false }));
+  bag.position.set(1.95, FLOOR, 1.05);
+  bag.rotation.y = -0.5;
+  scene.add(bag);
+  const open = cardboardBox({ w: 0.55, h: 0.32, d: 0.45 });
+  open.position.set(-1.9, FLOOR, 1.15);
+  open.rotation.y = 0.3;
+  scene.add(open);
+  const cat = makeCat({ pose: "sit", coat: "ginger", seed: 41 });
+  cat.group.scale.setScalar(0.55);
+  cat.group.position.set(-0.08, FLOOR, 0);
+  scene.add(cat.group);
+  const person = makeHuman({ pose: "stand", seed: 42, scale: 1.72, shirt: 1, skin: 2, hair: 2, cut: 2 });
+  person.group.position.set(0.32, FLOOR, -0.62);
+  scene.add(person.group);
+  const lights = rig2(scene, pipe.renderer, { size: 6, dist: 40, intensity: 5.8, fillK: 0.22, rimK: 0.3, keyDir: [-0.55, 0.5, 0.67] });
+  lights.follow(new Vector3(0, 1.2, 0.5), 6);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [1.3, 1.55, 8.6], target: [0.5, 1.3, 0.3], lens: 50 };
+  const B = { pos: [0.85, 1.35, 6.8], target: [0.38, 1.08, 0.3], lens: 50 };
+  return {
+    frame(f2) {
+      const t = (f2 - BEAT2[0]) / FPS5;
+      applyCam(cam, beatMove(f2, BEAT2, A, B));
+      const open2 = ease.inOutCubic(prog(t, 0.45, 1.25));
+      hinge.rotation.y = -1.75 * open2;
+      const back = Math.sin(Math.PI * prog(t, 2.2, 3.4));
+      cat.look(0.9 * back + 0.08 * Math.sin(t * 0.9), -0.05 - 0.3 * back, 0.05);
+      cat.update(t + 4);
+      person.state.nod = 0.15 * back;
+      person.update(t);
+      return { scene, camera: cam, bloom: 0.22, exposure: 1, vignette: 0.22 };
+    }
+  };
+}
+var FPS5, BEAT2, FLOOR;
+var init_porch = __esm({
+  "scene/videos/cat-kingdom/sets/porch.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS5 = 30;
+    BEAT2 = [420, 540];
+    FLOOR = 0.32;
+  }
+});
+
+// scene/videos/cat-kingdom/sets/sf.js
+var sf_exports = {};
+__export(sf_exports, {
+  createSF: () => createSF
+});
+function walkway(a2, b, w = 0.5) {
+  const g = new Group();
+  const d = b.clone().sub(a2), L = d.length();
+  const mid = a2.clone().add(b).multiplyScalar(0.5);
+  const yaw = Math.atan2(d.x, d.z), pitch = -Math.asin(d.y / L);
+  const inner = new Group();
+  inner.add(mesh(rbox(w, 0.06, L, 0.02), clay(S.wood, 0.65), {}));
+  for (const s of [-1, 1]) {
+    inner.add(mesh(rbox(0.04, 0.04, L, 0.015), clay(S.terra, 0.6), { pos: [s * w / 2, 0.3, 0] }));
+    for (let i = 0; i <= Math.floor(L / 1.1); i++) inner.add(mesh(new BoxGeometry(0.03, 0.3, 0.03), clay(S.terra, 0.6), { pos: [s * w / 2, 0.15, -L / 2 + 0.1 + i * 1.1] }));
+  }
+  inner.rotation.set(pitch, 0, 0);
+  g.add(inner);
+  g.position.copy(mid);
+  g.rotation.y = yaw;
+  return g;
+}
+function sunPool(r = 0.6) {
+  const m3 = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uCol: { value: tone(C2.gold, 1) } },
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform vec3 uCol; varying vec2 vUv; void main(){ float d = length(vUv - 0.5) * 2.0; gl_FragColor = vec4(uCol * (1.0 - smoothstep(0.3, 1.0, d)) * 0.28, 1.0); }"
+  });
+  m3.toneMapped = false;
+  const p = new Mesh(new PlaneGeometry(r * 2, r * 2).rotateX(-Math.PI / 2), m3);
+  p.renderOrder = 6;
+  return p;
+}
+function goldenGate() {
+  const g = new Group();
+  const red = clay(tone(C2.terra, 0.95), 0.6);
+  for (const x of [-4, 4]) {
+    for (const s of [-1, 1]) g.add(mesh(rbox(0.35, 7, 0.35, 0.05), red, { pos: [x, 3.5, s * 0.55] }));
+    for (const y of [4.2, 6.2, 6.9]) g.add(mesh(rbox(0.3, 0.3, 1.4, 0.04), red, { pos: [x, y, 0] }));
+  }
+  g.add(mesh(rbox(18, 0.3, 1.3, 0.05), red, { pos: [0, 2.2, 0] }));
+  for (const s of [-1, 1]) {
+    const pts = [];
+    for (let i = 0; i <= 40; i++) {
+      const x = -9 + 18 * i / 40;
+      const y = Math.abs(x) <= 4 ? 2.6 + 4.3 * (x / 4) ** 2 : 6.9 - (Math.abs(x) - 4) * 0.9;
+      pts.push(new Vector3(x, y, s * 0.55));
+    }
+    g.add(mesh(new TubeGeometry(new CatmullRomCurve3(pts), 80, 0.05, 6), red, { cast: false }));
+  }
+  return g;
+}
+async function createSF(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.3), top: tone(C2.blue, 0.9) });
+  const R = rng(55);
+  const plate = basePlate({ w: 12, d: 13 });
+  scene.add(plate);
+  const bay = mesh(new PlaneGeometry(260, 160).rotateX(-Math.PI / 2), glossy(tone(C2.blue, 0.95), { roughness: 0.35, reflect: 0.6 }), { pos: [0, -0.6, -86], cast: false });
+  scene.add(bay);
+  const gg = goldenGate();
+  gg.position.set(-14, -0.6, -30);
+  gg.rotation.y = 0.35;
+  gg.scale.setScalar(1.6);
+  scene.add(gg);
+  for (const [x, z, sx, sy, sz] of [[-30, -48, 18, 7, 9], [-8, -52, 16, 5, 9], [12, -60, 22, 6, 10]]) {
+    const h = mesh(new SphereGeometry(1, 40, 20), clay(mixc(S.green, tone(C2.cream, 0.85), 0.35), 0.9), { pos: [x, -0.8, z], cast: false });
+    h.scale.set(sx, sy, sz);
+    scene.add(h);
+  }
+  const hillMat = clay(tone(C2.cream, 0.8), 0.85);
+  const street3 = street(13.2, 1.5);
+  const st = new Group();
+  st.add(street3);
+  st.rotation.set(0, Math.PI / 2, 0);
+  const tilt = new Group();
+  tilt.add(st);
+  tilt.rotation.x = Math.atan(0.4);
+  tilt.position.set(0, slopeY(0) + 0.02, 0);
+  scene.add(tilt);
+  {
+    const sh = new Shape();
+    sh.moveTo(5.6, 0);
+    sh.lineTo(-5.6, 0);
+    sh.lineTo(-5.6, slopeY(-5.6));
+    sh.lineTo(5.2, slopeY(5.2));
+    sh.closePath();
+    const wg = new ExtrudeGeometry(sh, { depth: 1.5, bevelEnabled: false });
+    wg.rotateY(-Math.PI / 2);
+    wg.translate(0.75, 0, 0);
+    scene.add(mesh(wg, hillMat, {}));
+  }
+  const houses = [], sills = [], roofs = [];
+  const colors = [mixc(C2.cream, C2.terra, 0.42), tone(C2.blue, 1, 0.38), mixc(C2.cream, C2.green, 0.5), tone(C2.cream, 0.97), mixc(C2.cream, C2.terra, 0.24), tone(C2.blue, 0.9, 0.55), mixc(C2.cream, C2.green, 0.3)];
+  const zs = [4.4, 2.9, 1.4, -0.1, -1.6, -3.1, -4.6];
+  zs.forEach((z, i) => {
+    const y = slopeY(z + 0.7);
+    for (const side of [-1, 1]) {
+      const floors = 2 + (i + (side > 0 ? 1 : 0)) % 2;
+      const h = rowHouse({ w: 1.4, d: 2.4, floors, color: colors[(i * 2 + (side > 0 ? 1 : 0)) % colors.length], lit: 0.7, seed: i * 7 + side });
+      h.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+      h.position.set(side * 2.2, y, z);
+      scene.add(h);
+      scene.add(mesh(rbox(2.8, y + 0.02, 1.5, 0.02), hillMat, { pos: [side * 2.4, (y + 0.02) / 2 - 0.01, z] }));
+      h.updateMatrixWorld(true);
+      for (const sl of h.userData.sills) sills.push({ pos: sl.pos.clone().applyMatrix4(h.matrixWorld), lit: sl.lit, yaw: h.rotation.y });
+      roofs.push({ side, z, y: y + h.userData.height, i });
+      houses.push(h);
+    }
+  });
+  for (let i = 0; i < zs.length; i++) {
+    const L = roofs.find((r) => r.i === i && r.side < 0), Rr = roofs.find((r) => r.i === i && r.side > 0);
+    if (i % 2 === 0) scene.add(walkway(new Vector3(-2, L.y + 0.05, zs[i]), new Vector3(2, Rr.y + 0.05, zs[i])));
+    if (i === 1 || i === 4) {
+      const side = i % 2 ? 1 : -1;
+      const a2 = roofs.find((r) => r.i === i && r.side === side), b = roofs.find((r) => r.i === i + 1 && r.side === side);
+      scene.add(walkway(new Vector3(side * 2.2, a2.y + 0.05, zs[i] - 0.55), new Vector3(side * 2.2, b.y + 0.05, zs[i + 1] + 0.55), 0.42));
+    }
+  }
+  for (const [x, z0, y0] of [[-1.38, 2.9, slopeY(3.6)], [1.38, -0.1, slopeY(0.6)]]) {
+    for (let k = 0; k < 4; k++) scene.add(mesh(rbox(0.32, 0.05, 0.42, 0.015), clay(S.wood, 0.65), { pos: [x + Math.sign(x) * 0, y0 + 0.5 + k * 0.48, z0 - 0.45 + k % 2 * 0.9] }));
+  }
+  const cats = [];
+  const addCat = (pose, coat, pos, yaw, scale = 0.42, seed = cats.length + 60) => {
+    const c = makeCat({ pose, coat, seed, lod: "lo" });
+    c.group.position.copy(pos);
+    c.group.rotation.y = yaw;
+    c.group.scale.setScalar(scale);
+    scene.add(c.group);
+    cats.push(c);
+    return c;
+  };
+  sills.filter((s) => s.lit).forEach((s, i) => addCat(i % 3 === 0 ? "loaf" : "sit", i % 2 ? "cream" : "ginger", s.pos, s.yaw, 0.36));
+  roofs.forEach((r, i) => {
+    if (i % 3 === 1) return;
+    const p = new Vector3(r.side * 2.45, r.y + 0, r.z + (i % 2 ? 0.3 : -0.3));
+    const pool2 = sunPool(0.55);
+    pool2.position.copy(p).add(new Vector3(0, 0.02, 0));
+    scene.add(pool2);
+    addCat(i % 2 ? "sprawl" : "curl", i % 3 ? "ginger" : "cream", p, R() * 6, 0.5);
+  });
+  for (let i = 0; i < zs.length; i += 2) {
+    const L = roofs.find((r) => r.i === i && r.side < 0);
+    addCat(i % 4 ? "stand" : "sit", i % 4 ? "ginger2" : "cream", new Vector3(-0.3 + i * 0.1, L.y + 0.08, zs[i]), i % 4 ? Math.PI / 2 : 0.3, 0.45);
+  }
+  for (const z of [3.6, 0.6, -2.4]) for (const s of [-1, 1]) {
+    const t = shrub({ r: 0.3, stem: 0.4, seed: z * s * 10 });
+    t.position.set(s * 0.95, slopeY(z) + 0.02, z);
+    scene.add(t);
+  }
+  const labels = placeLabels([{ id: "sf", text: "San Francisco", pos: [0, slopeY(-4.6) + 2.9, -4.6] }]);
+  await labels.sync();
+  const lights = rig2(scene, pipe.renderer, { size: 9, dist: 50, intensity: 5.8, fillK: 0.22, rimK: 0.3, keyDir: [-0.66, 0.52, 0.42] });
+  lights.follow(new Vector3(0, 2.5, 0), 9);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [2.4, 4.6, 12], target: [0, 3, -0.6], lens: 35 };
+  const B = { pos: [4.4, 9.6, 8.4], target: [0, 3.4, -2.4], lens: 28 };
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT3[0]) / FPS6;
+      applyCam(cam, beatMove(f2, BEAT3, A, B, { via: [4.6, 6.4, 11.2] }));
+      cats.forEach((c, i) => {
+        c.look(Math.sin(t * 0.5 + i) * 0.3, 0.05, 0);
+        c.update(t + i * 1.1);
+      });
+      labels.update(cam, { sf: Math.min(1, Math.max(0, (t - 0.8) / 0.5)) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.24, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS6, BEAT3, slopeY;
+var init_sf = __esm({
+  "scene/videos/cat-kingdom/sets/sf.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS6 = 30;
+    BEAT3 = [540, 660];
+    slopeY = (z) => Math.min(4.6, Math.max(0, (5.2 - z) * 0.4));
+  }
+});
+
+// scene/videos/cat-kingdom/sets/freeway.js
+var freeway_exports = {};
+__export(freeway_exports, {
+  createFreeway: () => createFreeway
+});
+function groundMaterial() {
+  const m3 = clay(tone(C2.cream, 0.92), 0.85);
+  m3.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+        varying vec3 vWP;
+        uniform vec3 uRoad, uGrass, uDash, uShoulder;`).replace("#include <color_fragment>", `#include <color_fragment>
+        float z = abs(vWP.z);
+        vec3 c = diffuseColor.rgb;
+        // lawns: soft-edged patches away from the road
+        float lawn = smoothstep(2.6, 3.0, z) * (0.5 + 0.5 * sin(vWP.x * 0.35 + 1.0) * cos(vWP.z * 0.3));
+        c = mix(c, uGrass, smoothstep(0.35, 0.45, lawn));
+        float road = 1.0 - smoothstep(${ROAD.toFixed(2)} - 0.01, ${ROAD.toFixed(2)} + 0.01, z);
+        float shoulder = (1.0 - smoothstep(${(ROAD + 0.3).toFixed(2)} - 0.01, ${(ROAD + 0.3).toFixed(2)} + 0.01, z)) * (1.0 - road);
+        c = mix(c, uShoulder, shoulder);
+        c = mix(c, uRoad, road);
+        // dashed lane lines (light blue) and solid edge lines
+        float lane = 1.0 - smoothstep(0.035, 0.05, abs(z - 0.9));
+        float dash = step(0.45, fract(vWP.x / 1.6));
+        float edge = 1.0 - smoothstep(0.035, 0.05, abs(z - ${(ROAD - 0.12).toFixed(2)}));
+        c = mix(c, uDash, (lane * dash + edge) * road);
+        diffuseColor.rgb = c;`);
+    Object.assign(sh.uniforms, {
+      uRoad: { value: mixc(tone(C2.blue, 0.42), tone(C2.cream, 0.45), 0.35) },
+      uGrass: { value: tone(C2.green, 0.95) },
+      uDash: { value: tone(C2.blue, 1, 0.55) },
+      uShoulder: { value: tone(C2.cream, 0.8) }
+    });
+  };
+  return m3;
+}
+function gardenMaterial() {
+  const m3 = clay(S.green, 0.82);
+  m3.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(position, 1.0)).xyz;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;").replace("#include <color_fragment>", `#include <color_fragment>
+        float n = sin(vWP.x * 7.1 + sin(vWP.z * 5.3)) * sin(vWP.z * 6.7 + sin(vWP.x * 4.1));
+        diffuseColor.rgb *= 0.92 + 0.1 * n;`);
+  };
+  return m3;
+}
+async function createFreeway(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
+  scene.fog = new Fog(tone(C2.blue, 1, 0.5), 40, 160);
+  const R = rng(66);
+  const plate = new Group();
+  scene.add(plate);
+  plate.add(mesh(new PlaneGeometry(HALF * 2, HALF * 2, 1, 1).rotateX(-Math.PI / 2), groundMaterial(), {}));
+  plate.add(mesh(rbox(HALF * 2 + 0.3, 0.7, HALF * 2 + 0.3, 0.12), clay(tone(C2.cream, 0.78), 0.85), { pos: [0, -0.36, 0] }));
+  plate.add(mesh(rbox(HALF * 2 + 0.34, 0.12, HALF * 2 + 0.34, 0.05), clay(S.terraDark, 0.7), { pos: [0, -0.62, 0], cast: false }));
+  plate.add(mesh(rbox(HALF * 2 - 3.2, 0.22, 0.16, 0.05), clay(tone(C2.cream, 1, 0.1), 0.7), { pos: [0, 0.11, 0] }));
+  for (const s of [-1, 1]) {
+    const tg = new Group();
+    tg.add(mesh(rbox(1.6, 1.5, ROAD * 2 + 1.4, 0.1), clay(tone(C2.cream, 0.95), 0.8), { pos: [0, 0.75, 0] }));
+    tg.add(mesh(rbox(1.7, 0.25, ROAD * 2 + 1.6, 0.1), gardenMaterial(), { pos: [0, 1.58, 0] }));
+    for (const z of [-0.9, 0.9]) tg.add(mesh(rbox(0.06, 0.95, 1.5, 0.02), clay(tone(C2.blue, 0.3), 0.9), { pos: [-s * 0.79, 0.5, z], cast: false }));
+    tg.position.set(s * (HALF - 0.8), 0, 0);
+    plate.add(tg);
+  }
+  const cars = [];
+  const carCols = [S.blue, tone(C2.blue, 1, 0.35), tone(C2.cream, 1, 0.3), tone(C2.cream, 1, 0.3), tone(C2.blue, 1, 0.55)];
+  for (const [lane, dir] of [[-1.35, -1], [-0.45, -1], [0.45, 1], [1.35, 1]]) {
+    const n2 = 8, speed = 2.1 + R() * 0.6;
+    for (let i = 0; i < n2; i++) {
+      const car = toyCar({ color: carCols[Math.floor(R() * carCols.length)], scale: 0.7 });
+      car.rotation.y = dir > 0 ? 0 : Math.PI;
+      scene.add(car);
+      cars.push({ car, lane, dir, speed, x0: i / n2 * (HALF * 2 - 1.6) + R() * 1.2 });
+    }
+  }
+  const L = HALF * 2 - 1.6;
+  function updateCars(t) {
+    for (const c of cars) {
+      const x = ((c.x0 + c.speed * t) % L + L) % L - L / 2;
+      c.car.position.set(c.dir * x, 0, c.lane);
+      c.car.visible = Math.abs(x) < L / 2 - 0.2;
+    }
+  }
+  const deckMat = clay(tone(C2.cream, 0.97), 0.78), underMat = clay(tone(C2.cream, 0.74), 0.85), parapetMat = clay(tone(C2.cream, 1, 0.18), 0.7);
+  const garden = gardenMaterial(), post = sisalMaterial();
+  const W2 = 2.5, TH = 0.42;
+  const deckDefs = [
+    { pts: [[-2.4, 2.3, -HALF], [-1, 2.3, -4.5], [0.4, 2.3, 0], [1.4, 2.3, 4.5], [2.6, 2.3, HALF]] },
+    { pts: [[-HALF, 3.3, 7.5], [-5.5, 3.7, 4.6], [0, 3.8, 1.6], [5.5, 3.7, -2.5], [HALF, 3.3, -5.2]] },
+    { pts: [[HALF, 5.1, 6], [5, 5.3, 4.8], [0, 5.3, -3.6], [-5, 5.2, -7.2], [-HALF + 1.2, 5, -HALF]] }
+  ];
+  const decks = deckDefs.map((d) => {
+    const curve = new CatmullRomCurve3(d.pts.map((p) => new Vector3(...p)), false, "centripetal");
+    const g = new Group();
+    g.add(mesh(sweepProfile(curve, [[-W2 / 2, -TH], [W2 / 2, -TH], [W2 / 2, 0], [-W2 / 2, 0]], 160), deckMat, {}));
+    g.add(mesh(sweepProfile(curve, [[-W2 / 2 + 0.05, -TH - 0.06], [W2 / 2 - 0.05, -TH - 0.06], [W2 / 2 - 0.05, -TH + 0.02], [-W2 / 2 + 0.05, -TH + 0.02]], 160), underMat, {}));
+    for (const [u0, u1] of [[-W2 / 2, -W2 / 2 + 0.16], [W2 / 2 - 0.16, W2 / 2]]) g.add(mesh(sweepProfile(curve, [[u0, 0], [u1, 0], [u1, 0.3], [u0, 0.3]], 160), parapetMat, {}));
+    g.add(mesh(sweepProfile(curve, [[-0.82, 0], [0.82, 0], [0.82, 0.1], [-0.82, 0.1]], 160), garden, {}));
+    scene.add(g);
+    const len = curve.getLength(), n2 = Math.floor(len / 3.4);
+    for (let i = 1; i < n2; i++) {
+      const p = curve.getPointAt(i / n2);
+      if (Math.abs(p.z) < ROAD + 0.7 || Math.abs(p.x) > HALF - 1 || Math.abs(p.z) > HALF - 1) continue;
+      const h = p.y - TH;
+      g.add(mesh(new CylinderGeometry(0.3, 0.34, h, 22), post, { pos: [p.x, h / 2, p.z] }));
+      g.add(mesh(rbox(0.9, 0.16, 0.9, 0.05), underMat, { pos: [p.x, h - 0.08, p.z] }));
+    }
+    return { curve, g, len };
+  });
+  const onDeck = (d, t, u, lift = 0.1) => {
+    const p = d.curve.getPointAt(t), T = d.curve.getTangentAt(t);
+    const r = new Vector3().crossVectors(T, new Vector3(0, 1, 0)).normalize();
+    return { p: p.addScaledVector(r, u).setY(p.y + lift), yaw: Math.atan2(T.x, T.z) };
+  };
+  decks.forEach((d, di) => {
+    const n2 = Math.floor(d.len / 1.1);
+    for (let i = 0; i < n2; i++) {
+      const t = (i + 0.5) / n2;
+      if (R() < 0.35) continue;
+      const side = i % 2 ? 1 : -1;
+      const { p } = onDeck(d, t, side * (0.45 + R() * 0.25));
+      if (Math.abs(p.x) > HALF - 0.6 || Math.abs(p.z) > HALF - 0.6) continue;
+      const big = R() < 0.25;
+      const sh = shrub({ r: big ? 0.42 : 0.22 + R() * 0.12, stem: big ? 0.5 : 0.05, seed: di * 100 + i, dark: R() < 0.4 });
+      sh.position.copy(p);
+      scene.add(sh);
+    }
+  });
+  const cats = [];
+  const spots = [
+    [0, 0.42, 0, "sprawl", "ginger"],
+    [0, 0.6, 0, "loaf", "cream"],
+    [0, 0.27, 0, "sit", "ginger2"],
+    [1, 0.48, 0, "curl", "ginger"],
+    [1, 0.33, 0, "sphinx", "cream"],
+    [1, 0.62, 0, "sit", "ginger"],
+    [1, 0.73, 0, "loaf", "ginger2"],
+    [2, 0.45, 0, "sprawl", "cream"],
+    [2, 0.3, 0, "loaf", "ginger"],
+    [2, 0.58, 0, "sit", "cream"]
+  ];
+  spots.forEach(([di, t, u, pose, coat], i) => {
+    const d = decks[di];
+    const { p, yaw } = onDeck(d, t, u, 0.1);
+    const cu = cushion({ w: 1.4, d: 1.15, h: 0.17, color: i % 3 === 1 ? tone(C2.cream, 1, 0.1) : S.terra, piping: tone(C2.cream, 1, 0.2) });
+    cu.position.copy(p);
+    cu.rotation.y = yaw;
+    scene.add(cu);
+    const cat = makeCat({ pose, coat, seed: 40 + i, lod: "lo" });
+    cat.group.scale.setScalar(1.05);
+    cat.group.position.copy(p).add(new Vector3(0, 0.17, 0));
+    cat.group.rotation.y = yaw + (R() - 0.5) * 1.6 + (i % 2 ? Math.PI : 0);
+    scene.add(cat.group);
+    cats.push(cat);
+  });
+  {
+    const { p, yaw } = onDeck(decks[1], 0.2, 0, 0.1);
+    const walker = makeCat({ pose: "stand", coat: "ginger", seed: 77, lod: "lo" });
+    walker.group.scale.setScalar(1.05);
+    walker.group.position.copy(p);
+    walker.group.rotation.y = yaw;
+    scene.add(walker.group);
+    cats.push(walker);
+  }
+  for (const [t, u, coat, seed] of [[0.47, 1.17, "ginger", 91], [0.53, 1.17, "cream", 92]]) {
+    const d = decks[0];
+    const { p } = onDeck(d, t, u, 0.3);
+    const watcher = makeCat({ pose: "sit", coat, seed, lod: "lo" });
+    watcher.group.scale.setScalar(0.95);
+    watcher.group.position.copy(p);
+    watcher.group.rotation.y = Math.PI / 2 + (seed % 2 ? 0.5 : -0.4);
+    watcher.look(0, 0.45, 0);
+    watcher.fixed = true;
+    scene.add(watcher.group);
+    cats.push(watcher);
+  }
+  for (const [x, z, h, s] of [[-8.6, -4.2, 6.2, 3], [-6.2, -8.4, 5.4, 5], [-9.2, 2.6, 6.6, 7], [-8.6, 7.4, 5.2, 9], [4.2, -8.8, 6, 13], [8.6, -3.6, 4.6, 15], [9.3, -8.9, 5.6, 17]]) {
+    const palm = palmTree({ h, seed: s });
+    palm.position.set(x, 0, z);
+    scene.add(palm);
+  }
+  const lights = rig2(scene, pipe.renderer, { size: 15, dist: 60, intensity: 5.6, fillK: 0.22, rimK: 0.3 });
+  lights.follow(new Vector3(0, 2, 0), 15);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.1, 900);
+  return {
+    frame(f2) {
+      const t = f2 / FPS7;
+      const s = orbit(f2, 660, 780, { center: [0, 2.6, 0], a0: 0.52, a1: 0.86, r0: 20.5, r1: 19, h0: 8.6, h1: 7.9, lens0: 35, target: [-0.6, 2.7, 0.4], fn: ease.inOutSine });
+      applyCam(cam, s);
+      cats.forEach((c, i) => {
+        if (!c.fixed) c.look(Math.sin(t * 0.4 + i) * 0.25, 0.05, 0);
+        else c.look(Math.sin(t * 2.2 + i) * 0.35, 0.45, 0);
+        c.update(t + i * 1.7);
+      });
+      updateCars(t);
+      return { scene, camera: cam, bloom: 0.2, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS7, HALF, ROAD;
+var init_freeway = __esm({
+  "scene/videos/cat-kingdom/sets/freeway.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_props();
+    init_camera();
+    init_util();
+    FPS7 = 30;
+    HALF = 11;
+    ROAD = 1.9;
+  }
+});
+
+// scene/videos/cat-kingdom/sets/techlab.js
+var techlab_exports = {};
+__export(techlab_exports, {
+  createTechlab: () => createTechlab
+});
+function screenPainter() {
+  const cv = document.createElement("canvas");
+  cv.width = 640;
+  cv.height = 360;
+  const g = cv.getContext("2d");
+  const tex = new CanvasTexture(cv);
+  tex.colorSpace = SRGBColorSpace;
+  const R = rng(8);
+  const birds = Array.from({ length: 7 }, () => ({ y: 60 + R() * 200, sp: 60 + R() * 70, ph: R() * 640, s: 0.7 + R() * 0.6, fl: 6 + R() * 3 }));
+  return {
+    tex,
+    draw(t) {
+      const sky = g.createLinearGradient(0, 0, 0, 360);
+      sky.addColorStop(0, hex(tone(C2.blue, 1, 0.25)));
+      sky.addColorStop(1, hex(tone(C2.cream, 1, 0.35)));
+      g.fillStyle = sky;
+      g.fillRect(0, 0, 640, 360);
+      g.fillStyle = hex(tone(C2.cream, 1, 0.6));
+      for (const [x, y, r] of [[120, 90, 40], [170, 80, 55], [220, 95, 38], [470, 140, 46], [520, 128, 60], [570, 142, 40]]) {
+        g.beginPath();
+        g.ellipse((x + t * 12) % 760 - 60, y, r, r * 0.55, 0, 0, Math.PI * 2);
+        g.fill();
+      }
+      g.fillStyle = hex(tone(C2.green, 0.9));
+      g.beginPath();
+      g.moveTo(0, 360);
+      g.quadraticCurveTo(200, 270, 380, 320);
+      g.quadraticCurveTo(520, 290, 640, 330);
+      g.lineTo(640, 360);
+      g.fill();
+      g.strokeStyle = hex(tone(C2.cream, 0.35));
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      for (const b of birds) {
+        const x = (b.ph + t * b.sp) % 760 - 60, flap = Math.sin(t * b.fl) * 10 * b.s;
+        g.lineWidth = 5 * b.s;
+        g.beginPath();
+        g.moveTo(x - 16 * b.s, b.y - flap);
+        g.quadraticCurveTo(x - 7 * b.s, b.y - 8 * b.s, x, b.y);
+        g.quadraticCurveTo(x + 7 * b.s, b.y - 8 * b.s, x + 16 * b.s, b.y - flap);
+        g.stroke();
+      }
+      const dx = 320 + Math.sin(t * 1.9) * 220 + Math.sin(t * 4.3) * 30, dy = 250 + Math.sin(t * 2.7 + 1) * 60;
+      const glow = g.createRadialGradient(dx, dy, 0, dx, dy, 26);
+      glow.addColorStop(0, hex(tone(C2.terra, 1.2)));
+      glow.addColorStop(0.35, hex(C2.terra));
+      glow.addColorStop(1, "rgba(200,98,63,0)");
+      g.fillStyle = glow;
+      g.beginPath();
+      g.arc(dx, dy, 26, 0, Math.PI * 2);
+      g.fill();
+      tex.needsUpdate = true;
+      return { u: dx / 640, v: dy / 360 };
+    }
+  };
+}
+async function createTechlab(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.2 });
+  const room = new Group();
+  scene.add(room);
+  room.add(buildRoom(ROOM3, { windows: [WIN2], floor: tiles(tone(C2.cream, 1, 0.2), tone(C2.cream, 0.9), 0.5), wall: tone(C2.cream, 1, 0.1), wainscot: null, pilasters: [] }).group);
+  const R = rng(7);
+  const white = clay(tone(C2.cream, 1, 0.4), 0.55), steel = clay(tone(C2.cream, 0.7), 0.4), joint = clay(S.terra, 0.55);
+  const painter = screenPainter();
+  const SW = 3.4, SH = SW * 9 / 16, SY = 2.25;
+  room.add(mesh(rbox(SW + 0.2, SH + 0.2, 0.08, 0.04), clay(tone(C2.cream, 0.25), 0.5), { pos: [0, SY, ROOM3.z0 + 0.05] }));
+  const screen = mesh(new PlaneGeometry(SW, SH), new MeshBasicMaterial({ map: painter.tex, toneMapped: false }), { pos: [0, SY, ROOM3.z0 + 0.095], cast: false, receive: false });
+  room.add(screen);
+  const rings = [];
+  for (const s of [-1, 1]) {
+    const sp = new Group();
+    sp.add(mesh(rbox(0.42, 0.9, 0.36, 0.06), clay(tone(C2.cream, 0.3), 0.6), { pos: [0, 0.45, 0] }));
+    for (const y of [0.28, 0.66]) sp.add(mesh(new CylinderGeometry(0.12, 0.12, 0.03, 24), clay(tone(C2.cream, 0.55), 0.4), { pos: [0, y, 0.18], rot: [Math.PI / 2, 0, 0] }));
+    sp.position.set(s * (SW / 2 + 0.45), 0.9, ROOM3.z0 + 0.3);
+    room.add(sp);
+    room.add(mesh(rbox(0.5, 0.9, 0.4, 0.04), white, { pos: [s * (SW / 2 + 0.45), 0.45, ROOM3.z0 + 0.3] }));
+    for (let k = 0; k < 3; k++) {
+      const ring = new Mesh(new TorusGeometry(1, 0.012, 6, 48), new MeshBasicMaterial({ color: tone(C2.cream, 1, 0.5), transparent: true, depthWrite: false, toneMapped: false }));
+      ring.position.set(s * (SW / 2 + 0.45), 1.47, ROOM3.z0 + 0.5);
+      room.add(ring);
+      rings.push({ ring, k });
+    }
+  }
+  const table = new Group();
+  table.add(mesh(rbox(0.9, 0.05, 0.6, 0.02), white, { pos: [0, 0.78, 0] }));
+  for (const [x, z] of [[-0.38, -0.24], [0.38, -0.24], [-0.38, 0.24], [0.38, 0.24]]) table.add(mesh(new CylinderGeometry(0.025, 0.025, 0.78, 8), steel, { pos: [x, 0.39, z] }));
+  table.position.set(TX, 0, TZ);
+  room.add(table);
+  const glass = mesh(new CylinderGeometry(0.055, 0.045, 0.16, 24, 1, true), glossy(tone(C2.blue, 1, 0.55), { roughness: 0.06, transparent: true, opacity: 0.55, side: DoubleSide, depthWrite: false }), { cast: false });
+  room.add(glass);
+  const net = new Group();
+  const netMat = clay(tone(C2.terra, 1, 0.25), 0.9, { side: DoubleSide, transparent: true, opacity: 0.85 });
+  net.add(mesh(new SphereGeometry(0.26, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), netMat, {}));
+  net.add(mesh(new TorusGeometry(0.26, 0.015, 6, 32), steel, { rot: [Math.PI / 2, 0, 0] }));
+  net.position.set(TX + 0.62, 0.42, TZ + 0.05);
+  room.add(net);
+  room.add(mesh(new CylinderGeometry(0.015, 0.015, 0.42, 8), steel, { pos: [TX + 0.62 + 0.26, 0.21, TZ + 0.05] }));
+  const arm = new Group();
+  arm.add(mesh(new CylinderGeometry(0.09, 0.11, 0.08, 24), white, { pos: [0, 0.04, 0] }));
+  const shoulder = new Group();
+  shoulder.position.y = 0.1;
+  arm.add(shoulder);
+  shoulder.add(mesh(new SphereGeometry(0.06, 16, 12), joint, {}));
+  shoulder.add(mesh(rbox(0.07, 0.36, 0.07, 0.03), white, { pos: [0, 0.18, 0] }));
+  const elbow = new Group();
+  elbow.position.y = 0.36;
+  shoulder.add(elbow);
+  elbow.add(mesh(new SphereGeometry(0.05, 16, 12), joint, {}));
+  elbow.add(mesh(rbox(0.06, 0.3, 0.06, 0.025), white, { pos: [0, 0.15, 0] }));
+  elbow.add(mesh(new SphereGeometry(0.035, 12, 8), joint, { pos: [0, 0.31, 0] }));
+  arm.position.set(TX - 0.25, 0.805, TZ);
+  room.add(arm);
+  const watcher = makeCat({ pose: "sit", coat: "cream", seed: 71 });
+  watcher.group.scale.setScalar(0.45);
+  watcher.group.position.set(TX - 0.2, 0.805, TZ - 0.17);
+  watcher.group.rotation.y = 0.6;
+  room.add(watcher.group);
+  const beds = [];
+  for (const [x, z, coat, seed] of [[0.85, -0.95, "ginger", 72], [0.45, -1.85, "ginger2", 73]]) {
+    const b = new Group();
+    b.add(mesh(new CylinderGeometry(0.42, 0.36, 0.22, 32), white, { pos: [0, 0.11, 0] }));
+    b.add(mesh(new TorusGeometry(0.36, 0.08, 12, 40), clay(tone(C2.cream, 1, 0.2), 0.8), { pos: [0, 0.24, 0], rot: [Math.PI / 2, 0, 0] }));
+    const glow = new MeshStandardMaterial({ color: tone(C2.gold, 1, 0.2), emissive: tone(C2.gold, 0.9), emissiveIntensity: 0.7, roughness: 0.5 });
+    b.add(mesh(new TorusGeometry(0.405, 0.012, 6, 48), glow, { pos: [0, 0.2, 0], rot: [Math.PI / 2, 0, 0], cast: false }));
+    b.add(mesh(new CylinderGeometry(0.32, 0.32, 0.02, 32), clay(S.terra, 0.9), { pos: [0, 0.22, 0], cast: false }));
+    b.position.set(x, 0, z);
+    room.add(b);
+    const c = makeCat({ pose: "curl", coat, seed });
+    c.group.scale.setScalar(0.5);
+    c.group.position.set(x, 0.23, z);
+    c.group.rotation.y = R() * 6;
+    room.add(c.group);
+    beds.push(c);
+  }
+  const bedLight = new PointLight(tone(C2.gold, 1), 0.8, 2.2, 2);
+  bedLight.position.set(0.7, 0.7, -1.3);
+  room.add(bedLight);
+  const dm = new Group();
+  dm.add(mesh(rbox(0.9, 1.5, 0.12, 0.03), white, { pos: [0, 0.75, 0] }));
+  dm.add(mesh(rbox(0.66, 1.25, 0.04, 0.02), clay(tone(C2.cream, 0.25), 0.8), { pos: [0, 0.66, 0.05], cast: false }));
+  const flap = new Group();
+  flap.position.set(-0.33, 0, 0.08);
+  flap.add(mesh(rbox(0.66, 1.25, 0.05, 0.02), clay(S.wood, 0.6), { pos: [0.33, 0.66, 0] }));
+  dm.add(flap);
+  dm.add(mesh(rbox(0.5, 0.06, 0.06, 0.02), joint, { pos: [0.1, 1.32, 0.12] }));
+  dm.position.set(-1.15, 0, -2.3);
+  dm.rotation.y = 0.3;
+  room.add(dm);
+  const doorCat = makeCat({ pose: "sit", coat: "ginger", seed: 74 });
+  doorCat.group.scale.setScalar(0.45);
+  doorCat.group.position.set(-0.95, 0, -1.75);
+  doorCat.group.rotation.y = 0.3 + Math.PI;
+  room.add(doorCat.group);
+  const fan = makeCat({ pose: "sit", coat: "ginger", seed: 75 });
+  fan.group.scale.setScalar(0.5);
+  fan.group.position.set(0.05, 0, -2.75);
+  fan.group.rotation.y = Math.PI;
+  room.add(fan.group);
+  const fan2 = makeCat({ pose: "loaf", coat: "cream", seed: 76 });
+  fan2.group.scale.setScalar(0.48);
+  fan2.group.position.set(-0.45, 0, -3);
+  fan2.group.rotation.y = Math.PI + 0.3;
+  room.add(fan2.group);
+  const eng = makeHuman({ pose: "holdFolder", seed: 77, scale: 1.72, shirt: 3, skin: 1, hair: 0, cut: 2 });
+  eng.group.position.set(1.35, 0, -2.3);
+  eng.group.rotation.y = -2.2;
+  room.add(eng.group);
+  const labels = placeLabels([{ id: "sv", text: "Silicon Valley", pos: [-1.2, 1.75, -2.3], dot: false }]);
+  await labels.sync();
+  const keyDir = [-0.7, 0.45, 0.55];
+  const lights = rig2(scene, pipe.renderer, { size: 5, dist: 30, intensity: 7, keyDir, fillK: 0.2, rimK: 0.15, rimDir: [0.6, 0.5, 0.6] });
+  lights.follow(new Vector3(0, 1.4, -1), 5);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [0.7, 3, 6.3], target: [0, 1.25, -1.3], lens: 50 };
+  const B = { pos: [0.35, 2.55, 4], target: [0, 1.45, -2.2], lens: 50 };
+  const tmp2 = new Vector3();
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT4[0]) / FPS8;
+      applyCam(cam, beatMove(f2, BEAT4, A, B));
+      const dot = painter.draw(f2 / FPS8);
+      const dotW = tmp2.set((dot.u - 0.5) * SW, SY + (0.5 - dot.v) * SH, ROOM3.z0 + 0.1);
+      for (const c of [fan, fan2]) {
+        const p = c.group.position;
+        const yaw = Math.atan2(dotW.x - p.x, dotW.z - p.z) - c.group.rotation.y;
+        c.look(Math.atan2(Math.sin(yaw), Math.cos(yaw)) * 0.8, -0.35, 0);
+      }
+      const sweep = ease.inOutSine(prog(t, 0.9, 1.7));
+      shoulder.rotation.set(0, -0.6 + 0.9 * sweep, -0.5 + 0.25 * sweep);
+      elbow.rotation.z = 1.2 - 0.3 * sweep;
+      const push = ease.inOutSine(prog(t, 1.2, 1.7));
+      const fall = clamp2((t - 1.7) / 0.32);
+      const gx = TX + 0.05 + 0.38 * push, gy0 = 0.805 + 0.08;
+      if (fall <= 0) glass.position.set(gx, gy0, TZ + 0.02), glass.rotation.set(0, 0, -0.25 * prog(t, 1.6, 1.7));
+      else {
+        const y = gy0 - 0.47 * fall * fall;
+        glass.position.set(gx + 0.18 * fall, Math.max(0.55, y), TZ + 0.03);
+        glass.rotation.set(0, 0, -0.25 - 1.3 * fall);
+      }
+      watcher.look(0.5 + 0.4 * ease.inOutSine(prog(t, 1.4, 2)), 0.35 + 0.2 * ease.inOutSine(prog(t, 1.6, 2.1)), 0);
+      flap.rotation.y = -1.3 * Math.max(0, Math.sin(Math.PI * clamp2((t - 0.6) / 2.4)));
+      rings.forEach(({ ring, k }) => {
+        const ph = (t * 0.9 + k / 3) % 1;
+        ring.scale.setScalar(0.15 + ph * 0.9);
+        ring.material.opacity = 0.55 * (1 - ph);
+      });
+      [watcher, doorCat, fan, fan2, ...beds].forEach((c, i) => c.update(t + i * 1.4));
+      eng.update(t);
+      labels.update(cam, { sv: Math.min(1, Math.max(0, (t - 0.8) / 0.5)) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.25, exposure: 1, vignette: 0.22 };
+    }
+  };
+}
+var FPS8, BEAT4, ROOM3, WIN2, TX, TZ, hex;
+var init_techlab = __esm({
+  "scene/videos/cat-kingdom/sets/techlab.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_room();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS8 = 30;
+    BEAT4 = [780, 900];
+    ROOM3 = { x0: -2.8, x1: 2.8, z0: -3.6, z1: 2.6, h: 4 };
+    WIN2 = { z0: -1.6, z1: 0.4, y0: 0.7, y1: 3.4 };
+    TX = -0.6;
+    TZ = -0.2;
+    hex = (c) => "#" + c.getHexString();
+  }
+});
+
+// scene/videos/cat-kingdom/sets/valley.js
+var valley_exports = {};
+__export(valley_exports, {
+  createValley: () => createValley
+});
+function fieldRows({ w = 5, d = 4, rows = 7, kind = "catnip", seed = 1 }) {
+  const g = new Group(), R = rng(seed);
+  g.add(mesh(new BoxGeometry(w, 0.04, d), clay(mixc(tone(C2.cream, 0.6), C2.terra, 0.25), 0.95), { pos: [0, 0.02, 0], cast: false }));
+  const leaf = clay(kind === "catnip" ? tone(C2.green, 1, 0.22) : S.greenDark, 0.8);
+  const tip = clay(kind === "catnip" ? tone(C2.cream, 1, 0.4) : S.terra, 0.6);
+  const n2 = Math.floor(w / 0.32);
+  const geo = new SphereGeometry(1, 12, 8), tipGeo = new SphereGeometry(1, 8, 6);
+  const plants = new InstancedMesh(geo, leaf, rows * n2), tips = new InstancedMesh(tipGeo, tip, rows * n2);
+  plants.castShadow = plants.receiveShadow = true;
+  const m3 = new Matrix4(), q3 = new Quaternion(), sv = new Vector3(), p = new Vector3();
+  let k = 0;
+  for (let r = 0; r < rows; r++) for (let i = 0; i < n2; i++) {
+    const s = 0.13 + R() * 0.05;
+    p.set(-w / 2 + 0.2 + i * 0.32 + (R() - 0.5) * 0.05, s * 0.8, -d / 2 + 0.3 + r * ((d - 0.6) / (rows - 1)));
+    m3.compose(p, q3, sv.set(s, s * (kind === "catnip" ? 1.5 : 1.1), s));
+    plants.setMatrixAt(k, m3);
+    p.y += s * (kind === "catnip" ? 1.3 : 0.6);
+    p.x += (R() - 0.5) * 0.08;
+    m3.compose(p, q3, sv.setScalar(kind === "catnip" ? 0.035 : 0.05));
+    tips.setMatrixAt(k, m3);
+    k++;
+  }
+  g.add(plants, tips);
+  return g;
+}
+function beltBox(seed) {
+  const g = new Group(), R = rng(seed);
+  const card = clay(mixc(tone(C2.cream, 0.72 + R() * 0.06), C2.terra, 0.12), 0.85);
+  g.add(mesh(rbox(0.5, 0.34, 0.42, 0.015), card, { pos: [0, 0.17, 0] }));
+  const dent = mesh(new SphereGeometry(0.1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.25, 1), clay(mixc(tone(C2.cream, 0.5), C2.terra, 0.15), 0.9), { pos: [0, 0.343, 0], rot: [Math.PI, 0, 0], cast: false });
+  g.add(dent);
+  g.userData.dent = dent;
+  return g;
+}
+async function createValley(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
+  const plate = basePlate({ w: 17, d: 14, ground: mixc(tone(C2.cream, 0.9), C2.green, 0.12) });
+  plate.position.set(0, 0, -1);
+  scene.add(plate);
+  const cat1 = fieldRows({ w: 7.5, d: 3.4, rows: 8, kind: "catnip", seed: 2 });
+  cat1.position.set(-3.2, 0, -4.4);
+  scene.add(cat1);
+  const crop = fieldRows({ w: 6, d: 3.4, rows: 8, kind: "crop", seed: 3 });
+  crop.position.set(4.6, 0, -4.4);
+  scene.add(crop);
+  const cat2 = fieldRows({ w: 3.6, d: 3, rows: 6, kind: "catnip", seed: 4 });
+  cat2.position.set(-6.4, 0, 3.6);
+  scene.add(cat2);
+  for (const [x, z] of [[-7.6, -2.6], [7.6, -2], [7.3, 3.9], [-0.4, -7.2]]) {
+    const t = shrub({ r: 0.55, stem: 0.6, seed: x * 3 });
+    t.position.set(x, 0, z);
+    scene.add(t);
+  }
+  const shed = new Group();
+  const wall = clay(tone(C2.cream, 0.95), 0.85);
+  shed.add(mesh(rbox(4.2, 2.4, 0.2, 0.04), wall, { pos: [-4, 1.2, -1.7] }));
+  shed.add(mesh(rbox(0.2, 2.4, 3.2, 0.04), wall, { pos: [-6, 1.2, 0] }));
+  for (let i = 0; i < 3; i++) {
+    const sh = new Shape();
+    sh.moveTo(0, 0);
+    sh.lineTo(1.4, 0);
+    sh.lineTo(1.4, 0.75);
+    sh.closePath();
+    const rg = new ExtrudeGeometry(sh, { depth: 3.4, bevelEnabled: false });
+    rg.translate(0, 0, -1.7);
+    shed.add(mesh(rg, tileRoof(S.terra), { pos: [-6.1 + i * 1.4, 2.4, 0] }));
+  }
+  for (const [x, z] of [[-2, 1.6], [-2, -1.6]]) shed.add(mesh(new CylinderGeometry(0.09, 0.09, 2.4, 12), wall, { pos: [x, 1.2, z] }));
+  scene.add(shed);
+  const beltMat = clay(tone(C2.cream, 0.3), 0.7);
+  scene.add(mesh(rbox(X_END - X0 + 0.6, 0.12, 0.62, 0.05), beltMat, { pos: [(X0 + X_END) / 2, BELT_Y - 0.06, 0] }));
+  for (let x = X0; x <= X_END; x += 0.9) scene.add(mesh(rbox(0.08, BELT_Y - 0.12, 0.5, 0.02), clay(tone(C2.cream, 0.6), 0.6), { pos: [x, (BELT_Y - 0.12) / 2, 0] }));
+  const pressMat = clay(tone(C2.blue, 0.75), 0.5);
+  for (const s of [-1, 1]) scene.add(mesh(rbox(0.16, 2, 0.16, 0.04), pressMat, { pos: [X_PRESS, 1, s * 0.45] }));
+  scene.add(mesh(rbox(0.5, 0.25, 1.06, 0.06), pressMat, { pos: [X_PRESS, 2, 0] }));
+  const head = new Group();
+  head.add(mesh(new CylinderGeometry(0.05, 0.05, 0.7, 12), clay(tone(C2.cream, 0.7), 0.4), { pos: [0, 0.35, 0] }));
+  head.add(mesh(new SphereGeometry(0.1, 20, 12).scale(1, 0.6, 1), clay(S.terra, 0.5), { pos: [0, 0, 0] }));
+  scene.add(head);
+  const worker = makeHuman({ pose: "stand", seed: 81, scale: 1.72, shirt: 0, skin: 3, hair: 4, cut: 0 });
+  worker.group.position.set(X_PRESS + 0.15, 0, -1);
+  worker.group.rotation.y = 0.25;
+  scene.add(worker.group);
+  const boxes = Array.from({ length: Math.ceil((X_END - X0) / GAP) + 2 }, (_, i) => {
+    const b = beltBox(i + 3);
+    scene.add(b);
+    return b;
+  });
+  const cats = [];
+  const R = rng(9);
+  const catSpots = [[3.6, 0.9, "ginger"], [4.4, 0.2, "cream"], [3.9, -0.8, "ginger2"], [5.2, 1.2, "ginger"], [5.3, -0.4, "cream"], [4.6, 2.1, "ginger2"]];
+  catSpots.forEach(([x, z, coat], i) => {
+    const b = cardboardBox({ w: 0.62, h: 0.24, d: 0.52, flaps: i % 2 === 0 });
+    b.position.set(x, 0, z);
+    b.rotation.y = R() * 1.2 - 0.6;
+    scene.add(b);
+    const c = makeCat({ pose: i % 3 === 1 ? "loaf" : "sit", coat, seed: 82 + i, lod: "lo" });
+    c.group.scale.setScalar(0.66);
+    c.group.position.set(0, 0.02, 0);
+    c.group.rotation.y = -0.4 + R() * 0.8;
+    b.add(c.group);
+    cats.push(c);
+  });
+  const bed = cushion({ w: 0.9, d: 0.75, h: 0.22, color: tone(C2.blue, 1, 0.3), piping: tone(C2.cream, 1, 0.3) });
+  bed.position.set(3, 0, 2.3);
+  scene.add(bed);
+  const mouseToy = new Group();
+  mouseToy.add(mesh(new SphereGeometry(0.12, 16, 10).scale(1.4, 0.9, 1), clay(tone(C2.cream, 0.6), 0.8), {}));
+  mouseToy.add(mesh(new TorusGeometry(0.12, 0.012, 6, 20, Math.PI), clay(tone(C2.cream, 0.4), 0.8), { pos: [-0.25, 0, 0], rot: [Math.PI / 2, 0, 0] }));
+  mouseToy.position.set(2.4, 0.1, 1.6);
+  scene.add(mouseToy);
+  scene.add(mesh(new SphereGeometry(0.13, 20, 14), clay(S.terra, 0.6), { pos: [2.6, 0.13, 2.9] }));
+  const van = toyCar({ color: tone(C2.blue, 1, 0.3), scale: 1.6 });
+  van.position.set(6.4, 0, -1.8);
+  van.rotation.y = 2.4;
+  scene.add(van);
+  const labels = placeLabels([{ id: "cv", text: "Central Valley", pos: [-1, 0.9, -4.4], dot: false, italic: true }]);
+  await labels.sync();
+  const lights = rig2(scene, pipe.renderer, { size: 10, dist: 50, intensity: 5.8, fillK: 0.22, rimK: 0.3 });
+  lights.follow(new Vector3(0, 1, -1), 10);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [-1.6, 7.6, 10.8], target: [0.8, 0.3, -0.8], lens: 35 };
+  const B = { pos: [2.9, 4.6, 6.6], target: [3.9, 0.35, 0.1], lens: 35 };
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT5[0]) / FPS9;
+      applyCam(cam, beatMove(f2, BEAT5, A, B));
+      let pressDown = 0;
+      boxes.forEach((b, i) => {
+        const x = X0 + (t * SPEED + i * GAP) % (boxes.length * GAP);
+        const on = x <= X_END;
+        b.visible = on;
+        if (!on) return;
+        b.position.set(x, BELT_Y, 0);
+        b.userData.dent.visible = x > X_PRESS + 0.05;
+        const d = Math.abs(x - X_PRESS);
+        if (d < 0.18) pressDown = Math.max(pressDown, 1 - d / 0.18);
+        b.scale.y = 1 - 0.05 * Math.max(0, 1 - d / 0.12);
+      });
+      head.position.set(X_PRESS, BELT_Y + 0.42 + 0.45 * (1 - ease.inOutSine(pressDown)), 0);
+      cats.forEach((c, i) => {
+        c.look(Math.sin(t * 0.6 + i * 2) * 0.4, 0.05, 0);
+        c.update(t + i);
+      });
+      worker.update(t);
+      labels.update(cam, { cv: clamp2((t - 0.8) / 0.5) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.22, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS9, BEAT5, BELT_Y, X0, X_PRESS, X_END, SPEED, GAP;
+var init_valley = __esm({
+  "scene/videos/cat-kingdom/sets/valley.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS9 = 30;
+    BEAT5 = [900, 1020];
+    BELT_Y = 0.62;
+    X0 = -4.6;
+    X_PRESS = -0.5;
+    X_END = 2.6;
+    SPEED = 0.75;
+    GAP = 1.05;
+  }
+});
+
+// scene/videos/cat-kingdom/sets/chamber.js
+var chamber_exports = {};
+__export(chamber_exports, {
+  createChamber: () => createChamber
+});
+async function createChamber(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.2 });
+  const room = new Group();
+  scene.add(room);
+  room.add(buildRoom(ROOM4, { windows: WINS2, pilasters: [-2.9, -1, 1, 2.9], wall: tone(C2.cream, 0.9), floor: parquet(tone(S.wood, 1.05)) }).group);
+  const wood = clay(S.woodDark, 0.6), woodL = clay(S.wood, 0.6), blue = clay(tone(C2.blue, 0.6), 0.85), cream = clay(tone(C2.cream, 1, 0.2), 0.7);
+  room.add(mesh(rbox(1.3, 0.02, 6.2, 0.01), clay(tone(C2.blue, 0.55), 0.95), { pos: [0, 0.01, 0], cast: false }));
+  room.add(mesh(rbox(7.6, DAIS, 2.6, 0.04), woodL, { pos: [0, DAIS / 2, -3.9] }));
+  room.add(mesh(rbox(1.4, DAIS * 0.5, 0.5, 0.03), woodL, { pos: [0, DAIS * 0.25, -2.45] }));
+  const seal = pawSeal(0.8);
+  seal.position.set(0, 3.9, ROOM4.z0 + 0.05);
+  room.add(seal);
+  for (const x of [-1.6, 1.6]) {
+    const fl = pawFlag({ h: 3.2 });
+    fl.position.set(x, DAIS, -4.85);
+    fl.rotation.y = x < 0 ? 0.3 : Math.PI - 0.3;
+    room.add(fl);
+  }
+  const council = [];
+  const post = sisalMaterial();
+  const heights = [0.8, 1.25, 1.9, 1.25, 0.8, 1.55];
+  const xs = [-2.8, -1.45, 0, 1.45, 2.8, 3.9];
+  const coats = ["cream", "ginger2", "ginger", "cream", "ginger2", "ginger"];
+  xs.forEach((x, i) => {
+    const h = heights[i], z = -4.05 + (i === 2 ? -0.2 : 0);
+    room.add(mesh(new CylinderGeometry(0.22, 0.26, h, 20), post, { pos: [x, DAIS + h / 2, z] }));
+    room.add(mesh(rbox(0.72, 0.1, 0.62, 0.04), wood, { pos: [x, DAIS + h, z] }));
+    room.add(mesh(rbox(0.64, 0.1, 0.54, 0.05), clay(i === 2 ? S.terra : tone(C2.blue, 0.65), 0.9), { pos: [x, DAIS + h + 0.1, z] }));
+    const c = makeCat({ pose: i === 2 ? "sit" : i % 2 ? "loaf" : "sit", coat: coats[i], seed: 90 + i });
+    c.group.scale.setScalar(i === 2 ? 0.66 : 0.56);
+    c.group.position.set(x, DAIS + h + 0.15, z);
+    c.group.rotation.y = -x * 0.08;
+    room.add(c.group);
+    council.push(c);
+  });
+  room.add(mesh(rbox(1.6, 0.06, 0.8, 0.02), woodL, { pos: [0, DAIS + 0.5, -2.85] }));
+  room.add(mesh(rbox(1.5, 0.5, 0.06, 0.02), wood, { pos: [0, DAIS + 0.25, -2.5] }));
+  const bill = paperStack(3, 11);
+  bill.position.set(-0.3, DAIS + 0.53, -2.85);
+  room.add(bill);
+  const sitter = makeCat({ pose: "sit", coat: "ginger", seed: 99 });
+  sitter.group.scale.setScalar(0.5);
+  sitter.group.position.set(-0.3, DAIS + 0.56, -2.85);
+  sitter.group.rotation.y = 0.15;
+  room.add(sitter.group);
+  const sheet = paperStack(1, 12);
+  sheet.position.set(0.42, DAIS + 0.53, -2.82);
+  room.add(sheet);
+  const print = new Group();
+  const pm = clay(S.terra, 0.8);
+  print.add(mesh(new CircleGeometry(0.045, 20).rotateX(-Math.PI / 2), pm, { pos: [0, 0, 0.02], cast: false }));
+  for (const [dx, dz] of [[-0.045, -0.03], [-0.016, -0.055], [0.016, -0.055], [0.045, -0.03]]) print.add(mesh(new CircleGeometry(0.015, 12).rotateX(-Math.PI / 2), pm, { pos: [dx, 0, dz], cast: false }));
+  print.position.set(0.42, DAIS + 0.545, -2.82);
+  room.add(print);
+  const stamp = new Group();
+  stamp.add(mesh(new CylinderGeometry(0.11, 0.12, 0.08, 24), clay(S.terra, 0.6), { pos: [0, 0.04, 0] }));
+  stamp.add(mesh(new CylinderGeometry(0.035, 0.045, 0.24, 14), wood, { pos: [0, 0.2, 0] }));
+  stamp.add(mesh(new SphereGeometry(0.08, 16, 12), wood, { pos: [0, 0.36, 0] }));
+  room.add(stamp);
+  room.add(mesh(rbox(0.6, 1.1, 0.45, 0.04), wood, { pos: [-0.35, 0.55, -1.25] }));
+  const presenter = makeHuman({ pose: "holdFolder", seed: 101, scale: 1.72, shirt: 0, skin: 2, hair: 1, cut: 1 });
+  presenter.group.position.set(-0.35, 0, -0.75);
+  presenter.group.rotation.y = Math.PI;
+  room.add(presenter.group);
+  const people = [presenter];
+  const deskCats = [];
+  let k = 0;
+  for (const side of [-1, 1]) for (const z of [-0.4, 0.9, 2.2]) {
+    const x = side * 2;
+    room.add(mesh(rbox(1.6, 0.06, 0.6, 0.02), woodL, { pos: [x, 0.76, z] }));
+    room.add(mesh(rbox(1.6, 0.74, 0.06, 0.02), wood, { pos: [x, 0.37, z - 0.27] }));
+    if (k % 3 !== 1) {
+      const p = makeHuman({ pose: "sitTyping", seed: 110 + k, scale: 1.68 });
+      p.group.position.set(x + (k % 2 ? 0.3 : -0.3), 0, z + 0.62);
+      p.group.rotation.y = Math.PI;
+      room.add(p.group);
+      people.push(p);
+      room.add(mesh(rbox(0.5, 0.08, 0.46, 0.04), blue, { pos: [x + (k % 2 ? 0.3 : -0.3), 0.46, z + 0.62] }));
+    }
+    if (k % 2 === 0) {
+      const c = makeCat({ pose: "curl", coat: k % 4 ? "cream" : "ginger", seed: 120 + k, lod: "lo" });
+      c.group.scale.setScalar(0.45);
+      c.group.position.set(x + (k % 2 ? -0.35 : 0.35), 0.79, z);
+      c.state.open = 0;
+      room.add(c.group);
+      deskCats.push(c);
+    }
+    k++;
+  }
+  const labels = placeLabels([{ id: "sac", text: "Sacramento", pos: [2.4, 4.6, -5], dot: false }]);
+  await labels.sync();
+  const keyDir = [-0.7, 0.48, 0.52];
+  const lights = rig2(scene, pipe.renderer, { size: 7.5, dist: 40, intensity: 8, keyDir, fillK: 0.13, rimK: 0.1, rimDir: [0.6, 0.5, 0.6] });
+  lights.follow(new Vector3(0, 1.6, -1.5), 7.5);
+  const dusts = WINS2.map((w, i) => {
+    const d = dustMotes(ROOM4, w, lights.keyDir, pipe.dpr, 40, 50 + i);
+    scene.add(d.points, lightShaft(ROOM4, w, lights.keyDir, 0.1));
+    return d;
+  });
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [0.6, 2.3, 4.6], target: [0, 1.9, -3], lens: 40 };
+  const B = { pos: [0.5, 2.15, 2.7], target: [0, 1.95, -3.4], lens: 40 };
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT6[0]) / FPS10;
+      applyCam(cam, beatMove(f2, BEAT6, A, B));
+      const down = Math.sin(Math.PI * clamp2((t - 0.85) / 0.55));
+      stamp.position.set(0.42, DAIS + 0.545 + 0.6 * (1 - down), -2.82);
+      stamp.visible = t > 0.6 && t < 1.7;
+      print.visible = t > 1.12;
+      const order = [4, 0, 3, 1, 5, 2];
+      council.forEach((c, i) => {
+        const s = ease.inOutSine(prog(t, 1.9 + order.indexOf(i) * 0.28, 2.5 + order.indexOf(i) * 0.28));
+        c.state.open = 1 - s;
+        c.look(Math.sin(t * 0.5 + i) * 0.15 * (1 - s), 0.05 + 0.45 * s, 0.2 * s * (i % 2 ? 1 : -1));
+        c.update(t + i);
+      });
+      sitter.look(0.2, -0.1, 0);
+      sitter.update(t + 7);
+      deskCats.forEach((c, i) => c.update(t + i * 2));
+      people.forEach((p) => p.update(t));
+      dusts.forEach((d) => d.update(t));
+      labels.update(cam, { sac: clamp2((t - 0.8) / 0.5) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.22, exposure: 1, vignette: 0.22 };
+    }
+  };
+}
+var FPS10, BEAT6, ROOM4, WINS2, DAIS;
+var init_chamber = __esm({
+  "scene/videos/cat-kingdom/sets/chamber.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_room();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS10 = 30;
+    BEAT6 = [1020, 1140];
+    ROOM4 = { x0: -4.6, x1: 4.8, z0: -5.2, z1: 3.4, h: 5.2 };
+    WINS2 = [{ z0: -4, z1: -2.4, y0: 1, y1: 4.4 }, { z0: -1.2, z1: 0.4, y0: 1, y1: 4.4 }];
+    DAIS = 0.42;
+  }
+});
+
+// scene/videos/cat-kingdom/sets/oc.js
+var oc_exports = {};
+__export(oc_exports, {
+  createOC: () => createOC
+});
+function pawGeometry() {
+  const parts = [];
+  const disc = (x, z, rx, rz) => {
+    const g = new CircleGeometry(1, 16).rotateX(-Math.PI / 2);
+    g.scale(rx, 1, rz);
+    g.translate(x, 0, z);
+    parts.push(g);
+  };
+  disc(0, 0.08, 0.34, 0.28);
+  for (const [x, z] of [[-0.32, -0.2], [-0.12, -0.38], [0.12, -0.38], [0.32, -0.2]]) disc(x, z, 0.11, 0.14);
+  const pos = [], idx = [];
+  for (const g of parts) {
+    const base = pos.length / 3;
+    pos.push(...g.attributes.position.array);
+    idx.push(...Array.from(g.index.array, (i) => i + base));
+  }
+  const geo = new BufferGeometry();
+  geo.setAttribute("position", new Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+async function createOC(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
+  const R = rng(10);
+  scene.add(basePlate({ w: 16, d: 15 }));
+  scene.add(street(16, 1.5));
+  for (const x of [-6.3, 6.3]) {
+    const s2 = street(15, 1.2);
+    s2.rotation.y = Math.PI / 2;
+    s2.position.set(x, 1e-3, 0);
+    scene.add(s2);
+  }
+  for (const z of [-1, 1]) scene.add(mesh(new BoxGeometry(16, 0.03, 0.4), clay(tone(C2.cream, 1, 0.1), 0.8), { pos: [0, 0.015, z], cast: false }));
+  const lots = [];
+  const lawnMat = clay(S.green, 0.85), lawnMat2 = clay(tone(C2.green, 1.05, 0.08), 0.85);
+  for (const side of [-1, 1]) for (const [i, x] of [[0, -3.6], [1, 0], [2, 3.6]].map(([a2, b]) => [a2, b])) {
+    const zc = side * 3.9;
+    scene.add(mesh(new BoxGeometry(3.4, 0.04, 5.2), (i + side) % 2 ? lawnMat : lawnMat2, { pos: [x, 0.02, zc], cast: false }));
+    const h = house({ w: 2, d: 1.6, h: 0.95, roofType: (i + (side > 0 ? 1 : 0)) % 2 ? "hip" : "gable", seed: i * 3 + side, roof: S.terra });
+    h.position.set(x, 0.04, side * 2.6);
+    h.rotation.y = side > 0 ? Math.PI : 0;
+    scene.add(h);
+    const p = pool({ w: 1.5, d: 0.9 });
+    p.position.set(x + (i % 2 ? 0.6 : -0.6), 0.04, side * 5.2);
+    scene.add(p);
+    const t = shrub({ r: 0.42, stem: 0.5, seed: i * 7 + side * 3, dark: i % 2 === 0 });
+    t.position.set(x - 1.1, 0.04, side * 1.65);
+    scene.add(t);
+    lots.push({ x, zc, side, i });
+  }
+  const fences = [];
+  for (const side of [-1, 1]) {
+    for (const x of [-1.8, 1.8]) {
+      const f2 = fence(3.6);
+      f2.rotation.y = Math.PI / 2;
+      f2.position.set(x, 0.04, side * 4.6);
+      scene.add(f2);
+      fences.push(f2);
+    }
+    const back = fence(10.6);
+    back.position.set(0, 0.04, side * 6.45);
+    scene.add(back);
+  }
+  for (const [x, z] of [[-7.3, 1.4], [7.3, -1.4], [-7.3, -5.5]]) {
+    const pt = palmTree({ h: 3.6, seed: Math.round(x * 10 + z) });
+    pt.scale.setScalar(0.75);
+    pt.position.set(x, 0, z);
+    scene.add(pt);
+  }
+  const trails = [
+    [[-5.4, 1.55], [-2.05, 1.55], [-2.05, 6.2]],
+    [[2.05, 6.2], [2.05, 4.3], [1.55, 4.3]],
+    [[-5.4, -1.55], [-2.05, -1.55], [-2.05, -6.2]],
+    [[2.05, -6.2], [2.05, -1.55], [5.4, -1.55]]
+  ];
+  const prints = [];
+  trails.forEach((pts, ti) => {
+    let side = 1, n2 = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a2 = new Vector2(...pts[i]), b = new Vector2(...pts[i + 1]);
+      const L = a2.distanceTo(b), dir = b.clone().sub(a2).normalize();
+      for (let d = 0.15; d < L; d += 0.32) {
+        const p = a2.clone().addScaledVector(dir, d);
+        prints.push({ x: p.x - dir.y * side * 0.12, z: p.y + dir.x * side * 0.12, yaw: Math.atan2(dir.x, dir.y) + Math.PI, delay: 0.6 + n2 * 0.045 + ti * 0.08 });
+        side = -side;
+        n2++;
+      }
+    }
+  });
+  const pawInst = new InstancedMesh(pawGeometry(), new MeshStandardMaterial({ color: tone(C2.terra, 0.95), roughness: 0.7, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), prints.length);
+  pawInst.receiveShadow = true;
+  scene.add(pawInst);
+  const m4 = new Matrix4(), q4 = new Quaternion(), v4 = new Vector3(), s4 = new Vector3();
+  const cats = [];
+  const addCat = (pose, coat, pos, yaw, scale = 0.62, seed = 130 + cats.length) => {
+    const c = makeCat({ pose, coat, seed, lod: "lo" });
+    c.group.position.set(pos[0], 0.04, pos[1]);
+    c.group.rotation.y = yaw;
+    c.group.scale.setScalar(scale);
+    scene.add(c.group);
+    cats.push(c);
+    return c;
+  };
+  const starerA = addCat("sit", "ginger", [1.35, 3.6], Math.PI / 2, 0.72);
+  const starerB = addCat("sit", "cream", [2.25, 3.6], -Math.PI / 2, 0.72);
+  const groomers = [addCat("sit", "ginger2", [-3.2, 4.2], 0.5), addCat("sit", "cream", [3.9, -4], -2.4), addCat("sit", "ginger", [-0.5, -4.6], 2.8)];
+  addCat("sprawl", "ginger", [-3, 5.6], 1.2, 0.6);
+  addCat("loaf", "cream", [0.6, -5.6], 0.4, 0.6);
+  addCat("curl", "ginger2", [4.3, 5.5], 0, 0.6);
+  const walker = makeHuman({ pose: "carry", seed: 140, scale: 1.6, shirt: 1, skin: 1, hair: 3, cut: 2 });
+  walker.group.rotation.y = Math.PI / 2;
+  scene.add(walker.group);
+  const follower = addCat("stand", "ginger", [0, 0], Math.PI / 2, 0.6);
+  const labels = placeLabels([{ id: "oc", text: "Orange County", pos: [-4.6, 1.2, -2.6] }]);
+  await labels.sync();
+  const lights = rig2(scene, pipe.renderer, { size: 10, dist: 50, intensity: 5.8, fillK: 0.22, rimK: 0.3 });
+  lights.follow(new Vector3(0, 0, 0), 10);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [3.2, 7.5, 14], target: [0.6, 0, 1.2], lens: 35 };
+  const B = { pos: [1.6, 14.2, 5.6], target: [1.2, 0, 1.6], lens: 35 };
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT7[0]) / FPS11;
+      applyCam(cam, beatMove(f2, BEAT7, A, B));
+      prints.forEach((p, i) => {
+        const k = spring(t - p.delay, 0.35) * 0.3;
+        q4.setFromEuler(new Euler(0, p.yaw, 0));
+        m4.compose(v4.set(p.x, 0.05, p.z), q4, s4.set(Math.max(1e-4, k), 1, Math.max(1e-4, k)));
+        pawInst.setMatrixAt(i, m4);
+      });
+      pawInst.instanceMatrix.needsUpdate = true;
+      starerA.state.breathe = starerB.state.breathe = 0.3;
+      starerA.look(0, 0.05, 0);
+      starerB.look(0, 0.05, 0);
+      starerA.state.open = starerB.state.open = 1;
+      groomers.forEach((c, i) => c.look(1.25 * (i % 2 ? -1 : 1), 0.55 + 0.08 * Math.sin(t * 9 + i), 0.3));
+      cats.forEach((c, i) => {
+        if (c !== starerA && c !== starerB) c.update(t + i);
+      });
+      starerA.update(0.3);
+      starerB.update(0.6);
+      const wx = -6.5 + 3.4 * ease.inOutSine(prog(t, 0, 4));
+      walker.group.position.set(wx, 0.03, -1);
+      walker.group.rotation.z = Math.sin(t * 8) * 0.02;
+      walker.update(t);
+      follower.group.position.set(wx - 0.75, 0.03, -1);
+      follower.update(t);
+      labels.update(cam, { oc: clamp2((t - 0.8) / 0.5) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.22, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS11, BEAT7;
+var init_oc = __esm({
+  "scene/videos/cat-kingdom/sets/oc.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS11 = 30;
+    BEAT7 = [1140, 1260];
+  }
+});
+
+// scene/videos/cat-kingdom/sets/sanctuary.js
+var sanctuary_exports = {};
+__export(sanctuary_exports, {
+  createSanctuary: () => createSanctuary
+});
+function conifer(h = 1.6, seed = 1) {
+  const g = new Group(), R = rng(seed);
+  g.add(mesh(new CylinderGeometry(0.06, 0.09, h * 0.3, 8), clay(S.woodDark, 0.7), { pos: [0, h * 0.15, 0] }));
+  const m3 = clay(R() < 0.5 ? S.greenDark : tone(C2.green, 0.8), 0.8);
+  for (let i = 0; i < 3; i++) g.add(mesh(new ConeGeometry(h * (0.32 - i * 0.07), h * 0.42, 14), m3, { pos: [0, h * (0.32 + i * 0.22), 0] }));
+  return g;
+}
+function bird(color) {
+  const g = new Group();
+  const m3 = clay(color, 0.6);
+  g.add(mesh(new SphereGeometry(0.09, 12, 8).scale(1.6, 0.8, 0.8), m3, {}));
+  g.add(mesh(new SphereGeometry(0.055, 10, 8), m3, { pos: [0.13, 0.04, 0] }));
+  g.add(mesh(new ConeGeometry(0.02, 0.06, 6).rotateZ(-Math.PI / 2), clay(S.terra, 0.6), { pos: [0.19, 0.035, 0] }));
+  const wings = [-1, 1].map((s) => {
+    const w = new Group();
+    const shape = new Shape();
+    shape.moveTo(0, 0);
+    shape.lineTo(0.08, 0);
+    shape.lineTo(-0.02, 0.22);
+    shape.closePath();
+    w.add(mesh(new ShapeGeometry(shape).rotateX(-Math.PI / 2 * s), new MeshStandardMaterial({ color, roughness: 0.6, side: DoubleSide }), { cast: false }));
+    w.scale.z = s;
+    g.add(w);
+    return w;
+  });
+  g.userData.wings = wings;
+  return g;
+}
+async function createSanctuary(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.35, horizon: tone(C2.blue, 1, 0.32), top: tone(C2.blue, 0.92) });
+  const R = rng(11);
+  scene.fog = new Fog(tone(C2.blue, 1, 0.42), 30, 230);
+  scene.add(basePlate({ w: 16, d: 15, ground: mixc(tone(C2.cream, 0.88), C2.green, 0.35) }));
+  for (const [x, z, sx, sy, sz] of [[-1.4, -1.2, 3.6, 1.2, 3.4], [4.6, -4.8, 2.6, 0.8, 2.2], [-5.6, 3.8, 2.4, 0.6, 2]]) {
+    const h = mesh(new SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), clay(mixc(S.green, tone(C2.cream, 0.9), 0.15), 0.9), { pos: [x, 0, z] });
+    h.scale.set(sx, sy, sz);
+    scene.add(h);
+  }
+  const granite = clay(tone(C2.cream, 0.86), 0.85), snow = clay(tone(C2.cream, 1, 0.55), 0.7);
+  for (const [x, z, r, h] of [[-60, -150, 34, 30], [0, -170, 44, 42], [64, -155, 34, 28], [-120, -120, 28, 20]]) {
+    scene.add(mesh(new ConeGeometry(r, h, 7, 1), granite, { pos: [x, h / 2 - 0.7, z], rot: [0, R() * 2, 0], cast: false }));
+    scene.add(mesh(new ConeGeometry(r * 0.32, h * 0.32, 7, 1), snow, { pos: [x, h * 0.84 - 0.7, z], rot: [0, R() * 2, 0], cast: false }));
+  }
+  const inside = new Group();
+  inside.position.set(DOME.x, 0, DOME.z);
+  scene.add(inside);
+  const hillY = (x, z) => 1.2 * Math.sqrt(Math.max(0, 1 - (x / 3.6) ** 2 - (z / 3.4) ** 2));
+  for (let i = 0; i < 18; i++) {
+    const a2 = R() * Math.PI * 2, rr = 0.5 + Math.sqrt(R()) * 3;
+    const x = Math.cos(a2) * rr, z = Math.sin(a2) * rr;
+    const t = i % 3 ? conifer(1.1 + R() * 0.9, i) : shrub({ r: 0.4 + R() * 0.2, stem: 0.4, seed: i });
+    t.position.set(x, hillY(x, z) - 0.05, z);
+    inside.add(t);
+  }
+  const pond = mesh(new CircleGeometry(0.8, 32).rotateX(-Math.PI / 2), glossy(tone(C2.blue, 1, 0.1), { roughness: 0.08 }), { pos: [1.9, hillY(1.9, 1.2) + 0.03, 1.2], cast: false });
+  pond.scale.set(1.3, 1, 0.8);
+  inside.add(pond);
+  const glass = glossy(tone(C2.green, 1, 0.6), { roughness: 0.06, transparent: true, opacity: 0.2, reflect: 1, depthWrite: false, side: DoubleSide });
+  const dome = mesh(new SphereGeometry(DOME.r, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), glass, { cast: false, receive: false });
+  dome.renderOrder = 4;
+  inside.add(dome);
+  const rib = clay(tone(C2.cream, 1, 0.3), 0.5);
+  for (let i = 0; i < 8; i++) inside.add(mesh(new TorusGeometry(DOME.r, 0.035, 6, 64, Math.PI), rib, { rot: [0, i / 8 * Math.PI, 0], cast: false }));
+  for (const lat of [0.35, 0.7, 1.05]) inside.add(mesh(new TorusGeometry(DOME.r * Math.cos(lat), 0.03, 6, 64), rib, { pos: [0, DOME.r * Math.sin(lat), 0], rot: [Math.PI / 2, 0, 0], cast: false }));
+  inside.add(mesh(new TorusGeometry(DOME.r, 0.09, 8, 64), clay(tone(C2.green, 0.7), 0.6), { rot: [Math.PI / 2, 0, 0] }));
+  const birds = Array.from({ length: 12 }, (_, i) => {
+    const b = bird(i % 3 ? tone(C2.blue, 1, 0.35) : tone(C2.cream, 1, 0.3));
+    b.scale.setScalar(1.3);
+    inside.add(b);
+    return { b, r: 1 + R() * 2.2, h: 1.6 + R() * 1.6, sp: (0.35 + R() * 0.3) * (R() < 0.5 ? 1 : -1), ph: R() * 6.3, fl: 9 + R() * 4 };
+  });
+  const pen = new Group();
+  pen.position.set(3, 0, 2.7);
+  pen.scale.setScalar(1);
+  scene.add(pen);
+  pen.add(mesh(new BoxGeometry(3.8, 0.03, 3), clay(tone(C2.cream, 0.95), 0.8), { pos: [0, 0.015, 0], cast: false }));
+  for (const [x, z, L, ry] of [[0, -1.5, 3.8, 0], [0, 1.5, 3.8, 0], [-1.9, 0, 3, Math.PI / 2], [1.9, 0, 3, Math.PI / 2]]) {
+    const f2 = fence(L);
+    f2.position.set(x, 0, z);
+    f2.rotation.y = ry;
+    pen.add(f2);
+  }
+  const keeper = makeHuman({ pose: "stand", seed: 150, scale: 1.65, shirt: 2, skin: 2, hair: 0, cut: 2 });
+  keeper.group.position.set(1.25, 0, -0.55);
+  keeper.group.rotation.y = -2.3;
+  pen.add(keeper.group);
+  const wand = new Group();
+  wand.add(mesh(new CylinderGeometry(0.012, 0.012, 1.3, 6), clay(S.woodDark, 0.6), { pos: [0, 0.65, 0] }));
+  wand.position.set(0.98, 0.95, -0.35);
+  wand.rotation.set(0, 0, 0.9);
+  pen.add(wand);
+  const feather = new Group();
+  feather.add(mesh(new SphereGeometry(0.06, 12, 8).scale(1, 2.6, 0.4), clay(S.terra, 0.8), { pos: [0, -0.12, 0] }));
+  feather.add(mesh(new SphereGeometry(0.05, 12, 8).scale(1, 2.2, 0.4), clay(tone(C2.cream, 1, 0.3), 0.8), { pos: [0.05, -0.1, 0.02], rot: [0, 0, 0.5] }));
+  pen.add(feather);
+  const string = mesh(new CylinderGeometry(4e-3, 4e-3, 1, 4), clay(tone(C2.cream, 0.3), 0.6), { cast: false });
+  pen.add(string);
+  const hunter = makeCat({ pose: "sphinx", coat: "ginger", seed: 151 });
+  hunter.group.scale.setScalar(0.78);
+  hunter.group.position.set(-0.45, 0, 0.1);
+  hunter.group.rotation.y = 1.1;
+  pen.add(hunter.group);
+  const dot = new Mesh(new CircleGeometry(0.07, 20).rotateX(-Math.PI / 2), new MeshBasicMaterial({ color: tone(C2.terra, 1.3), toneMapped: false }));
+  pen.add(dot);
+  const chaser = makeCat({ pose: "stand", coat: "cream", seed: 152 });
+  chaser.group.scale.setScalar(0.75);
+  pen.add(chaser.group);
+  const watcher = makeCat({ pose: "sit", coat: "ginger2", seed: 153 });
+  watcher.group.scale.setScalar(0.72);
+  watcher.group.position.set(-1.3, 0, -0.9);
+  watcher.group.rotation.y = 0.9;
+  pen.add(watcher.group);
+  const labels = placeLabels([{ id: "sn", text: "Sierra Nevada", pos: [0, 30, -170], dot: false, italic: true }]);
+  await labels.sync();
+  const lights = rig2(scene, pipe.renderer, { size: 10, dist: 50, intensity: 5.8, fillK: 0.24, rimK: 0.3 });
+  lights.follow(new Vector3(0.5, 0.5, 0.5), 10);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const tmp2 = new Vector3();
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT8[0]) / FPS12;
+      applyCam(cam, beatOrbit(f2, BEAT8, { center: [0.6, 0, 0.6], a0: 0.62, a1: 1.1, r0: 13.5, r1: 12.5, h0: 6.4, h1: 5.8, lens0: 35, target: [0.6, 1.4, 0.4] }));
+      birds.forEach(({ b, r, h, sp, ph, fl }) => {
+        const a2 = ph + f2 / FPS12 * sp;
+        b.position.set(Math.cos(a2) * r, h + Math.sin(a2 * 2.3) * 0.25, Math.sin(a2) * r);
+        b.rotation.y = -a2 + (sp > 0 ? -Math.PI / 2 : Math.PI / 2) + Math.PI / 2;
+        const flap = Math.sin(f2 / FPS12 * fl) * 0.7;
+        b.userData.wings[0].rotation.x = flap;
+        b.userData.wings[1].rotation.x = -flap;
+      });
+      const sw = Math.sin(t * 3.1) * 0.45 + Math.sin(t * 5.3) * 0.12;
+      wand.updateMatrixWorld(true);
+      const tip = new Vector3(0, 1.3, 0).applyMatrix4(wand.matrix);
+      const fp = tip.clone().add(new Vector3(Math.sin(sw) * 0.7, -0.75 + Math.abs(Math.sin(sw)) * 0.2, Math.cos(t * 2.2) * 0.25));
+      feather.position.copy(fp);
+      feather.rotation.z = sw;
+      string.position.copy(tip).add(fp).multiplyScalar(0.5);
+      string.scale.y = tip.distanceTo(fp);
+      string.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), tmp2.copy(tip).sub(fp).normalize());
+      const hp = hunter.group.position, toF = Math.atan2(fp.x - hp.x, fp.z - hp.z) - hunter.group.rotation.y;
+      hunter.look(Math.atan2(Math.sin(toF), Math.cos(toF)) * 0.8, -0.25, 0);
+      const dx = -0.5 + Math.sin(t * 1.7) * 0.8, dz = 0.7 + Math.sin(t * 2.9 + 1) * 0.35;
+      dot.position.set(dx, 0.035, dz);
+      const cx = -0.5 + Math.sin((t - 0.35) * 1.7) * 0.8, cz = 0.7 + Math.sin((t - 0.35) * 2.9 + 1) * 0.35;
+      chaser.group.position.set(cx - 0.35, 0, cz + 0.2);
+      chaser.group.rotation.y = Math.atan2(dx - cx + 0.35, dz - cz - 0.2);
+      watcher.look(0.4 + Math.sin(t * 1.7) * 0.4, 0.1, 0);
+      [hunter, chaser, watcher].forEach((c, i) => c.update(t + i));
+      keeper.update(t);
+      labels.update(cam, { sn: clamp2((t - 0.8) / 0.5) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.24, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS12, BEAT8, DOME;
+var init_sanctuary = __esm({
+  "scene/videos/cat-kingdom/sets/sanctuary.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS12 = 30;
+    BEAT8 = [1260, 1380];
+    DOME = { x: -1.4, z: -1.2, r: 4.2 };
+  }
+});
+
+// scene/videos/cat-kingdom/sets/palms.js
+var palms_exports = {};
+__export(palms_exports, {
+  createPalms: () => createPalms
+});
+function sunPool2(w, d) {
+  const m3 = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uCol: { value: tone(C2.gold, 1) } },
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform vec3 uCol; varying vec2 vUv; void main(){ vec2 q = (vUv - 0.5) * 2.0; float d = length(q); gl_FragColor = vec4(uCol * (1.0 - smoothstep(0.35, 1.0, d)) * 0.26, 1.0); }"
+  });
+  m3.toneMapped = false;
+  const p = new Mesh(new PlaneGeometry(w, d).rotateX(-Math.PI / 2), m3);
+  p.renderOrder = 6;
+  return p;
+}
+function modernHouse({ w = 4, d = 2.4, h = 1.2 } = {}) {
+  const g = new Group();
+  const wall = clay(tone(C2.cream, 1, 0.2), 0.8);
+  g.add(mesh(rbox(w, h, d, 0.03), wall, { pos: [0, h / 2, 0] }));
+  g.add(mesh(rbox(w + 0.8, 0.12, d + 0.8, 0.03), clay(tone(C2.cream, 1, 0.35), 0.7), { pos: [0, h + 0.06, 0.15] }));
+  g.add(mesh(new PlaneGeometry(w * 0.6, h * 0.75), glossy(tone(C2.blue, 0.5), { roughness: 0.1 }), { pos: [w * 0.12, h * 0.42, d / 2 + 0.01], cast: false }));
+  const screen = clay(S.terra, 0.7);
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) g.add(mesh(rbox(0.16, 0.16, 0.08, 0.02), screen, { pos: [-w / 2 + 0.25 + i * 0.2, 0.2 + j * 0.24, d / 2 + 0.04], cast: false }));
+  return g;
+}
+async function createPalms(pipe) {
+  const scene = new Scene();
+  backdrop(scene, { glowAmt: 0.4, horizon: tone(C2.blue, 1, 0.34), top: tone(C2.blue, 0.9) });
+  scene.fog = new Fog(tone(C2.blue, 1, 0.42), 30, 130);
+  const R = rng(12);
+  const sand = mixc(tone(C2.cream, 0.88), C2.terra, 0.1);
+  scene.add(basePlate({ w: 20, d: 12, ground: sand }));
+  for (const [x, z, sx, sy, sz] of [[-30, -95, 40, 14, 12], [12, -110, 50, 19, 14], [52, -90, 34, 11, 11]]) {
+    const m3 = mesh(new SphereGeometry(1, 40, 20), clay(mixc(tone(C2.cream, 0.8), C2.terra, 0.15), 0.9), { pos: [x, -1, z], cast: false });
+    m3.scale.set(sx, sy, sz);
+    scene.add(m3);
+  }
+  const wallM = clay(tone(C2.cream, 0.97), 0.85);
+  scene.add(mesh(rbox(6, 0.9, 0.5, 0.05), wallM, { pos: [-5, 0.45, -0.9] }));
+  scene.add(mesh(rbox(6.2, 0.1, 0.62, 0.04), clay(S.terra, 0.75), { pos: [-5, 0.95, -0.9] }));
+  const strip = sunPool2(6.8, 1.6);
+  strip.position.set(-5, 0.03, -0.1);
+  scene.add(strip);
+  const top = sunPool2(6.4, 0.9);
+  top.position.set(-5, 1.02, -0.9);
+  scene.add(top);
+  const crowd = [];
+  const coats = ["ginger", "cream", "ginger2"];
+  for (let i = 0; i < 14; i++) {
+    const c = makeCat({ pose: i % 4 === 3 ? "loaf" : "sit", coat: coats[i * 7 % 3], seed: 160 + i, lod: "lo" });
+    c.group.scale.setScalar(0.5);
+    c.group.position.set(-7.75 + i * 0.4 + (R() - 0.5) * 0.06, 1, -0.9 + (R() - 0.5) * 0.08);
+    c.group.rotation.y = (R() - 0.5) * 0.6;
+    scene.add(c.group);
+    crowd.push(c);
+  }
+  for (let i = 0; i < 16; i++) {
+    const c = makeCat({ pose: ["sit", "loaf", "sprawl", "sit"][i % 4], coat: coats[(i * 5 + 1) % 3], seed: 180 + i, lod: "lo" });
+    c.group.scale.setScalar(0.52);
+    c.group.position.set(-7.8 + i * 0.37 + (R() - 0.5) * 0.1, 0.02, -0.1 + (R() - 0.5) * 0.7);
+    c.group.rotation.y = (R() - 0.5) * 1.4;
+    scene.add(c.group);
+    crowd.push(c);
+  }
+  const house1 = modernHouse({ w: 3.6, d: 2.2 });
+  house1.position.set(-5.4, 0, -3.4);
+  scene.add(house1);
+  const sail = mesh(new PlaneGeometry(3, 2.2).rotateX(-Math.PI / 2 + 0.12), clay(tone(C2.cream, 1, 0.4), 0.8, { side: DoubleSide }), { pos: [-1.9, 2, -2.6] });
+  scene.add(sail);
+  for (const [x, z] of [[-3.3, -3.6], [-0.5, -3.6], [-3.3, -1.6], [-0.5, -1.6]]) scene.add(mesh(new CylinderGeometry(0.04, 0.04, 2.05, 8), clay(S.woodDark, 0.6), { pos: [x, 1.02, z] }));
+  const tower = new Group();
+  tower.add(mesh(new CylinderGeometry(0.42, 0.52, 2.2, 28), clay(tone(C2.cream, 1, 0.25), 0.7), { pos: [0, 1.1, 0] }));
+  for (const y of [0.6, 1.3, 2]) tower.add(mesh(new TorusGeometry(0.47, 0.04, 8, 28), clay(S.terra, 0.6), { pos: [0, y, 0], rot: [Math.PI / 2, 0, 0] }));
+  tower.position.set(-1, 0, -4.4);
+  scene.add(tower);
+  const mist = [];
+  const mistMat = new MeshStandardMaterial({ color: tone(C2.cream, 1, 0.6), transparent: true, opacity: 0.35, roughness: 1, depthWrite: false });
+  for (let i = 0; i < 6; i++) {
+    const m3 = mesh(new SphereGeometry(0.3, 14, 10), mistMat.clone(), { cast: false });
+    scene.add(m3);
+    mist.push(m3);
+  }
+  const estate = new Group();
+  estate.position.set(5, 0, -0.6);
+  scene.add(estate);
+  estate.add(mesh(rbox(8.4, 0.05, 6.4, 0.03), clay(S.green, 0.85), { pos: [0, 0.03, 0], cast: false }));
+  for (let i = 0; i < 26; i++) {
+    const a2 = i / 26 * Math.PI * 2;
+    const hedge = shrub({ r: 0.22, stem: 0, seed: i, dark: true });
+    hedge.position.set(Math.cos(a2) * 4 * 1, 0.04, Math.sin(a2) * 3);
+    estate.add(hedge);
+  }
+  const big = pool({ w: 2.6, d: 1.3 });
+  big.position.set(2.2, 0.04, -1.6);
+  estate.add(big);
+  const villa = modernHouse({ w: 4.6, d: 2.4, h: 1.3 });
+  villa.position.set(-0.8, 0, -4.4);
+  estate.add(villa);
+  const gold = sunPool2(3.2, 2.6);
+  gold.position.set(-0.4, 0.07, 0.6);
+  estate.add(gold);
+  const loner = makeCat({ pose: "curl", coat: "ginger", seed: 199 });
+  loner.group.scale.setScalar(0.7);
+  loner.group.position.set(-0.4, 0.06, 0.6);
+  loner.state.open = 0;
+  estate.add(loner.group);
+  for (const [x, z, h, sd] of [[-7.6, 2.4, 4.6, 3], [-9, -2.4, 5.4, 5], [9, 2.2, 5, 7], [8.6, -3.8, 4.4, 9], [0.6, 3.6, 4.2, 11]]) {
+    const p = palmTree({ h, seed: sd });
+    p.scale.setScalar(0.85);
+    p.position.set(x, 0, z);
+    scene.add(p);
+  }
+  const gardener = makeHuman({ pose: "stand", seed: 200, scale: 1.65, shirt: 2, skin: 3, hair: 1, cut: 0 });
+  gardener.group.position.set(8.4, 0, 1.2);
+  gardener.group.rotation.y = -1.8;
+  scene.add(gardener.group);
+  const labels = placeLabels([{ id: "ps", text: "Palm Springs", pos: [-1.6, 3.2, -4.4] }]);
+  await labels.sync();
+  const lights = rig2(scene, pipe.renderer, { size: 12, dist: 50, intensity: 6, fillK: 0.22, rimK: 0.3 });
+  lights.follow(new Vector3(0, 0, 0), 12);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.05, 900);
+  const A = { pos: [-4.6, 4.6, 9.2], target: [-4.6, 0.7, -0.4], lens: 35 };
+  const B = { pos: [4.8, 5.4, 9.4], target: [4.6, 0.3, -0.4], lens: 35 };
+  return {
+    labels,
+    frame(f2, { avoid = [] } = {}) {
+      const t = (f2 - BEAT9[0]) / FPS13;
+      applyCam(cam, beatMove(f2, BEAT9, A, B, { via: [0, 5.6, 10.4] }));
+      crowd.forEach((c, i) => {
+        c.look(Math.sin(t * 1.3 + i * 1.7) * 0.7, 0.05, Math.sin(t * 0.9 + i) * 0.1);
+        c.update(t + i * 0.7);
+      });
+      loner.update(t);
+      gardener.update(t);
+      mist.forEach((m3, i) => {
+        const ph = (t * 0.35 + i / mist.length) % 1;
+        m3.position.set(-1 + Math.sin(i * 2.1) * 0.25 * ph, 2.3 + ph * 1.6, -4.4 + Math.cos(i * 1.3) * 0.25 * ph);
+        m3.scale.setScalar(0.6 + ph * 1.4);
+        m3.material.opacity = 0.3 * (1 - ph);
+      });
+      labels.update(cam, { ps: clamp2((t - 0.8) / 0.5) }, avoid);
+      return { scene, camera: cam, labels: labels.scene, bloom: 0.24, exposure: 1, vignette: 0.24 };
+    }
+  };
+}
+var FPS13, BEAT9;
+var init_palms = __esm({
+  "scene/videos/cat-kingdom/sets/palms.js"() {
+    init_three_module();
+    init_look2();
+    init_cat();
+    init_human();
+    init_props();
+    init_town();
+    init_beat();
+    init_camera();
+    init_util();
+    FPS13 = 30;
+    BEAT9 = [1380, 1500];
+  }
+});
+
+// scene/videos/cat-kingdom/sets/kitchen.js
+var kitchen_exports = {};
+__export(kitchen_exports, {
+  createKitchen: () => createKitchen
+});
+function duskWindow(w, h) {
+  const g = new Group();
+  const sky = new ShaderMaterial({
+    uniforms: { uTop: { value: tone(C2.blue, 0.42) }, uMid: { value: tone(C2.blue, 0.75) }, uLow: { value: mixc(C2.gold, C2.terra, 0.35) } },
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: `uniform vec3 uTop, uMid, uLow; varying vec2 vUv;
+      void main(){ vec3 c = mix(uLow, uMid, smoothstep(0.0, 0.45, vUv.y)); c = mix(c, uTop, smoothstep(0.45, 1.0, vUv.y));
+        gl_FragColor = vec4(c, 1.0);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`
+  });
+  sky.toneMapped = true;
+  g.add(mesh(new PlaneGeometry(w, h), sky, { cast: false, receive: false }));
+  const trim = clay(tone(C2.cream, 1, 0.3), 0.6);
+  for (const [x, y, ww, hh] of [[0, h / 2 + 0.04, w + 0.16, 0.08], [0, -h / 2 - 0.05, w + 0.3, 0.1], [-w / 2 - 0.04, 0, 0.08, h], [w / 2 + 0.04, 0, 0.08, h], [0, 0, 0.04, h], [0, 0, w, 0.04]]) g.add(mesh(rbox(ww, hh, 0.06, 0.015), trim, { pos: [x, y, 0.02] }));
+  return g;
+}
+async function createKitchen(pipe) {
+  const scene = new Scene();
+  scene.background = tone(C2.blue, 0.3);
+  const room = new Group();
+  scene.add(room);
+  room.add(buildRoom(ROOM5, { windows: [], floor: tiles(tone(C2.cream, 0.95), mixc(tone(C2.cream, 0.8), C2.terra, 0.2), 0.42), wall: tone(C2.cream, 0.95), wainscot: null, ghosts: false }).group);
+  const R = rng(14);
+  const cab = clay(tone(C2.cream, 1, 0.25), 0.7), wood = clay(S.wood, 0.55), knob = clay(S.terra, 0.5);
+  const cz = ROOM5.z0 + 0.33;
+  room.add(mesh(rbox(5.6, 0.86, 0.62, 0.02), cab, { pos: [0.1, 0.43, cz] }));
+  room.add(mesh(rbox(5.7, 0.05, 0.68, 0.015), wood, { pos: [0.1, 0.885, cz + 0.02] }));
+  for (let i = 0; i < 7; i++) {
+    const x = -2.45 + i * 0.8;
+    room.add(mesh(rbox(0.74, 0.7, 0.02, 0.01), clay(tone(C2.cream, 1, 0.35), 0.7), { pos: [x, 0.42, cz + 0.315], cast: false }));
+    room.add(mesh(new SphereGeometry(0.022, 10, 8), knob, { pos: [x + 0.27, 0.62, cz + 0.34], cast: false }));
+  }
+  for (const x of [-1.9, -1.1, 1.3, 2.1]) {
+    room.add(mesh(rbox(0.76, 0.7, 0.36, 0.02), cab, { pos: [x, 2.05, ROOM5.z0 + 0.18] }));
+    room.add(mesh(new SphereGeometry(0.02, 10, 8), knob, { pos: [x + 0.28, 1.8, ROOM5.z0 + 0.37], cast: false }));
+  }
+  const win = duskWindow(1.1, 0.95);
+  win.position.set(0.1, 1.55, ROOM5.z0 + 0.01);
+  room.add(win);
+  room.add(mesh(rbox(0.7, 0.04, 0.42, 0.06), clay(tone(C2.cream, 0.7), 0.3), { pos: [0.1, 0.9, cz + 0.02], cast: false }));
+  room.add(mesh(new TorusGeometry(0.1, 0.018, 8, 20, Math.PI), clay(tone(C2.cream, 0.75), 0.3), { pos: [0.1, 1, cz - 0.17] }));
+  room.add(mesh(new SphereGeometry(0.14, 20, 14).scale(1, 0.9, 1), clay(tone(C2.blue, 1, 0.3), 0.4), { pos: [-1.4, 1.03, cz] }));
+  const fruitBowl = new Group();
+  fruitBowl.add(mesh(new SphereGeometry(0.2, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), clay(S.terra, 0.6, { side: DoubleSide }), { pos: [0, 0.2, 0] }));
+  for (let i = 0; i < 5; i++) fruitBowl.add(mesh(new SphereGeometry(0.065, 14, 10), clay(i % 2 ? S.green : tone(C2.terra, 1.1), 0.5), { pos: [(R() - 0.5) * 0.2, 0.2 + R() * 0.05, (R() - 0.5) * 0.2] }));
+  fruitBowl.position.set(1.4, 0.71, cz);
+  room.add(fruitBowl);
+  const herbs = plant({ h: 0.6, seed: 4 });
+  herbs.scale.setScalar(0.45);
+  herbs.position.set(0.85, 0.91, cz - 0.1);
+  room.add(herbs);
+  const shade = new MeshStandardMaterial({ color: tone(C2.lamp, 1, 0.2), emissive: tone(C2.lamp, 1), emissiveIntensity: 1, roughness: 0.5, side: DoubleSide });
+  room.add(mesh(new CylinderGeometry(4e-3, 4e-3, 0.7, 4), clay(tone(C2.cream, 0.3), 0.5), { pos: [0.5, 2.55, 0.3], cast: false }));
+  room.add(mesh(new ConeGeometry(0.22, 0.2, 28, 1, true), shade, { pos: [0.5, 2.1, 0.3], cast: false }));
+  const lamp = new PointLight(tone(C2.lamp, 1), 3.2, 6, 1.4);
+  lamp.position.set(0.5, 1.95, 0.3);
+  scene.add(lamp);
+  room.add(mesh(rbox(0.7, 0.16, 0.55, 0.08), clay(S.terra, 0.9), { pos: [-2.2, 0.08, -0.6] }));
+  const dish = new Group();
+  dish.add(mesh(new CylinderGeometry(0.13, 0.1, 0.06, 28), clay(tone(C2.cream, 1, 0.3), 0.4), { pos: [0, 0.03, 0] }));
+  dish.position.set(-0.75, 0, 0.6);
+  room.add(dish);
+  const can = new Group();
+  can.add(mesh(new CylinderGeometry(0.075, 0.075, 0.11, 32), glossy(tone(C2.cream, 0.85), { roughness: 0.2, reflect: 1.2 }), { pos: [0, 0.055, 0] }));
+  can.add(mesh(new CylinderGeometry(0.0765, 0.0765, 0.06, 32, 1, true), clay(S.terra, 0.6), { pos: [0, 0.055, 0], cast: false }));
+  const lid = new Group();
+  lid.position.set(-0.07, 0.112, 0);
+  lid.add(mesh(new CylinderGeometry(0.072, 0.072, 8e-3, 32), glossy(tone(C2.cream, 0.95), { roughness: 0.15, reflect: 1.4 }), { pos: [0.07, 0, 0], cast: false }));
+  lid.add(mesh(new TorusGeometry(0.02, 4e-3, 6, 16), glossy(tone(C2.cream, 0.9), { roughness: 0.15 }), { pos: [0.1, 6e-3, 0], rot: [Math.PI / 2, 0, 0], cast: false }));
+  can.add(lid);
+  room.add(can);
+  const glowMat = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uCol: { value: tone(C2.gold, 1, 0.2) }, uK: { value: 0 } },
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform vec3 uCol; uniform float uK; varying vec2 vUv; void main(){ float d = length(vUv - 0.5) * 2.0; float rays = 0.6 + 0.4 * pow(abs(cos(atan(vUv.y - 0.5, vUv.x - 0.5) * 6.0)), 8.0); gl_FragColor = vec4(uCol * (1.0 - smoothstep(0.0, 1.0, d)) * rays * uK * 1.5, 1.0); }"
+  });
+  glowMat.toneMapped = false;
+  const glow = new Mesh(new PlaneGeometry(1, 1), glowMat);
+  glow.renderOrder = 8;
+  room.add(glow);
+  const sparkles = Array.from({ length: 10 }, (_, i) => {
+    const m3 = new Mesh(new SphereGeometry(0.012, 8, 6), new MeshBasicMaterial({ color: tone(C2.gold, 1.4, 0.3), transparent: true, toneMapped: false }));
+    room.add(m3);
+    return { m: m3, a: i / 10 * Math.PI * 2 + R() * 0.4, up: 0.3 + R() * 0.5, sp: 0.35 + R() * 0.3 };
+  });
+  const person = makeHuman({ pose: "openCan", seed: 210, scale: 1.72, shirt: 1, skin: 2, hair: 2, cut: 2 });
+  person.group.position.set(0.8, 0, -0.25);
+  person.group.rotation.y = -0.75;
+  room.add(person.group);
+  const gov = makeCat({ pose: "stand", coat: "ginger", seed: 1 });
+  gov.group.scale.setScalar(0.6);
+  room.add(gov.group);
+  const lights = rig(scene, pipe.renderer, { size: 3.6, dist: 20, intensity: 3.6, keyColor: tone(C2.lamp, 1), keyDir: [-0.3, 0.85, 0.45], fillSky: "#557795", fillGround: "#6E5842", fillK: 0.28, rimColor: "#FFD2A0", rimK: 0.45, rimDir: [0.5, 0.4, -0.8] });
+  lights.follow(new Vector3(0.2, 0.6, 0.4), 3.6);
+  const cam = new PerspectiveCamera(40, 1080 / 1920, 0.02, 200);
+  const A = { pos: [-0.5, 0.5, 3.3], target: [0.3, 0.7, -0.1], lens: 35 };
+  const B = { pos: [-0.32, 0.46, 2.4], target: [0.35, 0.68, -0.1], lens: 35 };
+  const E = { pos: [-0.22, 0.52, 2.2], target: [0.35, 0.74, -0.1], lens: 35 };
+  const handPos = new Vector3(), floorCan = new Vector3(0.12, 0, 0.32);
+  return {
+    frame(f2) {
+      const t = (f2 - T0) / FPS14;
+      applyCam(cam, f2 < 1800 ? move(f2, T0 + 20, 1790, A, B, { fn: ease.inOutSine }) : move(f2, 1800, 1915, B, E, { fn: ease.inOutSine }));
+      const nudge = t < 1.4 ? Math.max(0, Math.sin(t * 7.5)) * (1 - prog(t, 1.1, 1.4)) : 0;
+      person.group.updateMatrixWorld(true);
+      handPos.set(-5e-3, 0.585, 0.2).applyMatrix4(person.group.matrixWorld);
+      const lift = ease.inOutCubic(prog(t, 1.35, 2.05));
+      can.position.lerpVectors(floorCan, handPos, lift);
+      can.position.y += Math.sin(Math.PI * lift) * 0.12;
+      can.rotation.set(0, 0.4, nudge * 0.12 * (1 - lift));
+      const pop = ease.outCubic(prog(t, 2.35, 2.7));
+      lid.rotation.z = 1.9 * pop;
+      const g = Math.sin(Math.PI * clamp2((t - 2.3) / 1.4));
+      glowMat.uniforms.uK.value = g;
+      glow.position.copy(can.position).add(new Vector3(0, 0.14, 0));
+      glow.quaternion.copy(cam.quaternion);
+      glow.scale.setScalar(0.25 + 0.75 * ease.outCubic(clamp2((t - 2.3) / 1)));
+      sparkles.forEach(({ m: m3, a: a2, up, sp }) => {
+        const k = clamp2((t - 2.4) / 1.2);
+        m3.visible = k > 0 && k < 1;
+        m3.position.copy(can.position).add(new Vector3(Math.cos(a2) * sp * k, 0.14 + up * k - 0.25 * k * k, Math.sin(a2) * sp * k * 0.6));
+        m3.material.opacity = 1 - k;
+      });
+      const walk = ease.inOutSine(prog(t, 3, 4.6));
+      const p02 = new Vector3(-0.22, 0, 0.42), p12 = new Vector3(0.56, 0, 0.02);
+      const rub = Math.sin(Math.max(0, t - 4.6) * 2.2) * 0.05;
+      gov.group.position.lerpVectors(p02, p12, walk).add(new Vector3(rub * 0.6, 0, -rub));
+      gov.group.rotation.y = 1.5 - 0.95 * walk + rub * 2;
+      gov.group.rotation.z = 0.06 * walk * Math.sin(Math.max(0, t - 4.6) * 2.2);
+      const lookUp = Math.sin(Math.PI * clamp2((t - 2.2) / 1.2));
+      gov.look(0.35 * walk + 0.2 * lookUp, 0.45 * nudge * (1 - walk) - 0.55 * lookUp + 0.35 * (1 - walk) * (1 - lookUp) * (t < 1.4 ? 1 : 0) - 0.2 * walk, 0.35 * walk);
+      gov.state.slow = walk * Math.sin(Math.PI * clamp2((t - 4.8) / 1)) ** 2;
+      gov.state.tailAmp = 1 + walk;
+      gov.update(t);
+      person.state.nod = 0.25 + 0.15 * walk;
+      person.update(t);
+      const dim = ease.inOutSine(prog(f2, 1800, 1860));
+      return { scene, camera: cam, bloom: 0.28 + 0.14 * g, exposure: 1 - 0.38 * dim, vignette: 0.26 + 0.14 * dim };
+    }
+  };
+}
+var FPS14, ROOM5, T0;
+var init_kitchen = __esm({
+  "scene/videos/cat-kingdom/sets/kitchen.js"() {
+    init_three_module();
+    init_look2();
+    init_look();
+    init_cat();
+    init_human();
+    init_props();
+    init_room();
+    init_camera();
+    init_util();
+    FPS14 = 30;
+    ROOM5 = { x0: -3, x1: 3.2, z0: -1.9, z1: 2.8, h: 2.9 };
+    T0 = 1620;
   }
 });
 
@@ -40672,7 +42692,7 @@ var beats_default = {
       end: 1920,
       place: "",
       point: "End card",
-      endCard: "Stay in the cat kingdom\u2026\nor join the human\nrebellion?",
+      endCard: "Stay in the\ncat kingdom\u2026\nor join the\nhuman rebellion?",
       visual: "The kitchen softly dims behind a large neutral question.",
       camera: {
         shot: "Hold, slow drift",
@@ -41649,12 +43669,17 @@ var SAFE = { top: 154, bottom: 1536, right: 950 };
 function wordsHTML(text) {
   return text.split("\n").map((line) => {
     const out = [];
-    let bold = false;
+    let bold = false, prev = "";
     for (const part of line.split("**")) {
-      for (const w of part.split(" ").filter(Boolean)) out.push({ w, bold });
+      const glue = out.length > 0 && part.length > 0 && !part.startsWith(" ") && !prev.endsWith(" ");
+      prev = part;
+      part.split(" ").filter(Boolean).forEach((w, k) => {
+        if (k === 0 && glue) out[out.length - 1].pieces.push({ w, bold });
+        else out.push({ pieces: [{ w, bold }] });
+      });
       bold = !bold;
     }
-    return `<span class="line">${out.map((o, i) => `<span class="w">${o.bold ? `<b>${o.w}</b>` : o.w}${i < out.length - 1 ? " " : ""}</span>`).join("")}</span>`;
+    return `<span class="line">${out.map((o, i) => `<span class="w">${o.pieces.map((p) => p.bold ? `<b>${p.w}</b>` : p.w).join("")}${i < out.length - 1 ? " " : ""}</span>`).join("")}</span>`;
   }).join("");
 }
 function fmtNumber(v2, decimals, grouping = true) {
@@ -41796,12 +43821,20 @@ var params = new URLSearchParams(location.search);
 var DPR = parseFloat(params.get("dpr") || "2");
 if (params.get("safe") === "1") document.getElementById("safe").hidden = false;
 var SCHEDULE = [
-  [0, 300, "office"],
-  [300, 660, "state"],
+  [0, 180, "office"],
+  [180, 300, "bullpen"],
+  [300, 420, "state"],
+  [420, 540, "porch"],
+  [540, 660, "sf"],
   [660, 780, "freeway"],
-  [780, 1500, "state"],
+  [780, 900, "techlab"],
+  [900, 1020, "valley"],
+  [1020, 1140, "chamber"],
+  [1140, 1260, "oc"],
+  [1260, 1380, "sanctuary"],
+  [1380, 1500, "palms"],
   [1500, 1620, "state"],
-  [1620, 1920, "state"]
+  [1620, 1920, "kitchen"]
 ];
 var CUTS = SCHEDULE.map((s) => s[0]).filter((f2, i) => i > 0 && SCHEDULE[i - 1][2] !== SCHEDULE[i][2]);
 var T_BEFORE = 16;
@@ -41819,9 +43852,31 @@ async function fontsReady() {
 var LOADERS = {
   lab: () => Promise.resolve().then(() => (init_lab(), lab_exports)).then((m3) => m3.createLab),
   office: () => Promise.resolve().then(() => (init_office(), office_exports)).then((m3) => m3.createOffice),
+  bullpen: () => Promise.resolve().then(() => (init_bullpen(), bullpen_exports)).then((m3) => m3.createBullpen),
+  state: () => Promise.resolve().then(() => (init_state(), state_exports)).then((m3) => m3.createState),
+  porch: () => Promise.resolve().then(() => (init_porch(), porch_exports)).then((m3) => m3.createPorch),
+  sf: () => Promise.resolve().then(() => (init_sf(), sf_exports)).then((m3) => m3.createSF),
   freeway: () => Promise.resolve().then(() => (init_freeway(), freeway_exports)).then((m3) => m3.createFreeway),
-  state: () => Promise.resolve().then(() => (init_state(), state_exports)).then((m3) => m3.createState)
+  techlab: () => Promise.resolve().then(() => (init_techlab(), techlab_exports)).then((m3) => m3.createTechlab),
+  valley: () => Promise.resolve().then(() => (init_valley(), valley_exports)).then((m3) => m3.createValley),
+  chamber: () => Promise.resolve().then(() => (init_chamber(), chamber_exports)).then((m3) => m3.createChamber),
+  oc: () => Promise.resolve().then(() => (init_oc(), oc_exports)).then((m3) => m3.createOC),
+  sanctuary: () => Promise.resolve().then(() => (init_sanctuary(), sanctuary_exports)).then((m3) => m3.createSanctuary),
+  palms: () => Promise.resolve().then(() => (init_palms(), palms_exports)).then((m3) => m3.createPalms),
+  kitchen: () => Promise.resolve().then(() => (init_kitchen(), kitchen_exports)).then((m3) => m3.createKitchen)
 };
+var scenesOf = /* @__PURE__ */ new Map();
+function releaseShadows(activeNames, sets) {
+  for (const [name, scene] of scenesOf) {
+    if (activeNames.includes(name)) continue;
+    scene.traverse((o) => {
+      if (o.isLight && o.shadow && o.shadow.map) {
+        o.shadow.map.dispose();
+        o.shadow.map = null;
+      }
+    });
+  }
+}
 async function boot() {
   await fontsReady();
   const pipe = new Pipeline(document.getElementById("gl"), { dpr: DPR });
@@ -41859,6 +43914,8 @@ async function boot() {
       name = setNameAt(f2);
       const set = sets[name] || fallback;
       const out = set.frame(f2, { avoid });
+      scenesOf.set(name, out.scene);
+      releaseShadows([name], sets);
       pipe.render({ ...out, frame: f2 });
       labels = set.labels && set.labels.visible ? set.labels.visible() : [];
     } else {
@@ -41866,7 +43923,10 @@ async function boot() {
       const A = sets[nA] || fallback, B = sets[nB] || fallback;
       const outA = A.frame(Math.min(f2, tr.c - 1), { avoid });
       const labA = A.labels && A.labels.visible ? A.labels.visible().map((l) => ({ ...l, opacity: l.opacity * (1 - tr.p) })) : [];
+      scenesOf.set(nA, outA.scene);
       const outB = B.frame(Math.max(f2, tr.c), { avoid });
+      scenesOf.set(nB, outB.scene);
+      releaseShadows([nA, nB], sets);
       const labB = B.labels && B.labels.visible ? B.labels.visible().map((l) => ({ ...l, opacity: l.opacity * tr.p })) : [];
       pipe.blend(outA, outB, { frame: f2, p: tr.p, zoomA: 1 + 0.08 * ease.inOutSine(tr.p) });
       name = `${nA}>${nB}`;
