@@ -31695,22 +31695,38 @@ function environment(renderer) {
   pm.dispose();
   return envCache;
 }
-function rig(scene, renderer, { size = 10, dist = 30, target = new Vector3(), intensity = 2.6, env = false, envIntensity = 0.45, keyDir = [-0.55, 0.64, 0.54], rimDir = [0.35, 0.45, -1] } = {}) {
-  const key = new DirectionalLight(KEY_COOL, intensity);
+function rig(scene, renderer, {
+  size = 10,
+  dist = 30,
+  target = new Vector3(),
+  intensity = 2.6,
+  env = false,
+  envIntensity = 0.45,
+  keyDir = [-0.55, 0.64, 0.54],
+  rimDir = [0.35, 0.45, -1],
+  keyColor = KEY_COOL,
+  fillSky = "#A9BCD3",
+  fillGround = "#5C5650",
+  fillK = 0.35,
+  rimColor = "#DDE6F0",
+  rimK = 0.6,
+  mapSize = 4096
+} = {}) {
+  const key = new DirectionalLight(keyColor, intensity);
   keyDir = new Vector3(...keyDir).normalize();
   rimDir = new Vector3(...rimDir).normalize();
   key.position.copy(target).addScaledVector(keyDir, dist);
   key.target.position.copy(target);
   key.castShadow = true;
-  key.shadow.mapSize.set(4096, 4096);
+  key.shadow.mapSize.set(mapSize, mapSize);
   Object.assign(key.shadow.camera, { left: -size, right: size, top: size, bottom: -size, near: 0.1, far: dist * 2.5 });
   key.shadow.bias = -4e-4;
   key.shadow.normalBias = 0.02 * size / 10;
   key.shadow.radius = 4;
   scene.add(key, key.target);
-  const fill2 = new HemisphereLight("#A9BCD3", "#5C5650", intensity * 0.35);
+  const fill2 = new HemisphereLight(fillSky, fillGround, intensity * fillK);
   scene.add(fill2);
-  const rim = new DirectionalLight("#DDE6F0", intensity * 0.6);
+  const rim = new DirectionalLight(rimColor, intensity * rimK);
   rim.position.copy(target).addScaledVector(rimDir, dist);
   rim.target.position.copy(target);
   scene.add(rim, rim.target);
@@ -31731,7 +31747,7 @@ function rig(scene, renderer, { size = 10, dist = 30, target = new Vector3(), in
       rim.position.copy(t).addScaledVector(rimDir, dist);
       rim.target.position.copy(t);
       Object.assign(key.shadow.camera, { left: -sz, right: sz, top: sz, bottom: -sz });
-      key.shadow.normalBias = sz * 2 / 4096 * 1.5;
+      key.shadow.normalBias = sz * 2 / mapSize * 1.5;
       key.shadow.bias = -6e-4;
       key.shadow.camera.updateProjectionMatrix();
     },
@@ -39936,9 +39952,10 @@ function fmtNumber(v2, decimals, grouping = true) {
   return v2.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: grouping });
 }
 var Overlay = class {
-  /** @param {object} opts  { swatches: {name: css colour} } — legend swatch colours for this video */
+  /** @param {object} opts  { swatches: {name: css colour}, lateCount: [beat ids] } — per-video legend colours and timing */
   constructor(beatsDoc, opts = {}) {
     this.swatches = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: "#C9D0D6", "outline-highlight": HEX.green, ...opts.swatches || {} };
+    this.lateCount = opts.lateCount || [12, 13];
     this.beats = beatsDoc.beats;
     this.total = beatsDoc.totalFrames;
     this.el = Object.fromEntries(["title", "stat", "day", "legend", "caption", "endcard"].map((k) => [k, document.getElementById(k)]));
@@ -40027,7 +40044,7 @@ var Overlay = class {
       const pin = ease.outCubic(prog(t, 0.2, 0.55));
       const pout = ease.inCubic(prog(t, tOut, tOut + OUT));
       this.setPanel(stat, pin * (1 - pout), (1 - pin) * 14);
-      const tc = b.id === 12 || b.id === 13 ? 0.95 : 0.35;
+      const tc = b.stat.countAt ?? (this.lateCount.includes(b.id) ? 0.95 : 0.35);
       this.setStatText(b, ease.outCubic(prog(t, tc, tc + 0.9)));
     } else this.setPanel(stat, 0);
     const hasDay = (x) => x && (x.day || x.dayText);
