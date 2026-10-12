@@ -1,0 +1,647 @@
+{
+  "fps": 30,
+  "bpm": 120,
+  "framesPerBar": 60,
+  "totalFrames": 1920,
+  "note": "Single source of truth for timing, text, stats, camera and sound. docs/cat-kingdom/beat-sheet.md is generated from this file. Captions use **bold** for the key number and \\n for the line break. FACT placeholders are filled after the fact-check.",
+  "intro": "The story is fictional; every real-world number is sourced (codes point to `docs/cat-kingdom/sources.md`). The “Day 1 · fictional … Year 5” chip is the invented timeline of the reign. The whole video happens on one tabletop California: miniature cities and cut-away buildings stand at their real locations, and the camera flies between them over the map (no teleporting). Only the final kitchen is a cut.",
+  "resets": "Office interior (1–2) · flat statewide map (3) · close-up door (4) · fly to San Francisco (5) · Los Angeles (6) · a lab interior (7) · the Central Valley (8) · back to Sacramento (9) · Orange County from above (10) · colour shift to green sanctuaries (11) · Palm Springs (12) · jump in scale to the whole state (13) · cut to one kitchen at evening (14).",
+  "beats": [
+    {
+      "id": 1,
+      "start": 0,
+      "end": 180,
+      "place": "Sacramento",
+      "point": "Hook",
+      "title": "What if domestic cats\ntook over California?",
+      "caption": "They didn't conquer us.\nWe kept opening the door",
+      "stat": {
+        "parts": [
+          39
+        ],
+        "decimals": 0,
+        "template": "{0} million",
+        "label": "Californians, about\nCA Dept. of Finance"
+      },
+      "dayText": "Day 1 · fictional",
+      "visual": "Governor's office in a cut-away Capitol on the tabletop map. A ginger cat sits in the governor's chair, in a patch of sun; a human waits patiently with a folder. The paw seal hangs on the wall.",
+      "camera": {
+        "shot": "Establishing wide, slow push-in on the chair",
+        "lens": "35 → 40 mm",
+        "reason": "Shows the whole joke in one frame, then leans in on who is really in charge"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "pizzicato-theme"
+        },
+        {
+          "at": 40,
+          "cue": "purr-short"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-population"
+      ]
+    },
+    {
+      "id": 2,
+      "start": 180,
+      "end": 300,
+      "place": "Sacramento",
+      "point": "1 · The takeover begins with attention",
+      "caption": "FACT-sleep",
+      "stat": {
+        "parts": [
+          12,
+          16
+        ],
+        "decimals": 0,
+        "template": "{0}–{1} hours",
+        "label": "of sleep a day,\ntypical adult cat"
+      },
+      "dayText": "Day 3 · fictional",
+      "visual": "Open-plan state office: cats asleep on keyboards and in desk chairs; people work around them, one happily typing on a sliver of keyboard.",
+      "camera": {
+        "shot": "Orbit around the desk cluster",
+        "lens": "35 mm",
+        "reason": "Shows how many desks are taken, in 3d"
+      },
+      "sound": [
+        {
+          "at": 20,
+          "cue": "keyboard-pop"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-sleep"
+      ]
+    },
+    {
+      "id": 3,
+      "start": 300,
+      "end": 420,
+      "place": "Statewide",
+      "point": "1 · The takeover begins with attention",
+      "caption": "FACT-cats",
+      "stat": {
+        "parts": [
+          0
+        ],
+        "decimals": 1,
+        "template": "{0} million",
+        "label": "pet cats in California\n(estimate)"
+      },
+      "dayText": "Day 12 · fictional",
+      "visual": "Visual reset: flat top-down map of California. In one frame, tiny terracotta cats appear at doors across every city, all turning their heads at once (the one deliberate snap).",
+      "camera": {
+        "shot": "Top-down, slow push-in",
+        "lens": "35 mm",
+        "reason": "Only a map shows that it is happening everywhere at once"
+      },
+      "sound": [
+        {
+          "at": 30,
+          "cue": "boing-snap"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-cats"
+      ]
+    },
+    {
+      "id": 4,
+      "start": 420,
+      "end": 540,
+      "place": "Sacramento",
+      "point": "1 · The takeover begins with attention",
+      "caption": "FACT-spending",
+      "stat": {
+        "parts": [
+          152
+        ],
+        "decimals": 0,
+        "template": "${0} billion",
+        "label": "spent on US pets\nin a year · APPA"
+      },
+      "dayText": "Day 13 · fictional",
+      "visual": "A front door: a person opens it, the cat looks out and does not move; the paw seal stamps 'OPEN', then 'CLOSE'. The person closes it, smiling.",
+      "camera": {
+        "shot": "Slow push-in on the door",
+        "lens": "50 mm",
+        "reason": "Builds the comic tension of the second demand"
+      },
+      "sound": [
+        {
+          "at": 30,
+          "cue": "door-creak"
+        },
+        {
+          "at": 75,
+          "cue": "paw-stamp"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-spending"
+      ]
+    },
+    {
+      "id": 5,
+      "start": 540,
+      "end": 660,
+      "place": "San Francisco",
+      "point": "2 · California becomes a giant cat house",
+      "caption": "FACT-warmth",
+      "stat": {
+        "parts": [
+          30,
+          38
+        ],
+        "decimals": 0,
+        "template": "{0}–{1} °C",
+        "label": "a cat's comfort zone\n(about 86–100 °F)"
+      },
+      "dayText": "Month 3 · fictional",
+      "visual": "Fly-to San Francisco: hillside streets rebuilt with shaded climbing routes, rooftop walkways and glowing sunny windows; cats in every sun patch.",
+      "camera": {
+        "shot": "Fly-to, then crane up the hill",
+        "lens": "35 → 28 mm",
+        "reason": "'It keeps going': the whole city has been rebuilt"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 50,
+          "cue": "claws-stone"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-warmth"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Rooftop routes"
+        },
+        {
+          "swatch": "sun",
+          "text": "Sun estates"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 6,
+      "start": 660,
+      "end": 780,
+      "place": "Los Angeles",
+      "point": "2 · California becomes a giant cat house",
+      "caption": "FACT-freeway",
+      "stat": {
+        "parts": [
+          0
+        ],
+        "decimals": 0,
+        "template": "{0}",
+        "label": "vehicles a day on the 405\n(now underneath) · Caltrans"
+      },
+      "dayText": "Month 5 · fictional",
+      "visual": "Fly-to Los Angeles: a freeway interchange whose decks are ribbons of gardens, scratching columns and warm resting platforms; small blue human trains run underneath.",
+      "camera": {
+        "shot": "Fly-to, then orbit the interchange",
+        "lens": "35 mm",
+        "reason": "Shows both levels: cats on top, people below"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 60,
+          "cue": "purr-short"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-freeway"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Freeway gardens"
+        },
+        {
+          "swatch": "background",
+          "text": "Human service network"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 7,
+      "start": 780,
+      "end": 900,
+      "place": "Silicon Valley + Hollywood",
+      "point": "3 · A new economy emerges",
+      "caption": "FACT-hearing",
+      "stat": {
+        "parts": [
+          64
+        ],
+        "decimals": 0,
+        "template": "{0} kHz",
+        "label": "top of a cat's hearing\n(people: about 20 kHz)"
+      },
+      "dayText": "Month 8 · fictional",
+      "visual": "Silicon Valley lab: door-opening machines, perfect-temperature beds, a gentle robot arm nudging a glass off a table into a soft net. Behind it, a Hollywood screen plays bird videos and a red dot.",
+      "camera": {
+        "shot": "Slow push-in past the machines to the screen",
+        "lens": "50 mm",
+        "reason": "Reveals the gadgets one by one, then the entertainment empire"
+      },
+      "sound": [
+        {
+          "at": 45,
+          "cue": "glass-tink"
+        },
+        {
+          "at": 80,
+          "cue": "bird-chirps"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-hearing"
+      ]
+    },
+    {
+      "id": 8,
+      "start": 900,
+      "end": 1020,
+      "place": "Central Valley",
+      "point": "3 · A new economy emerges",
+      "caption": "FACT-boxes",
+      "stat": {
+        "parts": [
+          3
+        ],
+        "decimals": 0,
+        "template": "{0} days",
+        "label": "shelter cats with a box\ncalmed sooner · 2014 study"
+      },
+      "dayText": "Year 1 · fictional",
+      "visual": "Fly-to the Central Valley: catnip rows beside food crops; a cardboard plant where a press puts one perfect dent in every box; cats sit in the boxes, the products lie ignored.",
+      "camera": {
+        "shot": "Fly-to, then tracking dolly along the conveyor",
+        "lens": "35 mm",
+        "reason": "Follows the box from field to cat"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 55,
+          "cue": "cardboard-rustle"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-boxes"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Catnip fields"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 9,
+      "start": 1020,
+      "end": 1140,
+      "place": "Sacramento",
+      "point": "4 · Feline politics are personal",
+      "caption": "FACT-capital",
+      "stat": {
+        "parts": [
+          1854
+        ],
+        "decimals": 0,
+        "template": "{0}",
+        "label": "Sacramento became the\npermanent capital"
+      },
+      "dayText": "Year 2 · fictional",
+      "visual": "Fly back to Sacramento: the Capitol chamber, a council of cats on ever-taller furniture. A person presents a bill; a cat sits on it (approved, the seal stamps). A petition for shorter hours: the council falls asleep one by one.",
+      "camera": {
+        "shot": "Slow push-in down the chamber aisle",
+        "lens": "40 mm",
+        "reason": "Ceremony and tension, until it dissolves into naps"
+      },
+      "sound": [
+        {
+          "at": 30,
+          "cue": "paw-stamp"
+        },
+        {
+          "at": 85,
+          "cue": "snore-soft"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-capital"
+      ]
+    },
+    {
+      "id": 10,
+      "start": 1140,
+      "end": 1260,
+      "place": "Orange County",
+      "point": "4 · Feline politics are personal",
+      "caption": "FACT-grooming",
+      "stat": {
+        "parts": [
+          0
+        ],
+        "decimals": 0,
+        "template": "{0}%",
+        "label": "of a cat's waking time\nspent grooming"
+      },
+      "dayText": "Year 2 · fictional",
+      "visual": "Fly-to Orange County: immaculate lounging suburbs and grooming districts; territory borders spread as paw-print trails; two cats hold a staring contest across a fence; quiet, shady streets; a person happily carries a food bowl.",
+      "camera": {
+        "shot": "Fly-to, then top-down tilt over the neighbourhood",
+        "lens": "35 mm",
+        "reason": "Territories read best from above"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 60,
+          "cue": "stare-pluck"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-grooming"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Feline territories"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 11,
+      "start": 1260,
+      "end": 1380,
+      "place": "Sierra foothills",
+      "point": "5 · Their perfect world has a problem",
+      "caption": "FACT-birds",
+      "stat": {
+        "parts": [
+          2.4
+        ],
+        "decimals": 1,
+        "template": "{0} billion",
+        "label": "birds killed a year by US\noutdoor cats (est.) · 2013 study"
+      },
+      "dayText": "Year 3 · fictional",
+      "visual": "Visual reset to green: wildlife sanctuaries as huge glass domes over hills full of birds (all safe); next door, a supervised hunting simulation with feather wands and a red dot.",
+      "camera": {
+        "shot": "Orbit around a sanctuary dome",
+        "lens": "35 mm",
+        "reason": "Shows the dome's scale and both sides of the compromise"
+      },
+      "sound": [
+        {
+          "at": 20,
+          "cue": "bird-chirps"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-birds"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Wildlife sanctuaries"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 12,
+      "start": 1380,
+      "end": 1500,
+      "place": "Palm Springs",
+      "point": "5 · Their perfect world has a problem",
+      "caption": "FACT-range",
+      "stat": {
+        "parts": [
+          3.6
+        ],
+        "decimals": 1,
+        "template": "{0} hectares",
+        "label": "median home range of a pet\ncat (about 9 acres) · 2020 study"
+      },
+      "dayText": "Year 4 · fictional",
+      "visual": "Fly-to Palm Springs: shaded courtyards and cooling towers; a crowded sunny wall with dozens of cats refusing to share, beside a vast empty estate where a single cat sleeps.",
+      "camera": {
+        "shot": "Fly-to, then slow pan from the crowd to the empty estate",
+        "lens": "35 mm",
+        "reason": "The pan itself shows the inequality"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 70,
+          "cue": "yawn-purr"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-range"
+      ],
+      "legend": [
+        {
+          "swatch": "sun",
+          "text": "Sun estates"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 13,
+      "start": 1500,
+      "end": 1620,
+      "place": "Statewide",
+      "point": "Payoff",
+      "caption": "FACT-area",
+      "stat": {
+        "parts": [
+          155800
+        ],
+        "decimals": 0,
+        "template": "{0} sq mi",
+        "label": "of California land,\nabout · US Census Bureau"
+      },
+      "dayText": "Year 5 · fictional",
+      "visual": "Pull back to the whole state, tilted: the Sierra Nevada is a run of climbing shelves, the coast a row of lounging cushions, cities ring giant food and water bowls, all criss-crossed by territories and routes.",
+      "camera": {
+        "shot": "Crane up and pull back to a tilted statewide view",
+        "lens": "35 → 24 mm",
+        "reason": "The big reveal: the state is one living room"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "orchestra-hit"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-area"
+      ],
+      "legend": [
+        {
+          "swatch": "accent",
+          "text": "Feline territories"
+        },
+        {
+          "swatch": "sun",
+          "text": "Sun estates"
+        },
+        {
+          "swatch": "highlight",
+          "text": "Sanctuaries"
+        },
+        {
+          "swatch": "background",
+          "text": "Human service network"
+        }
+      ],
+      "tag": "Fictional layers"
+    },
+    {
+      "id": 14,
+      "start": 1620,
+      "end": 1800,
+      "place": "One kitchen",
+      "point": "Ending",
+      "caption": "They ruled California. They\nstill needed someone to come home",
+      "stat": {
+        "parts": [
+          9500
+        ],
+        "decimals": 0,
+        "template": "{0} years",
+        "label": "cats and people have\nshared homes, about"
+      },
+      "visual": "Cut to one ordinary kitchen in warm evening light. The feline governor paws at a can it cannot open. A person opens it (absurdly ceremonial). The cat rubs against their leg.",
+      "camera": {
+        "shot": "Low hero angle at cat height, slow push-in",
+        "lens": "35 mm",
+        "reason": "The payoff is small and personal: seen from the cat's level"
+      },
+      "sound": [
+        {
+          "at": 20,
+          "cue": "can-ceremony"
+        },
+        {
+          "at": 120,
+          "cue": "purr-short"
+        },
+        {
+          "at": 30,
+          "cue": "ticks"
+        }
+      ],
+      "sources": [
+        "FACT-together"
+      ]
+    },
+    {
+      "id": "end",
+      "start": 1800,
+      "end": 1920,
+      "place": "",
+      "point": "End card",
+      "endCard": "Stay in the cat kingdom…\nor join the human\nrebellion?",
+      "visual": "The kitchen softly dims behind a large neutral question.",
+      "camera": {
+        "shot": "Hold, slow drift",
+        "lens": "35 mm",
+        "reason": "Gives the question room to land"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "button-note"
+        }
+      ],
+      "sources": []
+    }
+  ]
+}

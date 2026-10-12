@@ -4,14 +4,15 @@ Panels are semi-transparent, so the colour *behind* a panel changes what the tex
 actually sits on. We test the two extremes: the panel over pure black and over
 pure white. Both must reach 4.5:1 for every text colour.
 
-Run:  python3 render/qa_contrast.py
+Run:  python3 render/qa_contrast.py [path/to/palette.json]   (default: scene/palette.json)
 """
 
 import json
 import pathlib
 import sys
 
-PALETTE = json.loads((pathlib.Path(__file__).parent.parent / "scene" / "palette.json").read_text())
+_DEFAULT = pathlib.Path(__file__).parent.parent / "scene" / "palette.json"
+PALETTE = json.loads(pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else _DEFAULT).read_text())
 
 
 def hex_to_rgb(h):

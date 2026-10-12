@@ -1,0 +1,19 @@
+{
+  "scene": {
+    "background": { "name": "Coastal blue", "hex": "#3F86AE", "job": "Sky behind every diorama, the ocean on the maps, and (as a lighter tint) the humans' service network. Cool = human." },
+    "subject": { "name": "Warm cream", "hex": "#F1E3C8", "job": "The world itself: land, plaster buildings, furniture, cream-coloured cats." },
+    "accent": { "name": "Terracotta", "hex": "#C8623F", "job": "Everything the cats add: territories, rooftop routes, the paw seal, roof tiles, ginger cats. Warm = cat." },
+    "highlight": { "name": "Leafy green", "hex": "#6FA35A", "job": "Living things: gardens on the freeways, catnip fields, wildlife sanctuaries." }
+  },
+  "light": {
+    "key": { "name": "Gold sunlight", "hex": "#FFD48C", "job": "The key light (late afternoon, about 4,300 K). Where it pools on the map it marks sun estates: the cats' wealth." },
+    "evening": { "name": "Kitchen lamp", "hex": "#FFC98F", "job": "The one lighting change: warm evening interior light for the final kitchen scene." }
+  },
+  "text": {
+    "text": { "name": "Near-black", "hex": "#1D1A17", "job": "Titles, captions, stat numbers, map labels." },
+    "secondary": { "name": "Warm grey", "hex": "#5B544C", "job": "Stat labels, asides, 'fictional' tags, legend text." },
+    "panelFill": { "name": "Off-white", "hex": "#F8F4EC", "opacity": 0.88, "job": "Every caption, stats, legend and end-card panel (with an 18 px background blur)." },
+    "panelEdge": { "name": "Warm grey edge", "hex": "#D6CCBD", "job": "1.5 px panel outline; the halo behind 3d map labels." },
+    "endCard": { "name": "Soft cream-grey", "hex": "#E9E3D8", "job": "End-card backdrop behind the panel." }
+  }
+}
