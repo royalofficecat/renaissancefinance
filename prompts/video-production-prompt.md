@@ -36,6 +36,9 @@ These rules apply to every video and override anything else in this prompt.
 - Hook (also the on-screen title): YOUR HOOK
 - Audience: WHO IT IS FOR
 - Tone: TONE
+- Scenario type: REAL OR FICTION (real = a plausible scenario where every
+  caption fact is sourced; fiction = an invented story, grounded with real
+  facts where they fit)
 
 **Focus and scope**
 
@@ -159,7 +162,8 @@ Before building anything, write a one-page style bible in
    as extruded bars, proportional circles, or animated arcs and flows.
    Include a small legend or labelled number for every visual encoding (the
    legend's text and panel are neutral; only its swatches carry color), and
-   never use a rainbow color scale.
+   never use a rainbow color scale. In fiction mode, invented layers are
+   marked as fictional in the legend.
 8. **Transitions.** Move between places with a smooth fly-to (zoom out, pan,
    zoom in). No teleporting.
 
@@ -171,7 +175,7 @@ Before building anything, write a one-page style bible in
    seconds for the end card, and split the rest into beats of about 4.5
    seconds each (30 seconds gives about 6 beats, 62 seconds gives 13). Every
    beat gets:
-   - one short caption with a real fact and a number,
+   - one short caption, with a fact and a number (see Accuracy),
    - a new camera angle or move,
    - a small stats panel that updates with a count-up, and
    - one sound cue.
@@ -184,8 +188,15 @@ Before building anything, write a one-page style bible in
 5. **End card.** The last 4 seconds show the end card question from the
    brief in large neutral Times New Roman type, with the brand or logo if one
    was given.
-6. **Accuracy.** Every fact needs a source listed in `docs/sources.md`. If a
-   number is an estimate, say "about" or "roughly" in the caption.
+6. **Accuracy.** Follow the scenario type from the brief.
+   - Real: every caption carries a real fact and a number, and every fact
+     needs a source listed in `docs/sources.md`.
+   - Fiction: invented story details are fine and need no source, but any
+     real-world fact or number in a caption (biology, geography, history,
+     population) must be true and sourced. Aim for at least one real fact
+     with a number every 2–3 beats so the absurd parts stay grounded.
+
+   If a number is an estimate, say "about" or "roughly" in the caption.
 7. **Wholesome only.** Nobody gets hurt on screen. Any danger goes in the
    captions as a fact.
 
@@ -253,7 +264,7 @@ downloaded audio.
 - [ ] Every piece of text is Times New Roman (or the stand-in you told me about), with no other font anywhere
 - [ ] Text, text boxes, stats panels, labels and legends are all neutral colors
 - [ ] Palette and lighting consistent across all beats
-- [ ] Every fact has a source, and the numbers in the captions match the stats panel
+- [ ] Every real-world fact has a source (invented story details in fiction mode excepted), and the numbers in the captions match the stats panel
 - [ ] Map labels correct and spelled right, legend present for data
 - [ ] No flicker, jitter, popping objects, or camera snaps
 - [ ] Audio synced to the frame, no clipping, loudness in range
