@@ -7,14 +7,16 @@ import { HEX } from './look.js';
 import { clamp } from './util.js';
 
 const FONT = {
-  regular: new URL('fonts/LiberationSerif-Regular.ttf', document.baseURI).href,
-  italic: new URL('fonts/LiberationSerif-Italic.ttf', document.baseURI).href,
+  regular: new URL('/scene/fonts/LiberationSerif-Regular.ttf', location.origin).href,
+  italic: new URL('/scene/fonts/LiberationSerif-Italic.ttf', location.origin).href,
 };
 const SAFE = { x0: 28, x1: 950, y0: 154, y1: 1536 };
 const W = 1080, H = 1920;
 
 export class Labels {
-  constructor() {
+  /** @param {object} colors  { text, halo } (defaults: the first video's light text on a dark halo) */
+  constructor(colors = {}) {
+    this.colors = { text: HEX.text, halo: HEX.panel, ...colors };
     this.scene = new THREE.Scene();
     this.items = new Map();
     this._v = new THREE.Vector3();
@@ -29,12 +31,12 @@ export class Labels {
     t.text = text;
     t.font = italic ? FONT.italic : FONT.regular;
     t.fontSize = 1;
-    t.color = HEX.text;
+    t.color = this.colors.text;
     t.anchorX = anchor === 'dot' ? 'left' : 'center';
     t.anchorY = anchor === 'dot' ? 'bottom' : 'middle';
     t.outlineWidth = '9%';
     t.outlineBlur = '22%';
-    t.outlineColor = HEX.panel;
+    t.outlineColor = this.colors.halo;
     t.outlineOpacity = 0.92;
     t.material = new THREE.MeshBasicMaterial({ transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
     t.renderOrder = 10;
@@ -42,8 +44,8 @@ export class Labels {
     let dotMesh = null;
     if (dot) {
       dotMesh = new THREE.Group();
-      const ring = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ color: HEX.panel, transparent: true, depthTest: false, toneMapped: false }));
-      const fill = new THREE.Mesh(new THREE.CircleGeometry(1, 32), new THREE.MeshBasicMaterial({ color: HEX.text, transparent: true, depthTest: false, toneMapped: false }));
+      const ring = new THREE.Mesh(new THREE.CircleGeometry(1.5, 32), new THREE.MeshBasicMaterial({ color: this.colors.halo, transparent: true, depthTest: false, toneMapped: false }));
+      const fill = new THREE.Mesh(new THREE.CircleGeometry(1, 32), new THREE.MeshBasicMaterial({ color: this.colors.text, transparent: true, depthTest: false, toneMapped: false }));
       fill.position.z = 0.01;
       ring.renderOrder = fill.renderOrder = 9;
       dotMesh.add(ring, fill);

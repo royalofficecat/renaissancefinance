@@ -31863,7 +31863,7 @@ var DATA, loadJSON, loadBin;
 var init_data = __esm({
   "scene/src/core/data.js"() {
     init_three_module();
-    DATA = new URL("../data/build/", document.baseURI).href;
+    DATA = new URL("/data/build/", location.origin).href;
     loadJSON = async (name) => (await fetch(DATA + name)).json();
     loadBin = async (name) => (await fetch(DATA + name)).arrayBuffer();
   }
@@ -37479,14 +37479,16 @@ var init_labels = __esm({
     init_look();
     init_util();
     FONT = {
-      regular: new URL("fonts/LiberationSerif-Regular.ttf", document.baseURI).href,
-      italic: new URL("fonts/LiberationSerif-Italic.ttf", document.baseURI).href
+      regular: new URL("/scene/fonts/LiberationSerif-Regular.ttf", location.origin).href,
+      italic: new URL("/scene/fonts/LiberationSerif-Italic.ttf", location.origin).href
     };
     SAFE2 = { x0: 28, x1: 950, y0: 154, y1: 1536 };
     W = 1080;
     H = 1920;
     Labels = class {
-      constructor() {
+      /** @param {object} colors  { text, halo } (defaults: the first video's light text on a dark halo) */
+      constructor(colors = {}) {
+        this.colors = { text: HEX.text, halo: HEX.panel, ...colors };
         this.scene = new Scene();
         this.items = /* @__PURE__ */ new Map();
         this._v = new Vector3();
@@ -37500,12 +37502,12 @@ var init_labels = __esm({
         t.text = text;
         t.font = italic ? FONT.italic : FONT.regular;
         t.fontSize = 1;
-        t.color = HEX.text;
+        t.color = this.colors.text;
         t.anchorX = anchor === "dot" ? "left" : "center";
         t.anchorY = anchor === "dot" ? "bottom" : "middle";
         t.outlineWidth = "9%";
         t.outlineBlur = "22%";
-        t.outlineColor = HEX.panel;
+        t.outlineColor = this.colors.halo;
         t.outlineOpacity = 0.92;
         t.material = new MeshBasicMaterial({ transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
         t.renderOrder = 10;
@@ -37513,8 +37515,8 @@ var init_labels = __esm({
         let dotMesh = null;
         if (dot) {
           dotMesh = new Group();
-          const ring = new Mesh(new CircleGeometry(1.5, 32), new MeshBasicMaterial({ color: HEX.panel, transparent: true, depthTest: false, toneMapped: false }));
-          const fill2 = new Mesh(new CircleGeometry(1, 32), new MeshBasicMaterial({ color: HEX.text, transparent: true, depthTest: false, toneMapped: false }));
+          const ring = new Mesh(new CircleGeometry(1.5, 32), new MeshBasicMaterial({ color: this.colors.halo, transparent: true, depthTest: false, toneMapped: false }));
+          const fill2 = new Mesh(new CircleGeometry(1, 32), new MeshBasicMaterial({ color: this.colors.text, transparent: true, depthTest: false, toneMapped: false }));
           fill2.position.z = 0.01;
           ring.renderOrder = fill2.renderOrder = 9;
           dotMesh.add(ring, fill2);
@@ -39930,11 +39932,13 @@ function wordsHTML(text) {
     return `<span class="line">${out.map((o, i) => `<span class="w">${o.bold ? `<b>${o.w}</b>` : o.w}${i < out.length - 1 ? " " : ""}</span>`).join("")}</span>`;
   }).join("");
 }
-function fmtNumber(v2, decimals) {
-  return v2.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+function fmtNumber(v2, decimals, grouping = true) {
+  return v2.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: grouping });
 }
 var Overlay = class {
-  constructor(beatsDoc) {
+  /** @param {object} opts  { swatches: {name: css colour} } — legend swatch colours for this video */
+  constructor(beatsDoc, opts = {}) {
+    this.swatches = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: "#C9D0D6", "outline-highlight": HEX.green, ...opts.swatches || {} };
     this.beats = beatsDoc.beats;
     this.total = beatsDoc.totalFrames;
     this.el = Object.fromEntries(["title", "stat", "day", "legend", "caption", "endcard"].map((k) => [k, document.getElementById(k)]));
@@ -39954,7 +39958,7 @@ var Overlay = class {
     endcard.innerHTML = b.endCard ? wordsHTML(b.endCard) : "";
     stat.querySelector(".lab").textContent = b.stat ? b.stat.label : "";
     legend.innerHTML = (b.legend || []).map((r) => {
-      const col = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: "#C9D0D6", "outline-highlight": HEX.green }[r.swatch];
+      const col = this.swatches[r.swatch];
       const isOutline = r.swatch.startsWith("outline");
       const cls = isOutline ? "sw outline" : "sw";
       const style = isOutline ? `border-color:${col}` : `background:${col}`;
@@ -39980,7 +39984,8 @@ var Overlay = class {
     if (!s) return num.textContent = "";
     let out = s.template;
     s.parts.forEach((v2, i) => {
-      out = out.replace(`{${i}}`, fmtNumber(v2 * p, s.decimals));
+      const from = s.from ? s.from[i] : 0;
+      out = out.replace(`{${i}}`, fmtNumber(from + (v2 - from) * p, s.decimals, s.grouping !== false));
     });
     num.textContent = out;
   }

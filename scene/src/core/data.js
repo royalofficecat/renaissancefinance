@@ -1,7 +1,8 @@
 // Loading helpers for the prepared data in data/build/.
 import * as THREE from 'three';
 
-export const DATA = new URL('../data/build/', document.baseURI).href;
+// Absolute path from the site root, so pages in sub-folders (scene/videos/<name>/) find the data too
+export const DATA = new URL('/data/build/', location.origin).href;
 
 export const loadJSON = async (name) => (await fetch(DATA + name)).json();
 export const loadBin = async (name) => (await fetch(DATA + name)).arrayBuffer();

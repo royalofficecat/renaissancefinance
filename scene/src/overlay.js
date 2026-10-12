@@ -29,12 +29,14 @@ function wordsHTML(text) {
     .join('');
 }
 
-function fmtNumber(v, decimals) {
-  return v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+function fmtNumber(v, decimals, grouping = true) {
+  return v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: grouping });
 }
 
 export class Overlay {
-  constructor(beatsDoc) {
+  /** @param {object} opts  { swatches: {name: css colour} } — legend swatch colours for this video */
+  constructor(beatsDoc, opts = {}) {
+    this.swatches = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: '#C9D0D6', 'outline-highlight': HEX.green, ...(opts.swatches || {}) };
     this.beats = beatsDoc.beats;
     this.total = beatsDoc.totalFrames;
     this.el = Object.fromEntries(['title', 'stat', 'day', 'legend', 'caption', 'endcard'].map((k) => [k, document.getElementById(k)]));
@@ -57,7 +59,7 @@ export class Overlay {
     stat.querySelector('.lab').textContent = b.stat ? b.stat.label : '';
     legend.innerHTML = (b.legend || [])
       .map((r) => {
-        const col = { water: HEX.water, accent: HEX.accent, highlight: HEX.green, outline: '#C9D0D6', 'outline-highlight': HEX.green }[r.swatch];
+        const col = this.swatches[r.swatch];
         const isOutline = r.swatch.startsWith('outline');
         const cls = isOutline ? 'sw outline' : 'sw';
         const style = isOutline ? `border-color:${col}` : `background:${col}`;
@@ -87,7 +89,8 @@ export class Overlay {
     if (!s) return (num.textContent = '');
     let out = s.template;
     s.parts.forEach((v, i) => {
-      out = out.replace(`{${i}}`, fmtNumber(v * p, s.decimals));
+      const from = s.from ? s.from[i] : 0; // e.g. a year counts up from 1800, not from 0
+      out = out.replace(`{${i}}`, fmtNumber(from + (v - from) * p, s.decimals, s.grouping !== false));
     });
     num.textContent = out;
   }
