@@ -1,7 +1,13 @@
 # 3d explainer videos
 
 This folder holds the production pipeline for short vertical 3d explainer videos (1080 × 1920, 30 fps).
-The current video is **"What if California got 30 days of extreme rain?"** (64 s).
+
+| Video | Status | Lives in |
+|---|---|---|
+| "What if California got 30 days of extreme rain?" (64 s) | Finished | `scene/src/`, `scene/beats.json`, `docs/` |
+| "What if domestic cats took over California?" (64 s) | Step 2: style frames | `scene/videos/cat-kingdom/`, `docs/cat-kingdom/` |
+
+Both videos share the engine: the render pipeline, the text layer, map helpers and capture scripts.
 
 The original website files (`index.html`, `style.css`, `script.js`, `background.jpg`) are untouched and unrelated to the video.
 
@@ -26,7 +32,10 @@ Other useful commands:
 | `npm run beatsheet` | Regenerates `docs/beat-sheet.md` from `scene/beats.json` |
 | `npm run qa` | Runs the quality checklist against the finished video |
 
-To preview in a browser, serve this folder and open `scene/index.html?frame=1050`. Add `&safe=1` to show the app-safe zones, and `&dpr=1` for a faster, lower-quality preview.
+**The cat video** uses the same commands with `--video=cat-kingdom`. For example, `node render/stills.mjs out/cat-kingdom/style 90 720 1590 --video=cat-kingdom` renders its style frames. Its extra map data comes from `.venv/bin/python data/prep_cats.py`, which runs after `data/prep_map.py`.
+`--q=lab=1` renders the character look-dev lab instead of the video.
+
+To preview in a browser, serve this folder and open `scene/index.html?frame=1050`, or `scene/videos/cat-kingdom/index.html?frame=90` for the cat video. Add `&safe=1` to show the app-safe zones, and `&dpr=1` for a faster, lower-quality preview.
 
 ## Where things live
 

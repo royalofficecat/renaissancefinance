@@ -4,7 +4,7 @@
   "type": "module",
   "description": "3d explainer video pipeline: three.js scene, Playwright capture, ffmpeg encode",
   "scripts": {
-    "data": ".venv/bin/python data/prep_map.py && .venv/bin/python data/prep_shasta.py",
+    "data": ".venv/bin/python data/prep_map.py && .venv/bin/python data/prep_shasta.py && .venv/bin/python data/prep_cats.py",
     "audio": ".venv/bin/python audio/generate.py",
     "stills": "node render/stills.mjs out/stills",
     "contact": "node render/contact.mjs",

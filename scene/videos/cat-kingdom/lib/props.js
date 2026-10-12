@@ -382,3 +382,31 @@ export function shrub({ r = 0.3, stem = 0.15, seed = 1, dark = false } = {}) {
   g.add(m);
   return g;
 }
+
+/** A ball of yarn with a few wrapped strands and a loose end. */
+export function yarnBall({ r = 1, color = S.terra, seed = 2 } = {}) {
+  const g = new THREE.Group(), R = rng(seed);
+  g.add(mesh(new THREE.SphereGeometry(r, 40, 28), clay(color, 0.9), {}));
+  const strand = clay(tone(color, 1.12), 0.9);
+  for (let i = 0; i < 9; i++) {
+    const t = mesh(new THREE.TorusGeometry(r * 1.005, r * 0.035, 6, 72), strand, { rot: [R() * Math.PI, R() * Math.PI, R() * Math.PI], cast: false });
+    g.add(t);
+  }
+  const loose = new THREE.CatmullRomCurve3([[r * 0.9, -r * 0.3, r * 0.3], [r * 1.6, -r * 0.85, r * 0.6], [r * 2.6, -r * 0.95, r * 0.2], [r * 3.4, -r * 0.95, r * 0.9]].map((p) => new THREE.Vector3(...p)));
+  g.add(mesh(new THREE.TubeGeometry(loose, 40, r * 0.05, 6), strand, {}));
+  return g;
+}
+
+/** A cat tree: sisal posts and carpeted platforms (terracotta carpet on wood). */
+export function catTree({ h = 6, seed = 3 } = {}) {
+  const g = new THREE.Group();
+  const wood = clay(S.wood, 0.6), carpet = clay(tone(C.terra, 0.92), 0.95), post = sisalMaterial();
+  g.add(mesh(rbox(3.0, 0.4, 3.0, 0.12), wood, { pos: [0, 0.2, 0] }));
+  g.add(mesh(new THREE.CylinderGeometry(0.34, 0.38, h, 18), post, { pos: [0, h / 2, 0] }));
+  g.add(mesh(new THREE.CylinderGeometry(0.3, 0.32, h * 0.55, 18), post, { pos: [1.0, h * 0.27, 0.6] }));
+  for (const [y, x, z, w] of [[h * 0.55, 1.0, 0.6, 1.9], [h, 0, 0, 2.4], [h * 0.78, -0.9, -0.5, 1.6]]) {
+    g.add(mesh(rbox(w, 0.28, w, 0.1), wood, { pos: [x, y, z] }));
+    g.add(mesh(rbox(w - 0.2, 0.12, w - 0.2, 0.05), carpet, { pos: [x, y + 0.19, z] }));
+  }
+  return g;
+}
