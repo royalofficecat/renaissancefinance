@@ -1,0 +1,19 @@
+/* Utah video theme: light text on dark, see-through panels (docs/utah-rain/style-bible.md).
+   Same font files, sizes and layout as the shared stylesheet. */
+:root {
+  --text: #F4F1EA;
+  --text-2: #BFB8AC;
+  --panel: rgba(26, 25, 23, 0.82);
+  --edge: #4A4540;
+  --endcard-bg: #121110;
+  --deep-blue: #33383E;
+}
+/* Qualitative gauges (imagined scenario): three rows of five pips, neutral only */
+#gauges { left: 48px; padding: 16px 24px 18px; font-size: 28px; line-height: 1.25; color: var(--text-2); }
+#gauges .g { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+#gauges .g + .g { margin-top: 6px; }
+#gauges .name { width: 220px; }
+#gauges .pips { display: flex; gap: 7px; }
+#gauges .pip { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #8C857B; box-sizing: border-box; }
+#gauges .pip.on { background: var(--text); border-color: var(--text); }
+#gauges .tag { margin-top: 8px; font-style: italic; }
