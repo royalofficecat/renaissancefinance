@@ -12,8 +12,8 @@ const vp = videoPaths(video);
 const OUT = vp.out;
 const beats = JSON.parse(fs.readFileSync(vp.beats, 'utf8'));
 // per video: the soundtrack script and the finished file's name
-const AUDIO = { '': 'audio/generate.py', 'cat-kingdom': 'audio/cat_kingdom.py' }[video];
-const MP4_NAME = { '': 'california-30-days-of-rain.mp4', 'cat-kingdom': 'what-if-cats-took-over-california.mp4' }[video];
+const AUDIO = { '': 'audio/generate.py', 'cat-kingdom': 'audio/cat_kingdom.py', 'utah-rain': 'audio/utah_rain.py' }[video];
+const MP4_NAME = { '': 'california-30-days-of-rain.mp4', 'cat-kingdom': 'what-if-cats-took-over-california.mp4', 'utah-rain': 'what-if-it-rained-in-utah-for-30-days.mp4' }[video];
 const FROM = parseInt(arg('from', '0'), 10), TO = parseInt(arg('to', String(beats.totalFrames)), 10);
 const FORCE = process.argv.includes('--force');
 const framesDir = path.join(OUT, 'frames');

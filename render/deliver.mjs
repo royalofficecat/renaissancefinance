@@ -8,7 +8,7 @@ import { videoArg, videoPaths } from './lib.mjs';
 
 const video = videoArg();
 const OUT = videoPaths(video).out;
-const name = { '': 'california-30-days-of-rain', 'cat-kingdom': 'what-if-cats-took-over-california' }[video];
+const name = { '': 'california-30-days-of-rain', 'cat-kingdom': 'what-if-cats-took-over-california', 'utah-rain': 'what-if-it-rained-in-utah-for-30-days' }[video];
 const src = path.join(OUT, `${name}.mp4`);
 if (!fs.existsSync(src)) throw new Error(`missing ${src}: run render/render_all.mjs first`);
 const ff = (args) => execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', ...args], { stdio: 'inherit', cwd: OUT });
