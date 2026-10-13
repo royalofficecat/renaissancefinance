@@ -39407,7 +39407,7 @@ async function createUtahMap(pipe) {
         zion: 0.95 * w(330, 420),
         colorado: 0.9 * Math.max(w(330, 420), sc.divide, w(900, 1020)),
         powell: 0.9 * Math.max(w(330, 420), sc.divide, w(915, 1020), w(1640, 1920)),
-        slc: 0.95 * Math.max(w(270, 300), sc.divide, w(1060, 1140), w(1380, 1920)),
+        slc: 0.95 * Math.max(w(270, 300), sc.divide, w(1060, 1140), w(1380, 1655)),
         gsl: 0.9 * Math.max(sc.divide, w(1050, 1140), w(1420, 1920)),
         basin: sc.divide,
         plateau: sc.divide,

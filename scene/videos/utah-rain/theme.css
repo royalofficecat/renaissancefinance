@@ -17,3 +17,6 @@
 #gauges .pip { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #8C857B; box-sizing: border-box; }
 #gauges .pip.on { background: var(--text); border-color: var(--text); }
 #gauges .tag { margin-top: 8px; font-style: italic; }
+
+/* the end-card question is a longer line than the cat video's: 72 px (the title range is 72-88) keeps it inside its panel */
+#endcard { font-size: 72px; }
