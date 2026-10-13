@@ -1,0 +1,649 @@
+{
+  "fps": 30,
+  "bpm": 120,
+  "totalFrames": 1920,
+  "note": "Single source of truth for timing, text, stats, camera and sound. docs/utah-rain/beat-sheet.md is generated from this file. Captions use **bold** for the key number and \\n for the line break. Every real-world number is sourced in docs/utah-rain/sources.md (codes U1…).",
+  "intro": "The rain, runoff and flooding are imagined; Utah's geography, rivers, basins and drainage are real. The day chip (“Day 1 … Day 30 · imagined scenario”) is an illustrative timeline, never a forecast, and every animated consequence on a map is labelled “imagined scenario”. Beats without a sourced number show a qualitative gauge instead (runoff, ground saturation, flood pressure), as the brief asks. Source codes (U1…) point to `docs/utah-rain/sources.md`.",
+  "resets": "Canyon close-up (1) · globe (2) · tilted map of the south (3) · cliff diorama (4) · cut-away block (5) · inside a slot canyon (6) · top-down statewide divide map (7) · fly-to Lake Powell (8) · Great Salt Lake (9) · mirror-flat salt flats, low and white (10) · a city on transparent ground (11) · crane up over the Wasatch (12) · colour shift: the sun breaks through (13) · jump in time: months later (14).",
+  "beats": [
+    {
+      "id": 1,
+      "start": 0,
+      "end": 180,
+      "place": "Zion canyon country",
+      "point": "Hook",
+      "title": "What if it rained in\nUtah for 30 days?",
+      "caption": "The desert turns green.\nThen the valleys start filling",
+      "gauges": {
+        "runoff": 2,
+        "saturation": 1,
+        "flood": 1
+      },
+      "dayText": "Day 1 · imagined scenario",
+      "visual": "Close on red sandstone as the first heavy drops hit and darken the rock. Within 2 s the dry wash below fills: a thin turquoise sheet becomes a rushing channel between the canyon walls.",
+      "camera": {
+        "shot": "Low wide shot, slow push-in down the wash",
+        "lens": "28 mm",
+        "reason": "Starts on the brief's image (rain on sandstone) and lets the change happen in frame by 3 s"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "thunder-roll"
+        },
+        {
+          "at": 8,
+          "cue": "rain-onset"
+        },
+        {
+          "at": 55,
+          "cue": "water-rush"
+        }
+      ],
+      "sources": []
+    },
+    {
+      "id": 2,
+      "start": 180,
+      "end": 300,
+      "place": "Utah on the globe",
+      "point": "Where",
+      "caption": "Utah normally gets about\n**13 inches** a year",
+      "stat": {
+        "parts": [
+          13
+        ],
+        "decimals": 0,
+        "template": "{0} in",
+        "label": "of rain and snow, statewide\nyearly average · NOAA"
+      },
+      "dayText": "Day 2 · imagined scenario",
+      "visual": "Pull out to the globe: the American West, Utah outlined. Storm clouds spin up over the state, then the globe gives way to the flat terrain map (fly-to, no cut).",
+      "camera": {
+        "shot": "Orbit on the globe, then fly down to the state",
+        "lens": "35 mm",
+        "reason": "Where in the world, then into the map without teleporting"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "wind-swell"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 90,
+          "cue": "whoosh-fly"
+        }
+      ],
+      "sources": [
+        "U1"
+      ]
+    },
+    {
+      "id": 3,
+      "start": 300,
+      "end": 420,
+      "place": "Southern Utah",
+      "point": "1 · The desert wakes up",
+      "caption": "A dry landscape suddenly has\nwater everywhere",
+      "gauges": {
+        "runoff": 3,
+        "saturation": 2,
+        "flood": 1
+      },
+      "dayText": "Day 4 · imagined scenario",
+      "visual": "Tilted terrain map of southern Utah: dusty red relief, dry washes lighting up as thin turquoise threads, temporary pools mirroring the clouds, and patches of green spreading where soil allows.",
+      "camera": {
+        "shot": "Tilted map, slow lateral drift",
+        "lens": "35 mm",
+        "reason": "Shows that it is happening across the whole region"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "drops-chime"
+        },
+        {
+          "at": 30,
+          "cue": "water-trickle"
+        }
+      ],
+      "sources": [
+        "U2"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Runoff in dry washes"
+        },
+        {
+          "swatch": "highlight",
+          "text": "Temporary greenery"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 4,
+      "start": 420,
+      "end": 540,
+      "place": "Zion canyon country",
+      "point": "1 · The desert wakes up",
+      "caption": "Waterfalls pour into canyons up to\nabout **2,600 ft** deep",
+      "stat": {
+        "parts": [
+          2600
+        ],
+        "decimals": 0,
+        "template": "{0} ft",
+        "label": "deep at most, Zion Canyon\n(half a mile) · NPS"
+      },
+      "dayText": "Day 6 · imagined scenario",
+      "visual": "Miniature Zion cliff: ribbon waterfalls pour off the sandstone rim, tiny plants push out of cracks, a still pool at the bottom reflects towering storm clouds.",
+      "camera": {
+        "shot": "Crane up the cliff face, waterfall to rim",
+        "lens": "35 mm",
+        "reason": "\"It keeps going\": the scale of the walls"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "canyon-echo"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 40,
+          "cue": "waterfall"
+        }
+      ],
+      "sources": [
+        "U3"
+      ]
+    },
+    {
+      "id": 5,
+      "start": 540,
+      "end": 660,
+      "place": "Canyon cross-section",
+      "point": "2 · Canyons become funnels",
+      "caption": "The narrowest places collect\nthe biggest rush",
+      "gauges": {
+        "runoff": 4,
+        "saturation": 3,
+        "flood": 2
+      },
+      "dayText": "Day 9 · imagined scenario",
+      "visual": "Cut-away terrain block: rain falls across a broad plateau, runs into tributaries (animated turquoise flows), and converges into one slot canyon.",
+      "camera": {
+        "shot": "Orbit around the cut-away block",
+        "lens": "35 mm",
+        "reason": "A 3d cross-section shows how wide rain becomes one narrow flow"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "rain-gust"
+        },
+        {
+          "at": 60,
+          "cue": "drum-low"
+        }
+      ],
+      "sources": [],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Runoff gathering"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 6,
+      "start": 660,
+      "end": 780,
+      "place": "The Narrows, Zion",
+      "point": "2 · Canyons become funnels",
+      "caption": "Narrows walls rise **1,000 ft**\nover a 20–30 ft river",
+      "stat": {
+        "parts": [
+          1000
+        ],
+        "decimals": 0,
+        "template": "{0} ft",
+        "label": "canyon walls; the river is\nsometimes 20–30 ft wide · NPS"
+      },
+      "dayText": "Day 11 · imagined scenario",
+      "visual": "Inside the slot canyon: a turquoise surge fills the floor of an empty canyon; two tiny hikers watch safely from a high bench on the rim.",
+      "camera": {
+        "shot": "Slow push-in down the slot",
+        "lens": "50 mm",
+        "reason": "Builds tension, then reveals the hikers safe above"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "water-rush"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 70,
+          "cue": "canyon-echo"
+        }
+      ],
+      "sources": [
+        "U4"
+      ]
+    },
+    {
+      "id": 7,
+      "start": 780,
+      "end": 900,
+      "place": "Utah statewide",
+      "point": "3 · Two water worlds",
+      "caption": "Some water leaves.\nSome has nowhere to go",
+      "stat": {
+        "parts": [
+          200000
+        ],
+        "decimals": 0,
+        "template": "{0} sq mi",
+        "label": "of Great Basin that drains\ninland, never to the sea · NPS"
+      },
+      "dayText": "Day 14 · imagined scenario",
+      "visual": "Visual reset: top-down terrain map. The real drainage divide draws on; the southeast tints toward the Colorado River system, the west toward the Great Basin. One set of arrows flows off the map; the other stops in lakes and valley floors.",
+      "camera": {
+        "shot": "Top-down, slow push-in",
+        "lens": "35 mm",
+        "reason": "Only a map shows the two systems side by side"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-map"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 40,
+          "cue": "arrow-pulses"
+        }
+      ],
+      "sources": [
+        "U5"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Colorado River system"
+        },
+        {
+          "swatch": "highlight",
+          "text": "Great Basin (no outlet)"
+        },
+        {
+          "swatch": "outline",
+          "text": "Drainage divide"
+        }
+      ],
+      "tag": "Flows: imagined scenario"
+    },
+    {
+      "id": 8,
+      "start": 900,
+      "end": 1020,
+      "place": "Colorado River & Lake Powell",
+      "point": "3 · Two water worlds",
+      "caption": "Downstream waits Lake Powell, about\n**186 miles** long when full",
+      "stat": {
+        "parts": [
+          186
+        ],
+        "decimals": 0,
+        "template": "{0} mi",
+        "label": "long at full pool,\nLake Powell · NPS"
+      },
+      "gauges": {
+        "runoff": 5,
+        "saturation": 4,
+        "flood": 3
+      },
+      "dayText": "Day 16 · imagined scenario",
+      "visual": "Fly-to the southeast: arrows ride the Colorado and its tributaries into Lake Powell, whose winding arms brighten as the water rises (imagined) and continue downstream past the state line.",
+      "camera": {
+        "shot": "Fly-to, then follow the river",
+        "lens": "35 mm",
+        "reason": "Follows the water that has somewhere to go"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 60,
+          "cue": "deep-drum"
+        }
+      ],
+      "sources": [
+        "U6"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Runoff heading downstream"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 9,
+      "start": 1020,
+      "end": 1140,
+      "place": "Great Salt Lake",
+      "point": "4 · The Great Salt Lake expands",
+      "caption": "The old shoreline becomes\na memory",
+      "stat": {
+        "parts": [
+          1700
+        ],
+        "decimals": 0,
+        "template": "{0} sq mi",
+        "label": "usual size; about 2,300 at\nthe 1986 record high · USGS"
+      },
+      "dayText": "Day 19 · imagined scenario",
+      "visual": "Tilted map of the lake: rivers swell (the Bear, Weber and Jordan), the shoreline creeps across the lowest ground first, flooding mudflats and leaving higher ground dry. An outline marks the old shore.",
+      "camera": {
+        "shot": "Fly-to, then slow push-in",
+        "lens": "35 mm",
+        "reason": "Shows the lake growing unevenly, following the terrain"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "whoosh-fly"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 40,
+          "cue": "water-swell"
+        }
+      ],
+      "sources": [
+        "U7"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Imagined new shoreline"
+        },
+        {
+          "swatch": "outline",
+          "text": "Usual shoreline"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 10,
+      "start": 1140,
+      "end": 1260,
+      "place": "Bonneville Salt Flats",
+      "point": "4 · The Great Salt Lake expands",
+      "caption": "About **30,000 acres** of salt flats\nturn into a mirror",
+      "stat": {
+        "parts": [
+          30000
+        ],
+        "decimals": 0,
+        "template": "{0} acres",
+        "label": "Bonneville Salt Flats,\nabout · BLM"
+      },
+      "dayText": "Day 21 · imagined scenario",
+      "visual": "Visual reset: low angle across white salt crust under a thin sheet of water, mirroring the storm sky; the Silver Island Mountains on the horizon.",
+      "camera": {
+        "shot": "Low wide shot, slow lateral track",
+        "lens": "24 mm",
+        "reason": "The mirror only works close to the surface"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "hush-wind"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 50,
+          "cue": "shimmer"
+        }
+      ],
+      "sources": [
+        "U8"
+      ]
+    },
+    {
+      "id": 11,
+      "start": 1260,
+      "end": 1380,
+      "place": "Salt Lake City",
+      "point": "5 · Cities discover the land",
+      "caption": "The streets follow our plans.\nThe water follows gravity",
+      "stat": {
+        "parts": [
+          80
+        ],
+        "decimals": 0,
+        "template": "{0}%",
+        "label": "of Utahns live along the\nWasatch Front (about)"
+      },
+      "gauges": {
+        "runoff": 5,
+        "saturation": 5,
+        "flood": 4
+      },
+      "dayText": "Day 24 · imagined scenario",
+      "visual": "Miniature Salt Lake City on a transparent ground: under the street grid, the buried creeks, slopes and low points glow turquoise as mountain runoff arrives; storm drains brim and low roads take water.",
+      "camera": {
+        "shot": "Orbit around the city block",
+        "lens": "35 mm",
+        "reason": "The 3d orbit shows the hidden land under the grid"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "drain-gurgle"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 50,
+          "cue": "drum-build"
+        }
+      ],
+      "sources": [
+        "U9"
+      ],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Water following low ground"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 12,
+      "start": 1380,
+      "end": 1500,
+      "place": "Wasatch Front",
+      "point": "5 · Cities discover the land",
+      "caption": "Wetlands spread where about\n**10 million** birds stop yearly",
+      "stat": {
+        "parts": [
+          10
+        ],
+        "decimals": 0,
+        "template": "{0} million",
+        "label": "migratory birds a year at Great\nSalt Lake and its wetlands"
+      },
+      "dayText": "Day 27 · imagined scenario",
+      "visual": "Crane up from the city to the Wasatch Range and out over the lake's edge: temporary wetlands and green patches spread across the valley floors; flocks wheel over shallow water.",
+      "camera": {
+        "shot": "Crane up and over",
+        "lens": "28 mm",
+        "reason": "\"It keeps going\": from the streets to the whole landscape"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "birds"
+        },
+        {
+          "at": 10,
+          "cue": "ticks"
+        },
+        {
+          "at": 70,
+          "cue": "swell-up"
+        }
+      ],
+      "sources": [
+        "U10"
+      ],
+      "legend": [
+        {
+          "swatch": "highlight",
+          "text": "Temporary wetlands"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 13,
+      "start": 1500,
+      "end": 1620,
+      "place": "Utah statewide",
+      "point": "Payoff · The clouds break",
+      "caption": "On day **30**,\nthe clouds finally break",
+      "gauges": {
+        "runoff": 2,
+        "saturation": 5,
+        "flood": 3
+      },
+      "dayText": "Day 30 · imagined scenario",
+      "visual": "The clouds part and warm low sun crosses the state (the one lighting change). Pull back over Utah: red-rock waterfalls, greener desert patches, a larger Great Salt Lake and flooded valley floors shining.",
+      "camera": {
+        "shot": "Pull back to a tilted statewide view, low hero sun",
+        "lens": "35 → 24 mm",
+        "reason": "The big reveal of the whole transformed state"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "cloud-break-chord"
+        },
+        {
+          "at": 0,
+          "cue": "drums-out"
+        }
+      ],
+      "sources": [],
+      "legend": [
+        {
+          "swatch": "water",
+          "text": "Standing water"
+        },
+        {
+          "swatch": "highlight",
+          "text": "New greenery"
+        }
+      ],
+      "tag": "Imagined scenario"
+    },
+    {
+      "id": 14,
+      "start": 1620,
+      "end": 1800,
+      "place": "Utah statewide",
+      "point": "Payoff · Afterwards",
+      "caption": "The rain stopped.\nThe transformation didn't",
+      "stat": {
+        "parts": [
+          2.9
+        ],
+        "decimals": 1,
+        "template": "{0} million",
+        "label": "acre-ft a year leave the lake\nonly by evaporation · USGS"
+      },
+      "dayText": "Months later · imagined",
+      "visual": "The calendar runs on: green fades back to red, pools shrink, inland water slowly evaporates and soaks in, and pale sediment rings stay behind, echoing the ancient Lake Bonneville shorelines on the mountains.",
+      "camera": {
+        "shot": "Slow drift, holding the wide view",
+        "lens": "24 mm",
+        "reason": "Lets the slow change be the point"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "quiet-chord"
+        },
+        {
+          "at": 30,
+          "cue": "ticks"
+        },
+        {
+          "at": 150,
+          "cue": "sudden-quiet"
+        }
+      ],
+      "sources": [
+        "U11",
+        "U12"
+      ]
+    },
+    {
+      "id": "end",
+      "start": 1800,
+      "end": 1920,
+      "place": "",
+      "point": "End card",
+      "visual": "The landscape dims softly behind a large neutral question.",
+      "camera": {
+        "shot": "Hold, slow drift",
+        "lens": "24 mm",
+        "reason": "Gives the question room to land"
+      },
+      "sound": [
+        {
+          "at": 0,
+          "cue": "button-note"
+        }
+      ],
+      "sources": [],
+      "endCard": "Explore the greener Utah,\nor wait for the\nwater to recede?"
+    }
+  ]
+}

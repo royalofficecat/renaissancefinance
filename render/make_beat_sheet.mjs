@@ -25,6 +25,9 @@ const fmtStat = (st) => {
   });
   return `**${out}** ${flat(st.label)}`;
 };
+// Qualitative gauges (1-5) for beats without a sourced number, e.g. { runoff: 3, saturation: 2, flood: 1 }
+const GAUGE_NAMES = { runoff: 'runoff', saturation: 'ground saturation', flood: 'flood pressure' };
+const fmtGauges = (g) => (g ? `_Gauges (imagined):_ ${Object.entries(g).map(([k, v]) => `${GAUGE_NAMES[k] || k} ${'●'.repeat(v)}${'○'.repeat(5 - v)}`).join(' · ')}` : '');
 
 const rows = beats.map((b) => {
   const text = [b.title && `**Title:** ${flat(b.title)}`, b.caption && flat(b.caption), b.endCard && `**End card:** ${flat(b.endCard)}`, b.tag && `_Tag: ${b.tag}_`]
@@ -32,7 +35,7 @@ const rows = beats.map((b) => {
     .join('<br>');
   const cam = `${b.camera.shot} (${b.camera.lens}). _Why:_ ${b.camera.reason}`;
   const sound = b.sound.map((s) => `${s.cue} @${tc(b.start + s.at)}`).join(', ');
-  return `| ${b.id} | ${tc(b.start)}–${tc(b.end)} |${hasPlace ? ` ${b.place || ''} |` : ''} ${text} | ${fmtStat(b.stat)} | ${cam} | ${sound} | ${b.sources.join(', ')} |`;
+  return `| ${b.id} | ${tc(b.start)}–${tc(b.end)} |${hasPlace ? ` ${b.place || ''} |` : ''} ${text} | ${[fmtStat(b.stat), fmtGauges(b.gauges)].filter(Boolean).join('<br>')} | ${cam} | ${sound} | ${b.sources.join(', ')} |`;
 });
 
 const md = `# Beat sheet — "${TITLE}"

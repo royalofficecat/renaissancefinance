@@ -63,8 +63,11 @@ def swatch_row(y, title, entries):
 scene = PAL["scene"]
 roles = {"background": "Background", "subject": "Main subject", "accent": "Accent (one colour)", "highlight": "Data / highlight", "water": "Water tint"}
 entries = [{**v, "role": roles.get(k, k)} for k, v in scene.items()]
+for k, v in PAL.get("extra", {}).items():
+    entries.append({**v, "role": "Pale end of subject"})
 if "light" in PAL:
-    entries.append({**PAL["light"]["key"], "role": "Key light colour"})
+    lk = next(iter(PAL["light"]))  # the first light colour (the key)
+    entries.append({**PAL["light"][lk], "role": "Key light colour"})
 swatch_row(160, "Scene colours (3d world only)", entries[:5])
 txt_entries = [{**t["text"], "role": "Titles, captions, numbers"}, {**t["secondary"], "role": "Labels, asides, legends"},
                {**t["panelFill"], "role": "Panel fill + 18 px blur"}, {**t["panelEdge"], "role": "Panel edge, label halo"}, {**t["endCard"], "role": "End-card backdrop"}]

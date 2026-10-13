@@ -5,6 +5,7 @@ This folder holds the production pipeline for short vertical 3d explainer videos
 | Video | Status | Lives in |
 |---|---|---|
 | "What if California got 30 days of extreme rain?" (64 s) | Finished | `scene/src/`, `scene/beats.json`, `docs/` |
+| "What if it rained in Utah for 30 days?" (64 s) | Step 1: plan | `scene/videos/utah-rain/`, `docs/utah-rain/` |
 | "What if domestic cats took over California?" (64 s) | Finished (QA 22/22: `docs/cat-kingdom/qa-report.md`) | `scene/videos/cat-kingdom/`, `docs/cat-kingdom/`, `audio/cat_kingdom.py` |
 
 Both videos share the engine: the render pipeline, the text layer, map helpers and capture scripts.

@@ -1,0 +1,22 @@
+{
+  "scene": {
+    "background": { "name": "Storm charcoal", "hex": "#33383E", "job": "Sky, storm clouds, the space around every diorama, and the neighbouring states on the map." },
+    "subject": { "name": "Sandstone red", "hex": "#B5533A", "job": "The land: red rock, canyon walls, the terrain of the state. Its pale end, desert cream (#E6D6B8), is the same family: salt crust, pale sand, dry lakebeds." },
+    "accent": { "name": "Turquoise water", "hex": "#33B1AA", "job": "The one accent and the story's actor: rain runoff, rivers, rising lakes, flooded flats, runoff arrows." },
+    "highlight": { "name": "Fresh green", "hex": "#7CB84F", "job": "Data and life: temporary greenery, new wetlands, and the Great Basin drainage on the divide map." }
+  },
+  "extra": {
+    "cream": { "name": "Desert cream", "hex": "#E6D6B8", "job": "The light end of the sandstone ramp (salt flats, sand, limestone). Not a fifth paint colour." }
+  },
+  "light": {
+    "storm": { "name": "Storm daylight", "hex": "#E3E9F0", "job": "Key light for days 1-29: cool, overcast, about 6,500 K." },
+    "clearing": { "name": "Clearing sun", "hex": "#FFDDB0", "job": "The one lighting change: warm low sun when the clouds break on day 30 (about 4,500 K)." }
+  },
+  "text": {
+    "text": { "name": "Off-white", "hex": "#F4F1EA", "job": "Titles, captions, stat numbers, map labels." },
+    "secondary": { "name": "Warm grey", "hex": "#BFB8AC", "job": "Stat labels, asides, 'imagined scenario' tags, legend text." },
+    "panelFill": { "name": "Charcoal panel", "hex": "#1A1917", "opacity": 0.82, "job": "Every caption, stats, legend, gauge and end-card panel (18 px background blur)." },
+    "panelEdge": { "name": "Warm grey edge", "hex": "#4A4540", "job": "1.5 px panel outline; the dark halo behind 3d map labels." },
+    "endCard": { "name": "Near-black", "hex": "#121110", "job": "End-card backdrop behind the panel." }
+  }
+}
