@@ -36,6 +36,11 @@ export function sandstone({ capFrom = 1e3, capTo = 1e3 + 1, bands = 7, sandBelow
         c = mix(c, mix(uRed, uCream, cap) * 1.06, smoothstep(0.8, 1.0, vON.y) * 0.3);
         c = mix(c, uSand, smoothstep(0.8, 0.95, vON.y) * (1.0 - smoothstep(uSandBelow - 0.05, uSandBelow + 0.1, p.y)));
         c *= 0.93 + 0.1 * rh1(floor(p.xz * 16.0 + p.y * 7.0));
+        // slickrock tops: swirling cross-bedded lines and darker potholes
+        float top = smoothstep(0.75, 0.95, vON.y);
+        float xb = 0.5 + 0.5 * sin(dot(p.xz, vec2(2.3, 1.1)) * 2.2 + rn2(p.xz * 0.6) * 6.0);
+        float pot = smoothstep(0.62, 0.75, rn2(p.xz * 1.4 + 3.0));
+        c *= 1.0 - top * (0.1 * smoothstep(0.6, 0.95, xb) + 0.16 * pot);
         c *= 1.0 - 0.28 * uWet;
         diffuseColor.rgb = c;`)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.45, uWet);');

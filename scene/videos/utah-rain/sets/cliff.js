@@ -74,7 +74,7 @@ export async function createCliff(pipe) {
       gp.setXYZ(i, ...bend(f.x + gp.getX(i) * (1 + 0.5 * (1 - y / RIM)) + sway, y, zmax + 0.16 + 0.12 * (1 - lip) - lip * 0.5).toArray());
       uv.setY(i, 1 - uv.getY(i)); // v = 0 at the top: the sheet reveals downwards
     }
-    const m = flowSheet({ speed: 3.2, streakScale: [6, 9], opacity: 0.95 });
+    const m = flowSheet({ color: mixc(C.water, C.cream, 0.4), foam: tone(C.cream, 1.1, 0.5), speed: 3.2, streakScale: [7, 12], opacity: 0.82 });
     const mesh = new THREE.Mesh(g, m);
     mesh.renderOrder = 2;
     world.add(mesh);
@@ -87,7 +87,7 @@ export async function createCliff(pipe) {
       cp.setXYZ(i, ...bend(f.x + cp.getX(i) * (1 + s), y, z).toArray());
       cuv.setY(i, s);
     }
-    const cm = flowSheet({ speed: 2.0, streakScale: [5, 4], opacity: 0.9 });
+    const cm = flowSheet({ color: mixc(C.water, C.cream, 0.3), foam: tone(C.cream, 1.1, 0.5), speed: 2.0, streakScale: [5, 4], opacity: 0.85 });
     const cmesh = new THREE.Mesh(cg, cm);
     cmesh.renderOrder = 2;
     world.add(cmesh);
@@ -147,13 +147,13 @@ export async function createCliff(pipe) {
   }, { r0: 0.05, r1: 0.075 });
 
   const rain = rainField(scene, R, { n: 2000, w: 14, h: 12, d: 16, len: 0.4, opacity: 0.26 });
-  const lights = rig(scene, pipe.renderer, { size: 16, dist: 40, intensity: 2.6, keyDir: [-0.72, 0.5, 0.48], rimDir: [0.6, 0.5, -0.8], fillK: 0.55 });
+  const lights = rig(scene, pipe.renderer, { size: 16, dist: 40, intensity: 2.6, keyDir: [-0.84, 0.46, 0.3], rimDir: [0.6, 0.5, -0.8], fillK: 0.55 });
   lights.follow(new THREE.Vector3(0, 6, 0), 14);
 
   const cam = new THREE.PerspectiveCamera(35, 1080 / 1920, 0.05, 400);
   // Crane up the cliff: from the pool and the foot of the falls to the rim where they pour over
-  const A = { pos: [-4.8, 3.6, 15.5], target: [0.3, 4.6, -2.5], lens: 35 };
-  const B = { pos: [-5.0, 9.6, 22.5], target: [0.4, 10.6, -3.0], lens: 35 };
+  const A = { pos: [-8.2, 3.4, 13.8], target: [0.9, 4.8, -2.5], lens: 35 };
+  const B = { pos: [-7.6, 10.2, 18.5], target: [0.9, 10.8, -3.0], lens: 35 };
 
   return {
     frame(f) {

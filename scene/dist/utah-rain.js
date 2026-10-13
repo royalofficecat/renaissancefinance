@@ -38109,6 +38109,11 @@ function sandstone({ capFrom = 1e3, capTo = 1e3 + 1, bands = 7, sandBelow = -1e3
         c = mix(c, mix(uRed, uCream, cap) * 1.06, smoothstep(0.8, 1.0, vON.y) * 0.3);
         c = mix(c, uSand, smoothstep(0.8, 0.95, vON.y) * (1.0 - smoothstep(uSandBelow - 0.05, uSandBelow + 0.1, p.y)));
         c *= 0.93 + 0.1 * rh1(floor(p.xz * 16.0 + p.y * 7.0));
+        // slickrock tops: swirling cross-bedded lines and darker potholes
+        float top = smoothstep(0.75, 0.95, vON.y);
+        float xb = 0.5 + 0.5 * sin(dot(p.xz, vec2(2.3, 1.1)) * 2.2 + rn2(p.xz * 0.6) * 6.0);
+        float pot = smoothstep(0.62, 0.75, rn2(p.xz * 1.4 + 3.0));
+        c *= 1.0 - top * (0.1 * smoothstep(0.6, 0.95, xb) + 0.16 * pot);
         c *= 1.0 - 0.28 * uWet;
         diffuseColor.rgb = c;`).replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.45, uWet);");
   };
@@ -38282,7 +38287,7 @@ async function createCliff(pipe) {
       gp.setXYZ(i, ...bend(f.x + gp.getX(i) * (1 + 0.5 * (1 - y / RIM)) + sway, y, zmax + 0.16 + 0.12 * (1 - lip) - lip * 0.5).toArray());
       uv.setY(i, 1 - uv.getY(i));
     }
-    const m = flowSheet({ speed: 3.2, streakScale: [6, 9], opacity: 0.95 });
+    const m = flowSheet({ color: mixc(C2.water, C2.cream, 0.4), foam: tone(C2.cream, 1.1, 0.5), speed: 3.2, streakScale: [7, 12], opacity: 0.82 });
     const mesh = new Mesh(g, m);
     mesh.renderOrder = 2;
     world.add(mesh);
@@ -38294,7 +38299,7 @@ async function createCliff(pipe) {
       cp.setXYZ(i, ...bend(f.x + cp.getX(i) * (1 + s), y, z).toArray());
       cuv.setY(i, s);
     }
-    const cm = flowSheet({ speed: 2, streakScale: [5, 4], opacity: 0.9 });
+    const cm = flowSheet({ color: mixc(C2.water, C2.cream, 0.3), foam: tone(C2.cream, 1.1, 0.5), speed: 2, streakScale: [5, 4], opacity: 0.85 });
     const cmesh = new Mesh(cg, cm);
     cmesh.renderOrder = 2;
     world.add(cmesh);
@@ -38345,11 +38350,11 @@ async function createCliff(pipe) {
     return [POOL.x + Math.cos(a) * r * POOL.rx, 6e-3, POOL.z + Math.sin(a) * r * POOL.rz];
   }, { r0: 0.05, r1: 0.075 });
   const rain = rainField(scene, R2, { n: 2e3, w: 14, h: 12, d: 16, len: 0.4, opacity: 0.26 });
-  const lights = rig2(scene, pipe.renderer, { size: 16, dist: 40, intensity: 2.6, keyDir: [-0.72, 0.5, 0.48], rimDir: [0.6, 0.5, -0.8], fillK: 0.55 });
+  const lights = rig2(scene, pipe.renderer, { size: 16, dist: 40, intensity: 2.6, keyDir: [-0.84, 0.46, 0.3], rimDir: [0.6, 0.5, -0.8], fillK: 0.55 });
   lights.follow(new Vector3(0, 6, 0), 14);
   const cam = new PerspectiveCamera(35, 1080 / 1920, 0.05, 400);
-  const A = { pos: [-4.8, 3.6, 15.5], target: [0.3, 4.6, -2.5], lens: 35 };
-  const B = { pos: [-5, 9.6, 22.5], target: [0.4, 10.6, -3], lens: 35 };
+  const A = { pos: [-8.2, 3.4, 13.8], target: [0.9, 4.8, -2.5], lens: 35 };
+  const B = { pos: [-7.6, 10.2, 18.5], target: [0.9, 10.8, -3], lens: 35 };
   return {
     frame(f) {
       const t = f / FPS4, bt = (f - B0) / FPS4;
@@ -39015,11 +39020,11 @@ function scenario(f) {
   const arrowsOn = up(790, 840);
   return {
     cloud: 1 - clearing,
-    runoff: (0.15 + 0.5 * up(240, 420) + 0.35 * up(420, 1e3)) * (1 - 0.65 * after),
-    green: (0.45 * up(310, 560) + 0.55 * up(560, 1450)) * (1 - 0.6 * after),
-    grow: up(1035, 1130) * (1 - 0.6 * after),
-    pond: (0.5 * up(300, 420) + 0.5 * up(420, 1440)) * (1 - 0.55 * after),
-    wetland: up(1385, 1470) * (1 - 0.6 * after),
+    runoff: (0.15 + 0.5 * up(240, 420) + 0.35 * up(420, 1e3)) * (1 - 0.85 * after),
+    green: (0.45 * up(310, 560) + 0.55 * up(560, 1450)) * (1 - 0.85 * after),
+    grow: Math.min(1, 1.02 * up(1030, 1095)) * (1 - 0.75 * after),
+    pond: (0.5 * up(300, 420) + 0.5 * up(420, 1440)) * (1 - 0.8 * after),
+    wetland: up(1385, 1460) * (1 - 0.85 * after),
     divide: arrowsOn * (1 - up(905, 935)),
     coArrows: arrowsOn * (1 - up(1010, 1034)),
     powell: up(935, 1e3) * (1 - up(1012, 1034)),
@@ -39136,7 +39141,8 @@ async function createUtahMap(pipe) {
         float ut = mk.g, gb = mk.b;
         // sandstone: red on the Colorado Plateau, paler desert cream on the Great Basin floors, darker on the heights
         float redness = mix(0.95, 0.5, gb) * smoothstep(0.0, 0.2, vY) + 0.12;
-        vec3 land = mix(uCream, uRed, clamp(redness, 0.0, 1.0));
+        vec3 redSoft = mix(uRed, vec3(dot(uRed, vec3(0.3, 0.59, 0.11))), 0.2);
+        vec3 land = mix(uCream, redSoft, clamp(redness, 0.0, 1.0));
         land *= 0.82 + 0.25 * smoothstep(0.02, 0.5, vY);
         land = mix(land, land * 0.72, smoothstep(0.42, 0.62, vY));
         land *= 0.8;
@@ -39160,16 +39166,16 @@ async function createUtahMap(pipe) {
         float shallow = step(wt.g, 0.98) * smoothstep(0.45, 0.85, wt.g) + smoothstep(0.05, 0.3, wt.b) * (1.0 - smoothstep(0.5, 0.8, wt.b));
         float wland = uWetland * clamp(shallow, 0.0, 1.0) * smoothstep(0.35, 0.6, fb(vWPos.xz * 5.0) + 0.1) * ut;
         float wet = max(max(lake, grow), max(pond, thread * 0.9));
-        vec3 wcol = mix(uWaterCol * 1.05, uWaterCol * 0.8, lake);
+        vec3 wcol = mix(mix(uWaterCol * 1.22, uCream, 0.18), uWaterCol * 0.78, lake);
         // Lake Powell's arms brighten as the imagined inflow arrives
         float nearP = 1.0 - smoothstep(4.0, 9.0, length(vWPos.xz - uPowellAt));
         wcol = mix(wcol, uWaterCol * 1.35, lake * nearP * uPowell);
         vec3 marsh = mix(uGreen * 0.9, mix(uWaterCol, uGreen, 0.55), step(0.5, fb(vWPos.xz * 11.0)));
-        wcol = mix(wcol, marsh, wland * 0.85);
-        land = mix(land, marsh, wland * 0.7);
+        wcol = mix(wcol, marsh, wland);
+        land = mix(land, marsh, wland * 0.9);
         // pale rings where the water has been (the months-later beat)
-        float ring = uRings * (1.0 - wet) * max(step(0.01, wt.g) * step(wt.g, 0.98), smoothstep(0.1, 0.4, wt.b)) * 0.8;
-        land = mix(land, uCream * 1.3, ring);
+        float ring = uRings * (1.0 - wet) * max(step(0.01, wt.g) * step(wt.g, 0.98), smoothstep(0.1, 0.4, wt.b)) * (0.75 + 0.25 * fb(vWPos.xz * 8.0));
+        land = mix(land, uCream * 1.5, ring);
         vec3 col = mix(land, wcol, wet);
         gWater = wet;
         // storm cloud shadows drifting over the land
@@ -39248,7 +39254,7 @@ async function createUtahMap(pipe) {
   });
   const gslPoly = vec.lakes.find((l) => l.name === "Great Salt Lake");
   const shore = addLine([...gslPoly.pts, gslPoly.pts[0]], { color: new Color("#D8D2C6"), px: 3.2, maxW: 0.3, dash: 10, opacity: 0, emissive: 0.15 });
-  const BIRDS = 70;
+  const BIRDS = 110;
   const bgeo = new BufferGeometry();
   bgeo.setAttribute("position", new BufferAttribute(new Float32Array([-1, 0.25, 0, 0, 0, 0.35, 0, 0, 0, 0, 0, 0.35, 1, 0.25, 0, 0, 0, 0]), 3));
   bgeo.setIndex([0, 1, 2, 3, 4, 5]);
@@ -39272,7 +39278,7 @@ async function createUtahMap(pipe) {
       bv.set(c.x + Math.cos(a) * b.rad * 1.4, c.y + b.h + 0.08 * Math.sin(t * 3 + b.ph), c.z + Math.sin(a) * b.rad);
       bq.setFromAxisAngle(new Vector3(0, 1, 0), -a);
       const flap = 0.6 + 0.4 * Math.sin(t * 9 + b.ph * 3);
-      bs.set(0.15, 0.15 * flap, 0.15);
+      bs.set(0.22, 0.22 * flap, 0.22);
       bm.compose(bv, bq, bs);
       birds.setMatrixAt(i, bm);
     }
@@ -39330,18 +39336,18 @@ async function createUtahMap(pipe) {
   const FLAT_A = at(UT, V(0, 205, 2.5)), FLAT_B = at(UT, V(0, 150, 2.2));
   const SO = ll(-111.75, 37.95);
   const SOUTH = at(SO, V(-4, 30, 33), 35, V(0, 0, -1.5));
-  const SOUTH2 = at(SO, V(0, 27, 24), 35, V(1.5, 0, -0.5));
+  const SOUTH2 = at(SO, V(0, 31, 16), 35, V(1.5, 0, -1.5));
   const A7 = at(UT, V(2, 132, 52), 35, V(0, 0, -1)), B7 = at(UT, V(2, 121, 48), 35, V(0, 0, -1));
   const PW = ll(-110.75, 37.45);
-  const POWELL = at(PW, V(-9, 25, 25), 35, V(0, 0, -1));
-  const GS = ll(-113, 41);
-  const GSL = at(GS, V(3, 33, 36), 35, V(0, 0, -1));
+  const POWELL = at(PW, V(-6, 30, 16), 35, V(0, 0, -2));
+  const GS = ll(-112.55, 41.12);
+  const GSL = at(GS, V(2, 24, 17), 35, V(0, 0, -0.5));
   const SL = toW(slc.x, slc.y);
   const CRANE = at(SL, V(1.8, 2.6, 6.2), 28, V(-0.8, 0.4, -2.5));
   const CRANE2 = at(SL, V(5.5, 15, 16), 28, V(-3, 0, -4.5));
   const WIDE = at(UT, V(0, 64, 64), 24, V(0, 0, -2));
-  const WIDE2 = at(UT, V(5, 62, 63), 24, V(0.5, 0, -2.5));
-  const WIDE3 = at(UT, V(6.5, 61, 62), 24, V(0.6, 0, -2.6));
+  const WIDE2 = at(ll(-112.1, 40), V(3, 46, 46), 24, V(0, 0, -1));
+  const WIDE3 = at(ll(-112.1, 40), V(3.8, 45, 45), 24, V(0, 0, -1.2));
   const span = (f, s, e, A, B, o = {}) => move(f, s + HOLD, e - SETTLE, A, B, { fn: ease.inOutSine, ...o });
   function shot(f) {
     if (f < 300) return move(f, 252, 300, FLAT_A, FLAT_B, { fn: ease.outCubic });
