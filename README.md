@@ -5,7 +5,7 @@ This folder holds the production pipeline for short vertical 3d explainer videos
 | Video | Status | Lives in |
 |---|---|---|
 | "What if California got 30 days of extreme rain?" (64 s) | Finished | `scene/src/`, `scene/beats.json`, `docs/` |
-| "What if it rained in Utah for 30 days?" (64 s) | Step 2: style frames | `scene/videos/utah-rain/`, `docs/utah-rain/` |
+| "What if it rained in Utah for 30 days?" (64 s) | Step 3: all beats + contact sheet | `scene/videos/utah-rain/`, `docs/utah-rain/` |
 | "What if domestic cats took over California?" (64 s) | Finished (QA 22/22: `docs/cat-kingdom/qa-report.md`) | `scene/videos/cat-kingdom/`, `docs/cat-kingdom/`, `audio/cat_kingdom.py` |
 
 Both videos share the engine: the render pipeline, the text layer, map helpers and capture scripts.
@@ -36,7 +36,7 @@ Other useful commands:
 **The cat video** renders end to end with `node render/render_all.mjs --video=cat-kingdom && node render/qa.mjs --video=cat-kingdom` (frames, soundtrack from `audio/cat_kingdom.py`, MP4 and QA report in `out/cat-kingdom/`). `node render/deliver.mjs --video=cat-kingdom` then makes the upload copy and the 720p preview. The other commands take `--video=cat-kingdom` too. For example, `node render/stills.mjs out/cat-kingdom/style 90 720 1590 --video=cat-kingdom` renders its style frames. Its extra map data comes from `.venv/bin/python data/prep_cats.py`, which runs after `data/prep_map.py`.
 `--q=lab=1` renders the character look-dev lab instead of the video. `node render/contact.mjs --video=cat-kingdom` builds its contact sheet, and `node render/preview.mjs --video=cat-kingdom` a quick low-resolution motion preview (no sound).
 
-**The Utah video** is in progress. `node render/stills.mjs out/utah-rain/style 90 840 1320 --video=utah-rain` renders its style frames. Its terrain, drainage and city data come from `.venv/bin/python data/prep_utah.py` and then `data/prep_slc.py` (both after `data/prep_map.py`).
+**The Utah video** is in progress. `node render/stills.mjs out/utah-rain/style 90 840 1320 --video=utah-rain` renders its style frames and `node render/contact.mjs --video=utah-rain` its contact sheet. Its terrain, drainage and city data come from `.venv/bin/python data/prep_utah.py` and then `data/prep_slc.py` (both after `data/prep_map.py`).
 
 To preview in a browser, serve this folder and open `scene/index.html?frame=1050`, or `scene/videos/cat-kingdom/index.html?frame=90` for the cat video. Add `&safe=1` to show the app-safe zones, and `&dpr=1` for a faster, lower-quality preview.
 

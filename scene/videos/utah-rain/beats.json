@@ -58,7 +58,7 @@
         "label": "of rain and snow, statewide\nyearly average · NOAA"
       },
       "dayText": "Day 2 · imagined scenario",
-      "visual": "Pull out to the globe: the American West, Utah outlined. Storm clouds spin up over the state, then the globe gives way to the flat terrain map (fly-to, no cut).",
+      "visual": "Pull out to the globe: the American West, Utah outlined, a storm spiralling in over the state; the camera dives straight down and the globe gives way to the flat terrain map (dissolve while moving).",
       "camera": {
         "shot": "Orbit on the globe, then fly down to the state",
         "lens": "35 mm",
@@ -142,7 +142,7 @@
         "label": "deep at most, Zion Canyon\n(half a mile) · NPS"
       },
       "dayText": "Day 6 · imagined scenario",
-      "visual": "Miniature Zion cliff: ribbon waterfalls pour off the sandstone rim, tiny plants push out of cracks, a still pool at the bottom reflects towering storm clouds.",
+      "visual": "Miniature Zion alcove (like the Emerald Pools): ribbon waterfalls pour off the curved sandstone rim, tiny plants push out of the ledges, a still pool at the foot mirrors the wall and the storm clouds.",
       "camera": {
         "shot": "Crane up the cliff face, waterfall to rim",
         "lens": "35 mm",
@@ -220,11 +220,11 @@
         "label": "canyon walls; the river is\nsometimes 20–30 ft wide · NPS"
       },
       "dayText": "Day 11 · imagined scenario",
-      "visual": "Inside the slot canyon: a turquoise surge fills the floor of an empty canyon; two tiny hikers watch safely from a high bench on the rim.",
+      "visual": "Over the rim of a slot canyon like the Narrows: a turquoise surge rolls down the empty floor between walls a stride apart and fills it; two tiny hikers watch safely from the rim, well back from the edge.",
       "camera": {
-        "shot": "Slow push-in down the slot",
+        "shot": "Slow push-in along the slot from just above the rim",
         "lens": "50 mm",
-        "reason": "Builds tension, then reveals the hikers safe above"
+        "reason": "Shows the depth and the surge, then the hikers safe above"
       },
       "sound": [
         {
@@ -554,7 +554,7 @@
         "flood": 3
       },
       "dayText": "Day 30 · imagined scenario",
-      "visual": "The clouds part and warm low sun crosses the state (the one lighting change). Pull back over Utah: red-rock waterfalls, greener desert patches, a larger Great Salt Lake and flooded valley floors shining.",
+      "visual": "A storm deck covers the state, then breaks open from the middle; warm low sun crosses Utah (the one lighting change). Pull back over the state: greener desert patches, a larger Great Salt Lake and flooded valley floors shining.",
       "camera": {
         "shot": "Pull back to a tilted statewide view, low hero sun",
         "lens": "35 → 24 mm",

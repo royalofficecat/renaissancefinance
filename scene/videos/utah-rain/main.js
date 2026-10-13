@@ -15,7 +15,8 @@ if (params.get('safe') === '1') document.getElementById('safe').hidden = false;
 
 // Which set is on screen, by frame. Every change of set is a short dissolve (see transitionAt).
 const SCHEDULE = [
-  [0, 180, 'canyon'], [180, 1260, 'utmap'], [1260, 1380, 'city'], [1380, 1920, 'utmap'],
+  [0, 180, 'canyon'], [180, 264, 'globe'], [264, 420, 'utmap'], [420, 540, 'cliff'], [540, 660, 'block'], [660, 780, 'slot'],
+  [780, 1140, 'utmap'], [1140, 1260, 'flats'], [1260, 1380, 'city'], [1380, 1920, 'utmap'],
 ];
 const CUTS = SCHEDULE.map((s) => s[0]).filter((f, i) => i > 0 && SCHEDULE[i - 1][2] !== SCHEDULE[i][2]);
 
@@ -35,6 +36,11 @@ async function fontsReady() {
 
 const LOADERS = {
   canyon: () => import('./sets/canyon.js').then((m) => m.createCanyon),
+  globe: () => import('./sets/globe.js').then((m) => m.createGlobe),
+  cliff: () => import('./sets/cliff.js').then((m) => m.createCliff),
+  block: () => import('./sets/block.js').then((m) => m.createBlock),
+  slot: () => import('./sets/slot.js').then((m) => m.createSlot),
+  flats: () => import('./sets/flats.js').then((m) => m.createFlats),
   utmap: () => import('./sets/utmap.js').then((m) => m.createUtahMap),
   city: () => import('./sets/city.js').then((m) => m.createCity),
 };

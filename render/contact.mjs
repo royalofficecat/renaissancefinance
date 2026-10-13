@@ -14,8 +14,9 @@ const vp = videoPaths(video);
 const DEFAULTS = {
   '': [45, 200, 270, 380, 480, 620, 740, 870, 1040, 1170, 1300, 1420, 1580, 1720, 1880],
   'cat-kingdom': [90, 250, 385, 495, 615, 720, 850, 985, 1100, 1235, 1340, 1470, 1590, 1720, 1880],
+  'utah-rain': [90, 230, 370, 490, 610, 740, 860, 990, 1110, 1220, 1330, 1470, 1580, 1740, 1880],
 };
-const TITLES = { '': 'California, 30 days of extreme rain', 'cat-kingdom': 'What if domestic cats took over California?' };
+const TITLES = { '': 'California, 30 days of extreme rain', 'cat-kingdom': 'What if domestic cats took over California?', 'utah-rain': 'What if it rained in Utah for 30 days?' };
 const FRAMES = framesArg ? framesArg.slice(9).split(',').map(Number) : DEFAULTS[video];
 const dir = path.join(vp.out, 'contact');
 for (const sub of ['plain', 'safe']) fs.mkdirSync(path.join(dir, sub), { recursive: true });

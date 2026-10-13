@@ -80,7 +80,7 @@ export function rig(scene, renderer, o = {}) {
 }
 
 /** Storm sky backdrop: charcoal at the top, a lighter grey horizon; `clear` (0..1) opens a warm gap. */
-export function backdrop(scene, { radius = 600 } = {}) {
+export function backdrop(scene, { radius = 600, mirror = false } = {}) {
   const U = { uTop: { value: tone(C.storm, 0.75) }, uHor: { value: tone(C.storm, 1.55) }, uWarm: { value: tone(C.sun, 1.0) }, uClear: { value: 0 }, uSun: { value: SKY_U.uSunDir.value } };
   const mat = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, depthTest: false, fog: false, uniforms: U,
@@ -88,7 +88,7 @@ export function backdrop(scene, { radius = 600 } = {}) {
     fragmentShader: /* glsl */ `
       uniform vec3 uTop, uHor, uWarm, uSun; uniform float uClear; varying vec3 vDir;
       void main(){
-        float y = clamp(vDir.y, -1.0, 1.0);
+        float y = clamp(${mirror ? 'abs(vDir.y)' : 'vDir.y'}, -1.0, 1.0);
         vec3 c = mix(uHor, uTop, smoothstep(-0.05, 0.7, y));
         float s = pow(max(dot(normalize(vDir), uSun), 0.0), 4.0);
         c = mix(c, uWarm, s * uClear * 0.8);

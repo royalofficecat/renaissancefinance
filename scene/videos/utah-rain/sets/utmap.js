@@ -7,7 +7,7 @@ import { dataTexture, loadBin, loadJSON, loadPixels, samplePix } from '../../../
 import { ribbonGeometry, ribbonMaterial, updateRibbon } from '../../../src/core/ribbon.js';
 import { Labels } from '../../../src/core/labels.js';
 import { applyCam, move } from '../../../src/core/camera.js';
-import { clamp, ease, lerp, prog } from '../../../src/core/util.js';
+import { clamp, ease, lerp, prog, smoothstep } from '../../../src/core/util.js';
 import { C, HEX, S, SKY_REFL, SKY_U, backdrop, clay, rig, tone } from '../look.js';
 
 const KM = 10000;
@@ -30,13 +30,18 @@ export function scenario(f) {
   const up = (a, b) => ease.inOutSine(prog(f, a, b));
   const clearing = up(1500, 1565);
   const after = up(1640, 1790);
+  const arrowsOn = up(790, 840);
   return {
     cloud: 1 - clearing,
-    runoff: (0.15 + 0.85 * up(200, 1020)) * (1 - 0.65 * after),
-    green: up(300, 900) * (1 - 0.6 * after),
-    grow: (0.9 * up(1020, 1380) + 0.1 * up(1380, 1500)) * (1 - 0.6 * after),
-    pond: up(780, 1440) * (1 - 0.55 * after),
-    divide: up(790, 840) * (1 - up(1010, 1040)),
+    runoff: (0.15 + 0.5 * up(240, 420) + 0.35 * up(420, 1000)) * (1 - 0.65 * after),
+    green: (0.45 * up(310, 560) + 0.55 * up(560, 1450)) * (1 - 0.6 * after),
+    grow: up(1035, 1130) * (1 - 0.6 * after),
+    pond: (0.5 * up(300, 420) + 0.5 * up(420, 1440)) * (1 - 0.55 * after),
+    wetland: up(1385, 1470) * (1 - 0.6 * after),
+    divide: arrowsOn * (1 - up(905, 935)),
+    coArrows: arrowsOn * (1 - up(1010, 1034)),
+    powell: up(935, 1000) * (1 - up(1012, 1034)),
+    shore: up(1036, 1062) * (1 - up(1515, 1560)),
     warmth: clearing,
     rings: after,
   };
@@ -95,7 +100,7 @@ export async function createUtahMap(pipe) {
   const U = {
     uMasks: { value: dataTexture(masks) }, uWater: { value: dataTexture(wat) }, uFlow: { value: dataTexture(flow) },
     uBg: { value: BG }, uRed: { value: S.red }, uCream: { value: S.cream }, uWaterCol: { value: S.water }, uGreen: { value: S.green }, uStorm: { value: C.storm },
-    uCloud: { value: 1 }, uRunoff: { value: 0 }, uGreenK: { value: 0 }, uGrow: { value: 0 }, uPond: { value: 0 }, uDivide: { value: 0 }, uTime: { value: 0 }, uRings: { value: 0 },
+    uCloud: { value: 1 }, uPowell: { value: 0 }, uPowellAt: { value: new THREE.Vector2() }, uWetland: { value: 0 }, uRunoff: { value: 0 }, uGreenK: { value: 0 }, uGrow: { value: 0 }, uPond: { value: 0 }, uDivide: { value: 0 }, uTime: { value: 0 }, uRings: { value: 0 },
   };
   const mat = clay(0xffffff, 0.85, { normalMap: normalTex, normalMapType: THREE.ObjectSpaceNormalMap });
   mat.onBeforeCompile = (sh) => {
@@ -108,7 +113,7 @@ export async function createUtahMap(pipe) {
         varying vec2 vMapUv; varying float vY; varying vec3 vWPos;
         uniform sampler2D uMasks, uWater, uFlow;
         uniform vec3 uBg, uRed, uCream, uWaterCol, uGreen, uStorm;
-        uniform float uCloud, uRunoff, uGreenK, uGrow, uPond, uDivide, uTime, uRings;
+        uniform float uCloud, uRunoff, uGreenK, uGrow, uPond, uDivide, uTime, uRings, uPowell, uWetland; uniform vec2 uPowellAt;
         float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
         float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
           return mix(mix(h21(i), h21(i+vec2(1,0)), u.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), u.x), u.y); }
@@ -125,26 +130,37 @@ export async function createUtahMap(pipe) {
         vec3 land = mix(uCream, uRed, clamp(redness, 0.0, 1.0));
         land *= 0.82 + 0.25 * smoothstep(0.02, 0.5, vY);
         land = mix(land, land * 0.72, smoothstep(0.42, 0.62, vY));
+        land *= 0.8;
         // imagined greenery where the land can hold it
         float gn = fl.g * uGreenK * smoothstep(0.35, 0.65, fb(vWPos.xz * 1.3) + fl.g * 0.4);
         land = mix(land, mix(uGreen, uGreen * 0.7, fb(vWPos.xz * 3.0)), clamp(gn * 1.4, 0.0, 0.85));
         // the two water worlds
-        land = mix(land, mix(land * 0.85, uWaterCol * 0.7, 0.32), uDivide * (1.0 - gb) * ut);
-        land = mix(land, mix(land * 0.85, uGreen * 0.7, 0.38), uDivide * gb * ut);
+        land = mix(land, mix(land, uWaterCol * 0.7, 0.32), uDivide * (1.0 - gb) * ut);
+        land = mix(land, mix(land, uGreen * 0.7, 0.38), uDivide * gb * ut);
         // neighbouring states sink back towards the storm
         land = mix(mix(land * 0.6, uStorm * 1.1, 0.72), land, ut);
         // runoff threads in the washes (more of them as the rain goes on)
-        float thr = mix(0.86, 0.6, uRunoff);
-        float thread = smoothstep(thr, thr + 0.05, fl.r) * smoothstep(0.0, 0.05, uRunoff);
+        float thr = mix(0.8, 0.4, uRunoff);
+        float thread = smoothstep(thr, thr + 0.04, fl.r) * smoothstep(0.0, 0.05, uRunoff);
         // water: lakes today, the lake's imagined growth over the lowest ground, ponds in closed basins
         float lake = smoothstep(0.4, 0.6, wt.r);
         float grow = (1.0 - smoothstep(uGrow - 0.03, uGrow + 0.01, wt.g + (fb(vWPos.xz * 6.0) - 0.5) * 0.04)) * step(0.001, uGrow) * step(wt.g, 0.995);
         float pond = smoothstep(1.0 - uPond * 0.9, 1.0 - uPond * 0.9 + 0.08, wt.b) * step(0.02, uPond);
+        // temporary wetlands: a green fringe on the low ground just beyond the lake's new edge
+        // (the newly flooded shallows and the low ground around ponds turn marshy green)
+        float shallow = step(wt.g, 0.98) * smoothstep(0.45, 0.85, wt.g) + smoothstep(0.05, 0.3, wt.b) * (1.0 - smoothstep(0.5, 0.8, wt.b));
+        float wland = uWetland * clamp(shallow, 0.0, 1.0) * smoothstep(0.35, 0.6, fb(vWPos.xz * 5.0) + 0.1) * ut;
         float wet = max(max(lake, grow), max(pond, thread * 0.9));
         vec3 wcol = mix(uWaterCol * 1.05, uWaterCol * 0.8, lake);
+        // Lake Powell's arms brighten as the imagined inflow arrives
+        float nearP = 1.0 - smoothstep(4.0, 9.0, length(vWPos.xz - uPowellAt));
+        wcol = mix(wcol, uWaterCol * 1.35, lake * nearP * uPowell);
+        vec3 marsh = mix(uGreen * 0.9, mix(uWaterCol, uGreen, 0.55), step(0.5, fb(vWPos.xz * 11.0)));
+        wcol = mix(wcol, marsh, wland * 0.85);
+        land = mix(land, marsh, wland * 0.7);
         // pale rings where the water has been (the months-later beat)
-        float ring = uRings * (1.0 - wet) * max(step(0.01, wt.g) * step(wt.g, 0.98), smoothstep(0.1, 0.4, wt.b)) * 0.55;
-        land = mix(land, uCream * 1.05, ring);
+        float ring = uRings * (1.0 - wet) * max(step(0.01, wt.g) * step(wt.g, 0.98), smoothstep(0.1, 0.4, wt.b)) * 0.8;
+        land = mix(land, uCream * 1.3, ring);
         vec3 col = mix(land, wcol, wet);
         gWater = wet;
         // storm cloud shadows drifting over the land
@@ -227,6 +243,66 @@ export async function createUtahMap(pipe) {
     return { ...l, end, basin: a.basin };
   });
 
+  // the Great Salt Lake's usual shoreline (Natural Earth), dashed, so the imagined growth reads against it
+  const gslPoly = vec.lakes.find((l) => l.name === 'Great Salt Lake');
+  const shore = addLine([...gslPoly.pts, gslPoly.pts[0]], { color: new THREE.Color('#D8D2C6'), px: 3.2, maxW: 0.3, dash: 10, opacity: 0, emissive: 0.15 });
+
+  // birds over the new wetlands (beat 12): small dark chevrons wheeling in two flocks
+  const BIRDS = 70;
+  const bgeo = new THREE.BufferGeometry();
+  bgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, 0.25, 0, 0, 0, 0.35, 0, 0, 0, 0, 0, 0.35, 1, 0.25, 0, 0, 0, 0]), 3));
+  bgeo.setIndex([0, 1, 2, 3, 4, 5]);
+  const birds = new THREE.InstancedMesh(bgeo, new THREE.MeshBasicMaterial({ color: tone(C.storm, 0.45), side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: false }), BIRDS);
+  birds.frustumCulled = false;
+  birds.renderOrder = 4;
+  scene.add(birds);
+  const flockAt = [ll(-112.02, 40.98, 0.7), ll(-112.2, 41.33, 0.9)];
+  const birdSeed = Array.from({ length: BIRDS }, (_, i) => { const r = Math.sin(i * 12.9898) * 43758.5453; const u = r - Math.floor(r); const r2 = Math.sin(i * 78.233) * 12345.678; return { flock: i % 2, ph: u * Math.PI * 2, rad: 0.5 + (r2 - Math.floor(r2)) * 0.9, h: (u - 0.5) * 0.5, sp: 0.35 + 0.2 * (r2 - Math.floor(r2)) }; });
+  const bm = new THREE.Matrix4(), bq = new THREE.Quaternion(), bv = new THREE.Vector3(), bs = new THREE.Vector3();
+  function updateBirds(t, k) {
+    birds.material.opacity = 0.85 * k;
+    for (let i = 0; i < BIRDS; i++) {
+      const b = birdSeed[i], c = flockAt[b.flock];
+      const a = b.ph + t * b.sp;
+      bv.set(c.x + Math.cos(a) * b.rad * 1.4, c.y + b.h + 0.08 * Math.sin(t * 3 + b.ph), c.z + Math.sin(a) * b.rad);
+      bq.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -a);
+      const flap = 0.6 + 0.4 * Math.sin(t * 9 + b.ph * 3);
+      bs.set(0.15, 0.15 * flap, 0.15);
+      bm.compose(bv, bq, bs);
+      birds.setMatrixAt(i, bm);
+    }
+    birds.instanceMatrix.needsUpdate = true;
+  }
+
+  // a storm deck over the state that breaks open on day 30 (from the middle outwards)
+  const CLU = { uT: { value: 0 }, uCover: { value: 0 }, uOpen: { value: 0 }, uCol: { value: tone(C.storm, 2.0) }, uDark: { value: tone(C.storm, 1.1) }, uSun: { value: tone(C.sun, 1.0) } };
+  const deck = new THREE.Mesh(new THREE.PlaneGeometry(WX * 1.6, WZ * 1.6, 1, 1).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, uniforms: CLU,
+    vertexShader: 'varying vec2 vP; void main(){ vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: /* glsl */ `
+      varying vec2 vP; uniform float uT, uCover, uOpen; uniform vec3 uCol, uDark, uSun;
+      float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+      float vn(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
+        return mix(mix(h21(i), h21(i+vec2(1,0)), u.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), u.x), u.y); }
+      float fb(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<5;i++){ s+=a*vn(p); p=p*2.1+7.3; a*=0.5;} return s; }
+      void main(){
+        vec2 q = vP * 0.06 + vec2(uT * 0.03, uT * 0.012);
+        float n = fb(q + fb(q * 1.7) * 0.6);
+        float r = length(vP) / 40.0 + (n - 0.5) * 0.5;
+        float open = smoothstep(uOpen * 1.6 - 0.25, uOpen * 1.6, r);   // the gap grows from the middle
+        float a = smoothstep(0.42 - 0.12 * uCover, 0.62, n) * uCover * open;
+        float edge = smoothstep(0.0, 0.25, a) * (1.0 - smoothstep(0.25, 0.7, a));
+        vec3 c = mix(uCol, uDark, smoothstep(0.55, 0.8, n));
+        c = mix(c, uSun * 1.1, edge * uOpen * 0.8);                     // sunlit cloud edges as it breaks
+        gl_FragColor = vec4(c, clamp(a * 0.92, 0.0, 0.92) * (1.0 - smoothstep(26.0, 40.0, length(vP))));
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
+  }));
+  deck.position.set(0, 9, 0);
+  deck.renderOrder = 6;
+  scene.add(deck);
+
   // ---------- labels (the brief's places only)
   const labels = new Labels({ text: HEX.text, halo: HEX.panel });
   const slc = vec.cities.find((c) => c.name === 'Salt Lake City');
@@ -236,34 +312,96 @@ export async function createUtahMap(pipe) {
   labels.add('colorado', { text: 'Colorado River', pos: ll(-109.9, 38.55, 0.1), italic: true, size: 28, priority: 1 });
   labels.add('basin', { text: 'Great Basin', pos: ll(-113.4, 39.2, 0.3), size: 30, priority: 1 });
   labels.add('plateau', { text: 'Colorado River system', pos: ll(-110.6, 38.0, 0.3), size: 30, priority: 1 });
+  labels.add('zion', { text: 'Zion', pos: ll(-113.03, 37.3, 0.15), dot: true, size: 30, priority: 2 });
+  labels.add('wasatch', { text: 'Wasatch Range', pos: ll(-111.62, 40.62, 0.4), size: 30, priority: 2 });
+  labels.add('flats', { text: 'Bonneville Salt Flats', pos: ll(-113.85, 40.78, 0.1), italic: true, size: 28, priority: 1 });
   await labels.sync();
 
-  const cam = new THREE.PerspectiveCamera(35, 1080 / 1920, 0.5, 1500);
-  // Beat 7 (780-900): almost top-down over the whole state, slow push-in
-  const U7 = ll(-111.6, 39.3);
-  const A7 = { pos: U7.clone().add(new THREE.Vector3(2, 132, 52)), target: U7.clone().add(new THREE.Vector3(0, 0, -1)), lens: 35 };
-  const B7 = { pos: U7.clone().add(new THREE.Vector3(2, 121, 48)), target: U7.clone().add(new THREE.Vector3(0, 0, -1)), lens: 35 };
+  const cam = new THREE.PerspectiveCamera(35, 1080 / 1920, 0.05, 1500);
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const at = (p, d, lens = 35, t = V(0, 0, 0)) => ({ pos: p.clone().add(d), target: p.clone().add(t), lens });
+  // Every shot is a frame -> camera function; moves hold 0.67 s while the caption lands (HOLD) and settle
+  // before the next dissolve (SETTLE). 1 unit = 10 km.
+  const HOLD = 20, SETTLE = 18;
+  const UT = ll(-111.6, 39.3);
+  // Beat 2 tail (264-300): the flat map, straight down, continuing the globe's dive
+  const FLAT_A = at(UT, V(0, 205, 2.5)), FLAT_B = at(UT, V(0, 150, 2.2));
+  // Beat 3: tilted southern Utah, drifting east from Zion towards the canyon country
+  const SO = ll(-111.75, 37.95);
+  const SOUTH = at(SO, V(-4, 30, 33), 35, V(0, 0, -1.5));
+  const SOUTH2 = at(SO, V(0, 27, 24), 35, V(1.5, 0, -0.5));
+  // Beat 7: almost top-down over the whole state, slow push-in
+  const A7 = at(UT, V(2, 132, 52), 35, V(0, 0, -1)), B7 = at(UT, V(2, 121, 48), 35, V(0, 0, -1));
+  // Beat 8: fly to Lake Powell, looking up the Colorado from the south-west
+  const PW = ll(-110.75, 37.45);
+  const POWELL = at(PW, V(-9, 25, 25), 35, V(0, 0, -1));
+  // Beat 9: the Great Salt Lake, tilted from the south
+  const GS = ll(-113.0, 41.0);
+  const GSL = at(GS, V(3, 33, 36), 35, V(0, 0, -1));
+  // Beat 12: a crane up from the streets of Salt Lake City to the Wasatch and out over the lake's edge
+  const SL = toW(slc.x, slc.y);
+  const CRANE = at(SL, V(1.8, 2.6, 6.2), 28, V(-0.8, 0.4, -2.5));
+  const CRANE2 = at(SL, V(5.5, 15, 16), 28, V(-3.0, 0, -4.5));
+  // Beats 13-end: the whole state, tilted, warm low sun
+  const WIDE = at(UT, V(0, 64, 64), 24, V(0, 0, -2));
+  const WIDE2 = at(UT, V(5, 62, 63), 24, V(0.5, 0, -2.5));
+  const WIDE3 = at(UT, V(6.5, 61, 62), 24, V(0.6, 0, -2.6));
+  const span = (f, s, e, A, B, o = {}) => move(f, s + HOLD, e - SETTLE, A, B, { fn: ease.inOutSine, ...o });
+  function shot(f) {
+    if (f < 300) return move(f, 252, 300, FLAT_A, FLAT_B, { fn: ease.outCubic });
+    if (f < 600) return span(f, 300, 420, FLAT_B, SOUTH2, { via: SO.clone().add(V(-6, 60, 40)) });
+    if (f < 900) return move(f, 800, 882, A7, B7, { fn: ease.inOutSine });
+    if (f < 1020) return span(f, 900, 1020, B7, POWELL, { via: PW.clone().add(V(-12, 60, 40)) });
+    if (f < 1200) return span(f, 1020, 1140, POWELL, GSL, { via: ll(-111.9, 39.4).add(V(-4, 70, 25)) });
+    if (f < 1500) return span(f, 1380, 1500, CRANE, CRANE2, { fn: ease.inOutSine });
+    if (f < 1620) return span(f, 1500, 1620, CRANE2, WIDE, { via: SL.clone().add(V(4, 45, 40)) });
+    if (f < 1800) return move(f, 1640, 1782, WIDE, WIDE2, { fn: ease.inOutSine });
+    return move(f, 1800, 1920, WIDE2, WIDE3, { fn: ease.inOutSine });
+  }
+  const pw = ll(-110.85, 37.25);
+  U.uPowellAt.value.set(pw.x, pw.z);
 
   return {
     labels,
     frame(f, { avoid = [] } = {}) {
       const t = f / FPS;
       const sc = scenario(f);
-      applyCam(cam, move(f, 800, 882, A7, B7, { fn: ease.inOutSine }));
+      applyCam(cam, shot(f));
       U.uCloud.value = sc.cloud; U.uRunoff.value = sc.runoff; U.uGreenK.value = sc.green; U.uGrow.value = sc.grow; U.uPond.value = sc.pond;
-      U.uDivide.value = sc.divide; U.uTime.value = t; U.uRings.value = sc.rings;
+      U.uDivide.value = sc.divide; U.uTime.value = t; U.uRings.value = sc.rings; U.uPowell.value = sc.powell; U.uWetland.value = sc.wetland;
       lights.warmth(sc.warmth);
       sky.U.uClear.value = sc.warmth;
       for (const d of divide) { d.mat.uniforms.uOpacity.value = 0.9 * sc.divide; d.mat.uniforms.uReveal.value = d.len * ease.inOutSine(prog(f, 790, 830)); }
       const rev = ease.inOutSine(prog(f, 805, 870));
       for (const a of arrows) {
-        a.mat.uniforms.uOpacity.value = 0.95 * sc.divide;
+        const k = a.basin === 'gb' ? sc.divide : sc.coArrows;
+        a.mat.uniforms.uOpacity.value = 0.95 * k;
         a.mat.uniforms.uReveal.value = a.len * rev;
-        if (a.end) a.end.material.opacity = 0.9 * sc.divide * prog(rev, 0.85, 1);
+        if (a.end) a.end.material.opacity = 0.9 * k * prog(rev, 0.85, 1);
       }
+      arrowsG.visible = sc.coArrows > 0.001;
+      CLU.uT.value = t;
+      CLU.uCover.value = smoothstep(1468, 1500, f) * 0.95 + 0.4 * smoothstep(264, 280, f) * (1 - smoothstep(300, 360, f));
+      CLU.uOpen.value = ease.inOutSine(prog(f, 1512, 1590));
+      deck.visible = CLU.uCover.value > 0.002 && CLU.uOpen.value < 0.999;
+      shore.mat.uniforms.uOpacity.value = 0.85 * sc.shore;
+      shore.mesh.visible = sc.shore > 0.001;
+      const birdK = smoothstep(1400, 1440, f) * (1 - smoothstep(1520, 1560, f));
+      birds.visible = birdK > 0.001;
+      if (birds.visible) updateBirds(t, birdK);
       mats.forEach((m) => updateRibbon(m, cam, t));
-      const lab = sc.divide;
-      labels.update(cam, { slc: 0.9, gsl: 0.9, powell: 0.9 * lab, colorado: 0.9 * lab, basin: lab, plateau: lab }, avoid);
+      // place names, beat by beat (only the brief's places)
+      const w = (a, b) => smoothstep(a, a + 12, f) * (1 - smoothstep(b - 12, b, f));
+      labels.update(cam, {
+        zion: 0.95 * w(330, 420),
+        colorado: 0.9 * Math.max(w(330, 420), sc.divide, w(900, 1020)),
+        powell: 0.9 * Math.max(w(330, 420), sc.divide, w(915, 1020), w(1640, 1920)),
+        slc: 0.95 * Math.max(w(270, 300), sc.divide, w(1060, 1140), w(1380, 1920)),
+        gsl: 0.9 * Math.max(sc.divide, w(1050, 1140), w(1420, 1920)),
+        basin: sc.divide, plateau: sc.divide,
+        wasatch: 0.95 * w(1395, 1500),
+        flats: 0.9 * w(1070, 1140),
+      }, avoid);
       return { scene, camera: cam, labels: labels.scene, bloom: 0.25, exposure: 1.0, vignette: 0.26 };
     },
   };
